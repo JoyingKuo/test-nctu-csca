@@ -121,8 +121,8 @@ restore.processRestore = function(req, res, next){
           // console.log(courseResult[0].course[i].code);
        for(var i = 0; i<courseResult.length; i++){
         for(var q = 0; q<courseResult[i].course.length; q++){
-            //if(i == 1)
-                //console.log(courseResult[i].course[q].code);
+            if(i == 0)
+                console.log(courseResult[i].course[q].code);
             if(restore[i].pre[courseResult[i].course[q].code] == true){
                 if(i == 0){
                     console.log("i: "+ i+" / "+"q: "+ q);
