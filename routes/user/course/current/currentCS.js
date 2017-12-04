@@ -14,7 +14,7 @@ currentCS.processCS = function(req, res, next){
 		// the year the student enter school
 		var school_year = (100 + temp);
 		if(!studentId){
-			//console.log("No Student Id");
+			////console.log("No Student Id");
 			return;
 		}
 		for(var i=0; i<now.length; i++){
@@ -23,7 +23,7 @@ currentCS.processCS = function(req, res, next){
 		}
 		// determine compulsory courses
 		var compulse = req.course.compulse;
-		////console.log(compulse);
+		//////console.log(compulse);
 		for(var q=0; q<compulse.length; q++){
 			cosNumber = compulse[q].cos_codes;
   			for(var k=0; k<cosNumber.length; k++){
@@ -32,6 +32,7 @@ currentCS.processCS = function(req, res, next){
                                         en:'',
                                         code:'',
                                         score: -1,
+                                        originalCredit:0,
                                         complete:false,
                                         english:false,
                                         grade: '0',
@@ -41,8 +42,9 @@ currentCS.processCS = function(req, res, next){
                                 };
 				if(taken[cosNumber[k]] === true){
   				  	var reg = compulse[q].cos_cname.substring(0,3);
+                    cosInfo.originalCredit = parseInt(detail[cosNumber[k]].cos_credit);
 					if(reg == '物化生'){
-						var temp = datail[cosNumber[k]].cos_cname.substring(0,2);
+						var temp = detail[cosNumber[k]].cos_cname.substring(0,2);
 						cosInfo.cn = detail[cosNumber[k]].cos_cname;
                         cosInfo.en = detail[cosNumber[k]].cos_ename;
 					}
@@ -89,6 +91,7 @@ currentCS.processCS = function(req, res, next){
                                         en:'',
                                         code:'',
                                         score: -1,
+                                        originalCredit:0,
                                         complete:false,
                                         english:false,
                                         grade: '0',
@@ -98,6 +101,7 @@ currentCS.processCS = function(req, res, next){
                                 };
                         for(var k=0; k<cosNumber.length; k++){
                                 if(taken[cosNumber[k]] === true){
+                                        cosInfo.originalCredit = parseInt(detail[cosNumber[k]].cos_credit);
                                         cosInfo.cn = core[q].cos_cname;
                                         cosInfo.en = core[q].cos_ename;
                                         cosInfo.code = cosNumber[k];
@@ -123,6 +127,7 @@ currentCS.processCS = function(req, res, next){
                                         en:'',
                                         code:'',
                                         score: -1,
+                                        originalCredit:0,
                                         complete:false,
                                         english:false,
                                         grade: '0',
@@ -132,6 +137,7 @@ currentCS.processCS = function(req, res, next){
                                 };
                         for(var k=0; k<cosNumber.length; k++){
                                 if(taken[cosNumber[k]] === true){
+                                        cosInfo.originalCredit = parseInt(detail[cosNumber[k]].cos_credit);
                                         cosInfo.cn = other[q].cos_cname;
                                         cosInfo.en = other[q].cos_ename;
                                         cosInfo.code = cosNumber[k];
@@ -157,6 +163,7 @@ currentCS.processCS = function(req, res, next){
                                         en:'',
                                         code:'',
                                         score: -1,
+                                        originalCredit:0,
                                         complete:false,
                                         english:false,
                                         grade: '0',
@@ -166,6 +173,7 @@ currentCS.processCS = function(req, res, next){
                                 };
                         for(var k=0; k<cosNumber.length; k++){
                                 if(taken[cosNumber[k]] === true){
+                                        cosInfo.originalCredit = parseInt(detail[cosNumber[k]].cos_credit);
                                         cosInfo.cn = vice[q].cos_cname;
                                         cosInfo.en = vice[q].cos_ename;
                                         cosInfo.code = cosNumber[k];

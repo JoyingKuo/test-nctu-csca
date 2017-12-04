@@ -17,7 +17,7 @@ router.post('/students/graduate/english', csrfProtection, function(req, res){
     var submit2 = req.body.check2.state;
     let eng_state = "0";
     if(req.session.profile){
-        let studentId = utils.getPersonId(JSON.parse(req.session.profile));
+        let studentId = res.locals.studentId;
         if(submit1)
             eng_state = "1";
         else{
@@ -32,13 +32,13 @@ router.post('/students/graduate/english', csrfProtection, function(req, res){
 });
 
 router.get('/students/graduate/english',function(req, res){
-    let personId = utils.getPersonId(JSON.parse(req.session.profile));
+    let personId = res.locals.studentId
     query.findPerson(personId, function(err, result){
         if(err){
             res.redirect('/');
         }
         else {
-            console.log(result);
+            //console.log(result);
             if(JSON.parse(result)[0].en_certificate == "1")
                 res.json({ check: {state: "1" } });
             else if(JSON.parse(result)[0].en_certificate === "21")

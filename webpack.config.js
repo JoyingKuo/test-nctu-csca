@@ -48,11 +48,12 @@ module.exports = {
   resolve: {
       extensions: ['*', '.js', '.json'] 
     },
-  plugins: [
+  plugins:
+  /* [
     	new BundleAnalyzerPlugin({
 		analyzerMode: 'server',
 		analyzerHost: '140.113.168.202',
-		analyzerPort: 1112,
+		analyzerPort: 1114,
 		reportFilename: 'report.html',
 		defaultSizes: 'parsed',
 		openAnalyzer: true,
@@ -60,7 +61,7 @@ module.exports = {
 		statsFilename: 'stats.json',
 		statsOptions: null,
 		logLevel: 'info'
-	}),
+	}),*/[
 	new ExtractTextPlugin({filename: 'style.[name].css', publicPath: '/public/'})
   ],
   watch: true

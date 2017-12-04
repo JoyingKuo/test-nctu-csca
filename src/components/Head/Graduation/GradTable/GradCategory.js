@@ -12,13 +12,6 @@ class GradCategory extends React.Component {
 
         let subjects = this.state.subjects;
         for (let i = 0; i < subjects.length; i++) {
-            // score
-            if (subjects[i].score == null) {
-                if (subjects.grade == null)
-                    subjects[i].score = (subjects[i].complete == true)? '通過': '未過';
-                else
-                    subjects[i].score = subjects[i].grade;
-            }
 
             // comment
             if (this.state.name=='通識')
@@ -35,10 +28,8 @@ class GradCategory extends React.Component {
                 subjects[i].score = '抵免';
             } else if (subjects[i].reason=="free2") {
                 subjects[i].comment += '免修課程';
-                subjects[i].score = '';
             } else if (subjects[i].reason=="now") {
                 subjects[i].comment += '當期課程';
-                subjects[i].score = '';
             }
 
             // 未修
@@ -47,12 +38,23 @@ class GradCategory extends React.Component {
                 this.state.subjects[i].originalCredit = '　';
             }
 
+            // score
+            if (subjects[i].score == null) {
+                if (subjects.grade == null)
+                    subjects[i].score = (subjects[i].complete == true)? '通過': '未過';
+                else
+                    subjects[i].score = subjects[i].grade;
+            }
+
         }
+
+        let gept = this.props.graduationCheckEnglishTest;
+        let gept_show = [(gept==='21')? 'V': ' ', (gept==='22')? 'V': ' ', (gept==='1')? 'V': ' ']
 
         return(
             <tbody>
                 <tr>
-                    <td className="title-text" rowSpan={this.state.subjects.length+1}>{this.state.name}</td>
+                    <td className="title-text" rowSpan={this.state.subjects.length+1+(this.state.name === '外語')}>{this.state.name}</td>
                     <td className='title-text'>科目名稱</td>
                     <td style={{fontSize: '8pt', fontWeight:'bold'}}>1上</td>
                     <td style={{fontSize: '8pt', fontWeight:'bold'}}>1下</td>
@@ -79,6 +81,14 @@ class GradCategory extends React.Component {
                         comment={subject.comment}
                     />
                 )}
+                {this.state.name === '外語' &&
+                    <tr>
+                        <td className="bg-orange left-text" colSpan="12">
+                            <span>★英檢：&nbsp;&nbsp;通過({gept_show[0]})&nbsp;&nbsp;&nbsp;未通過({gept_show[1]})&nbsp;&nbsp;&nbsp;已抵免({gept_show[2]})</span><br/>
+                            <span style={{fontSize: '8pt', fontWeight:'bold', color: '#0000FF'}}>未通過者請勾選 (  )加修並通過「英文進階課程」4學分  (  )於畢業前自行報名並通過所列任ㄧ英文能力檢定考試與標準</span>
+                        </td>
+                    </tr>
+                }
             </tbody>
         );
     }

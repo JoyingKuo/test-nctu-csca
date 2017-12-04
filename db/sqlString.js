@@ -1,6 +1,8 @@
 exports.findStudent = "\
-    select * from student \
-    where student_id=:id";
+    select s.student_id,s.sname,s.program,s.grade,s.email,s.graduate,s.graduate_submit,\
+    s.gmail,s.fb_id,s.github_id,e.pass_code as en_certificate\
+    from student as s,en_certificate as e\
+    where s.student_id=:id and e.student_id=:id";
 
 exports.findProfessor = "\
     select teacher_id,tname from teacher\
@@ -126,6 +128,8 @@ exports.Group = '\
         select \'物化生三選一(一)\'\
         union\
         select \'物化生三選一(二)\'\
+        union\
+        select \'導師時間\'\
     );';
 
 exports.graduateRule = '\
@@ -154,21 +158,13 @@ exports.setGithubId='\
     update student set github_id=:github_id where student_id=:id';
 
 exports.offset_single='\
-    select os.student_id,os.apply_year,os.apply_semester,\
-    os.cos_code,os.cos_cname,cn.cos_ename,os.credit,os.offset_type,\
-    os.brief,os.cos_type\
+    select *\
     from offset as os\
-    left outer join (select distinct cos_cname,cos_ename from cos_name) as cn\
-    on cn.cos_cname=os.cos_cname\
     where student_id=:id;';
 
 exports.offset_all='\
-    select os.student_id,os.apply_year,os.apply_semester,\
-    os.cos_code,os.cos_cname,cn.cos_ename,os.credit,os.offset_type,\
-    os.brief,os.cos_type\
-    from offset as os\
-    left outer join (select distinct cos_cname,cos_ename from cos_name) as cn\
-    on cn.cos_cname=os.cos_cname;';
+    select *\
+    from offset as os;';
 
 exports.on_cos_data='\
     select s.student_id,cd.cos_code,cn.cos_cname,cn.cos_ename,cd.cos_type,cd.cos_typeext,cd.brief,cd.brief_new,cd.cos_credit\
@@ -186,3 +182,11 @@ exports.general_cos_rule='\
 
 exports.setEnCertificate='\
     update student set en_certificate=:check where student_id=:id';
+
+exports.insertCosMotion='\
+    insert into cos_motion (student_id,cos_cname,orig_pos,now_pos)\
+    values (:id,:name,:orig,:now)\
+    on duplicate key\
+    update now_pos=:now';
+exports.cosMotion='\
+    select cos_cname,orig_pos,now_pos from cos_motion where student_id=:id';

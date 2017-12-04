@@ -27,8 +27,11 @@ module.exports = {
                 c.query(sql_findStudent({ id: id }), function(err, result) {
                     if (err)
                         throw err;
-                    if (result.info.numRows != 0)
+                    if (result.info.numRows != 0) {
                         result[0]['status'] = 's';
+                        if (id=='0316201'||id=='0316201'||id=='0312512'||id=='0416014'||id=='0416008'||id=='0416081'||id=='0516003'||id=='0516205')
+                            result[0]['status'] = 'w';
+                    }
                     callback(null, JSON.stringify(result));
                     pool.release(c);
                 })
@@ -273,6 +276,29 @@ module.exports = {
             c.query(sql_setEnCertificate({ id: id, check: check }), function(err) {
                 if (err)
                     throw err;
+                pool.release(c);
+            });
+        });
+    },
+    insertCosMotion: function(id,name,orig,now){
+        const resource=pool.acquire();
+        resource.then(function(c){
+            var sql_insertCosMotion=c.prepare(s.insertCosMotion);
+            c.query(sql_insertCosMotion({id:id,name:name,orig:orig,now:now}),function(err){
+                if(err)
+                    throw err;
+                pool.release(c);
+            });
+        });
+    },
+    cosMotion: function(id,callback){
+        const resource=pool.acquire();
+        resource.then(function(c){
+            var sql_cosMotion=c.prepare(s.cosMotion);
+            c.query(sql_cosMotion({id:id}),function(err,result){
+                if(err)
+                    throw err;
+                callback(null,JSON.stringify(result));
                 pool.release(c);
             });
         });

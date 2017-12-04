@@ -12,6 +12,7 @@ var nowOther = require('../../course/current/currentOther');
 var nowCS = require('../../course/current/currentCS');
 
 var StudentId = getStudentId.getStudentId.studentId;
+var StudentProfile = query.query.queryProfile;
 var queryPass = query.query.queryPass;
 var queryCourse = query.query.queryCourse;
 var queryRule = query.query.queryRule;
@@ -25,7 +26,7 @@ var processFinal = finalProcess.finalProcess.processFinal;
 var currentOther = nowOther.currentOther.processOther;
 var currentCS = nowCS.currentCS.processCS;
 
-router.get('/assistants/graduate/revised', StudentId, queryFree, queryGeneral, queryPass, queryCourse, queryNow,queryRule, processOther, processCS, processFinal, processResult, currentOther, currentCS, function(req, res){
+router.get('/assistants/graduate/revised', StudentId, StudentProfile, queryFree, queryGeneral, queryPass, queryCourse, queryNow,queryRule, processOther, processCS, processFinal, processResult, currentOther, currentCS, function(req, res){
 	res.send(res.locals.courseResult);
 
 });

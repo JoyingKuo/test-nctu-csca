@@ -4,13 +4,13 @@ var utils = require('../../../utils');
 var randoms = require('../../../randomVals');
 var methods = {};
 
-var url = "https://id.nctu.edu.tw/o/authorize/?client_id=LtdkznMFdoasXeNs23sRGnjodszIhlVbeujg27Fg&response_type=code&scope=profile%20name";
+var url = "https://id.nctu.edu.tw/o/authorize/?client_id=whzg3iNMpyLCy0jNFqq6iTSyEayJkvhYCRYbC9MY&response_type=code&scope=profile%20name";
 var redirectPath = utils.redirectPath;
 var oAuthNctu = {
     grant_type : "authorization_code",
-    client_id : "LtdkznMFdoasXeNs23sRGnjodszIhlVbeujg27Fg",
+    client_id : "whzg3iNMpyLCy0jNFqq6iTSyEayJkvhYCRYbC9MY",
     client_secret : randoms.randomVals.nctuClientKey,
-    redirect_uri : "https://csca.nctu.edu.tw/auth/Nctu/callback"
+    redirect_uri : "http://140.113.168.202:1234/auth/Nctu/callback"
 }
 
 exports.oAuthNctu = oAuthNctu;
@@ -23,7 +23,7 @@ methods.getCode = function(req, res, next){
         return;
 et   }
     //console.log("token:");
-    //console.log(oAuthNctu.code);
+    console.log(oAuthNctu.code);
     next();
 }
 
@@ -49,7 +49,7 @@ methods.getToken = function(req, res, next){
             }
             var bodyObj = JSON.parse(body);
             var access_token = bodyObj.access_token;
-	    //console.log("Token:" + access_token);
+	    console.log("Token:" + access_token);
             oAuthNctu.token = access_token;
             next();
         });
@@ -63,10 +63,10 @@ methods.getProfile = function(req, res, next){
           'Authorization' : 'Bearer ' + oAuthNctu.token,
     },}, function(err, res, body){
         if(body == '<h1>Server Error (500)</h1>'){
-            //console.log("invalid token!!");
+            console.log("invalid token!!");
             return;
         }
-	//console.log("Profile:" + body);
+	console.log("Profile:" + body);
 	req.session.profile = body;
 	body = JSON.parse(body);
 	//console.log("req.sesision:" + req.session.profile);
@@ -90,7 +90,7 @@ methods.redirectAfterAuth = function(req, res, next){
                 return;
             }
             query.findPerson(personId, function(err, result){
-		//console.log(result + typeof(result));
+		//console.log(result);
                 if(!result){
                     return;
                 }
@@ -125,6 +125,9 @@ methods.redirectPath = function(req, res, next){
     //console.log(req.session.profile); 
     var personStatus = JSON.parse(req.session.profile).personStatus;
     switch(personStatus){
+        case 'w':
+            //console.log("This is a student");
+            res.redirect('/students/head');
         case 's':
             //console.log("This is a student");
             res.redirect('/students/head');

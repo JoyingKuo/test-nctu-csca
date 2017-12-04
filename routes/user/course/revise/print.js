@@ -4,7 +4,7 @@ var print = {};
 print.processPrint = function(req, res, next){
 	
   if(req.session.profile){
-      
+          
       var studentId = res.locals.studentId;
       var temp = parseInt(studentId.substring(0,2));
       var school_year = (100 + temp);
@@ -40,7 +40,7 @@ print.processPrint = function(req, res, next){
         courseResult[4].course[i].score = ''; 
       }
 
-      for(var q=0; q<3; q++){
+      for(var q=0; q<5; q++){
             var cosInfo = {
                     cn:'',
                     en:'',
@@ -55,9 +55,11 @@ print.processPrint = function(req, res, next){
                     reason:'',
                     move:''
             }
-            courseResult[3].course.push(cosInfo);
+            if(q<3){
+                courseResult[3].course.push(cosInfo);
+                courseResult[5].course.push(cosInfo);
+            }
             courseResult[4].course.push(cosInfo);
-            courseResult[5].course.push(cosInfo);
       }
       res.locals.courseResult = courseResult;
   }

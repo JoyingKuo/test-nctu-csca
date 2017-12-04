@@ -2,6 +2,10 @@
     display: none;
 }
 
+.dark-toast{
+    background-color: black;
+}
+
 .font_adjust{
     background: #F5F5F5;
     height: auto;
@@ -10,12 +14,16 @@
 
 @media print {
     #ontopDiv,
-    .font_adjust,
+    .schedule-bar,
+    .Grad-Row,
     #topRec,
+    .fixed,
+    .Grad-title-adjust,
     footer {
         display: none;
     }
     #printArea {
+        padding: 5px;
         height: auto;
         width: auto;
         display: block;
@@ -32,7 +40,7 @@
     position: fixed;
     bottom: 41px;
     right: 3px;
-    z-index: 10000;
+    z-index: 100;
 }
 
 .red{
@@ -86,6 +94,7 @@
 .text{
     color: #7B7B7B;
     float: left;
+    opacity: 0.8;
     font-family: 'Noto Sans CJK TC';
 }
 
@@ -93,7 +102,7 @@
     padding: 25px 0 0 50px;
     display: inline-block;
     width: 700px;
-    height: 125px;
+    height: 130px;
 }
 
 .grad-hover-info{
@@ -216,8 +225,6 @@
 
 .course-button{
     padding: 11px 0 120px 0;
-    height: 100px;
-    width: 1300px;
 }
 
 #graduate-footer{
