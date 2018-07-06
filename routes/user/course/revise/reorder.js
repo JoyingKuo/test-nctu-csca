@@ -8,6 +8,14 @@ reorder.processOrder = function(req, res, next){
         var courseResult = res.locals.courseResult;
         var reorderResult = [];
         var lanes = { lanes: [] };
+        var taken = [];
+        var repeatCounter = [];
+
+        /*for(var i = 0; i<courseResult.length; i++)
+            for(var u = 0; u<courseResult[i].course.length; u++)
+                taken[courseResult[i].course[u].code] =  true;*/
+        var sameCount = 0;
+
 
         var compulsory = {
                 id: '共同必修',
@@ -70,7 +78,12 @@ reorder.processOrder = function(req, res, next){
                 cards: []
 
         }
-
+        var graduate = {
+                id: '抵免研究所課程',
+                title: '抵免研究所課程',
+                total:0,
+                cards: []
+        }
         //compulsory
         for(var i = 0; i<courseResult.length; i++){
             if(i == 0)
@@ -93,34 +106,40 @@ reorder.processOrder = function(req, res, next){
                 service.total = courseResult[i].require;
             else if(i == 9)
                 art.total = courseResult[i].require;
-            /*if(i == 0){
-            //console.log("length:");
-            //console.log(courseResult[i].course.length);
-            }*/
-            //if(i == 0)
-                //console.log(courseResult[i].course);
+            else if(i == 10)
+                graduate.total = courseResult[i].credit;
+            
             for(var q = 0; q<courseResult[i].course.length; q++){
-                //console.log("the"+i);
-                //console.log("the q "+ q);
-                //console.log(courseResult[i].course[q]);
+                var cosCode = courseResult[i].course[q].code;
                 var cosInfo = {
                     id: '',
                     title: '',
                     label: '',
-                    description: ''
+                    description: '',
+                    cardStyle:{ borderRadius:6, boxShadow:'0 0 6px 1px #E08521', marginBottom: 15}
                 }
-                if(!courseResult[i].course[q].code)
-                    cosInfo.id = 'DCP';
-                else
+                //if(!courseResult[i].course[q].code)
+                    //cosInfo.id = 'DCP';
+                //else{
                     cosInfo.id = courseResult[i].course[q].code;
+                //}
                 cosInfo.title = courseResult[i].course[q].cn + '(' + courseResult[i].course[q].en + ')';
                 if(courseResult[i].course[q].complete == true){
                     cosInfo.label = courseResult[i].course[q].realCredit;
-                    cosInfo.description = courseResult[i].course[q].score;
+                    if(courseResult[i].course[q].reason == 'notCS'){
+                        cosInfo.description = '尚未抵免此課程';
+                        cosInfo.cardStyle = { borderRadius:6, boxShadow:'0 0 6px 1px #E08521', marginBottom: 15};
+                    }
+                    else{
+                        cosInfo.description = courseResult[i].course[q].score;
+                        cosInfo.cardStyle = { borderRadius:6, boxShadow:'0 0 6px 1px #41c836', marginBottom: 15};
+                    }
                 }
                 else{
-                    if(courseResult[i].course[q].reason == 'now')
+                    cosInfo.cardStyle = { borderRadius:6, boxShadow:'0 0 6px 1px #BD3B36', marginBottom: 15};;
+                    if(courseResult[i].course[q].reason == 'now'){
                         cosInfo.description = '當期課程';
+                    }
                     else
                         cosInfo.description = '未修此課程';
                 }
@@ -144,12 +163,15 @@ reorder.processOrder = function(req, res, next){
                     service.cards.push(cosInfo);
                 else if(i == 9)
                     art.cards.push(cosInfo);
+                else if(i == 10)
+                    graduate.cards.push(cosInfo);
             }
         }
         reorderResult.push(compulsory);
         reorderResult.push(coreClass);
         reorderResult.push(otherClass);
         reorderResult.push(elective);
+        reorderResult.push(graduate);
         reorderResult.push(otherElect);
         reorderResult.push(language);
         reorderResult.push(general);

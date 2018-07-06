@@ -10,6 +10,7 @@ var finalProcess = require('../../course/revise/final');
 var nowOther = require('../../course/current/currentOther');
 var nowCS = require('../../course/current/currentCS');
 var orderInfo = require('../../course/revise/orderInfo');
+var restore = require('../../course/revise/restore');
 
 var StudentId = getStudentId.getStudentId.studentId;
 var StudentProfile = query.query.queryProfile;
@@ -19,14 +20,17 @@ var queryRule = query.query.queryRule;
 var queryFree = query.query.queryFree;
 var queryNow = query.query.queryNow;
 var queryGeneral = query.query.queryGeneral;
+var queryChange = query.query.queryChange;
 var processOther = other.Othercourse.processOther;
 var processCS = cs.CScourse.processCS;
 var processFinal = finalProcess.finalProcess.processFinal;
 var currentOther = nowOther.currentOther.processOther;
 var currentCS = nowCS.currentCS.processCS;
 var getOrderInfo = orderInfo.orderInfo.getOrderInfo;
+var processRestore = restore.restore.processRestore;
 
-router.get('/students/graduate/orderInfo', StudentId, StudentProfile, queryFree, queryGeneral, queryPass, queryCourse, queryNow, queryRule, processOther, processCS, processFinal, currentOther, currentCS, getOrderInfo, function(req, res){
+
+router.get('/students/graduate/orderInfo', StudentId, StudentProfile, queryFree, queryGeneral, queryPass, queryChange, queryCourse, queryNow, queryRule, processOther, processCS, currentOther, currentCS, processRestore, getOrderInfo, function(req, res){
 	//console.log(res.locals.orderInfo);
     //console.log(res.locals.lanes['lanes']);
     res.send(JSON.stringify(res.locals.orderInfo));

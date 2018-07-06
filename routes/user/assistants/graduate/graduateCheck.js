@@ -4,24 +4,28 @@ var express = require('express');
 var utils = require('../../../../utils');
 var query = require('../../../../db/msql');
 var utils = require('../../../../utils');
-var router = express.Router();
-
+var getStudentId = require('../../course/getStudentId');
 var csrf = require('csurf');
+var router = express.Router();
+var studentId = getStudentId.getStudentId.studentId; 
 var csrfProtection = csrf();
 
-router.post('/assistants/graduate/check', csrfProtection, function(req, res){
+router.post('/assistants/graduate/check', studentId, csrfProtection, function(req, res){
     var submit = req.body.check.state;
-
+    var studentId = req.body.params.student_id;
+    console.log(studentId);
     if(req.session.profile && submit){
-        utils.getPersonIdwCb(JSON.parse(req.session.profile), setSubmitState);
+        setSubmitState(studentId);
+        res.send({ check: {state: true } });
     }
+    else
+        res.send({ check: {state: false } });
 });
 
-router.get('/assistants/graduate/check',function(req, res){
+router.get('/assistants/graduate/check', studentId, function(req, res){
     let personId = res.locals.studentId;
     query.findPerson(personId, function(err, result){
         if(err){
-            ////console.log(err);
             res.redirect('/');
         }
         else {

@@ -23,7 +23,7 @@ methods.getCode = function(req, res, next){
         return;
 et   }
     //console.log("token:");
-    console.log(oAuthNctu.code);
+   // console.log(oAuthNctu.code);
     next();
 }
 
@@ -49,7 +49,7 @@ methods.getToken = function(req, res, next){
             }
             var bodyObj = JSON.parse(body);
             var access_token = bodyObj.access_token;
-	    console.log("Token:" + access_token);
+	   // console.log("Token:" + access_token);
             oAuthNctu.token = access_token;
             next();
         });
@@ -66,7 +66,7 @@ methods.getProfile = function(req, res, next){
             console.log("invalid token!!");
             return;
         }
-	console.log("Profile:" + body);
+	//console.log("Profile:" + body);
 	req.session.profile = body;
 	body = JSON.parse(body);
 	//console.log("req.sesision:" + req.session.profile);
@@ -108,7 +108,7 @@ methods.redirectAfterAuth = function(req, res, next){
             	    next();
 		}
 		else{
-                    console.log(result);
+                   // console.log(result);
                     var temp = JSON.parse(result);
 		    var profileObj = JSON.parse(req.session.profile);
                     profileObj.personStatus = temp[0].status;
@@ -134,7 +134,7 @@ methods.redirectPath = function(req, res, next){
             break;
         case 'p':
             //console.log("This is a professor");
-            res.redirect('/professors/head');
+            res.redirect('/teachers/head');
             break;
         case 'a':
             //console.log("This is an assistant");

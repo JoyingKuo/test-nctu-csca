@@ -7,7 +7,7 @@ var methods = require('./methods');
 var checkCard = methods.method.checkCard;
 var insertToDB = methods.method.insertToDB;
 
-router.post('/students/graduate/change', StudentId, insertToDB, checkCard);
+router.post('/students/graduate/change', StudentId, checkCard);
 
 
 module.exports = router; 

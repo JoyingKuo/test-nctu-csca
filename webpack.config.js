@@ -4,12 +4,13 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
-  entry: {
+/*  entry: {
     students : './src/index.student.js', 
     assistants : './src/index.assistant.js', 
     teachers : './src/index.teacher.js', 
     login : './src/index.login.js', 
-  },
+  },*/
+    entry: './src/index.js',
   output: {
     path: path.join(__dirname, '/public'), 
     filename: 'bundle.[name].js',
@@ -23,6 +24,13 @@ module.exports = {
                           fallback: 'style-loader',
                           use: ['css-loader','sass-loader']
                         })	
+                  },
+                  {
+                     test: /\.scss$/,
+                     loader: ExtractTextPlugin.extract({
+                     fallback: 'style-loader',
+                     use: ['css-loader', 'sass-loader']
+                     })
                   },
                   {
                     test: /\.js$/,

@@ -10,6 +10,11 @@ module.exports.getPersonProgram = function(profileObj){
   return profileObj.program;
 }
 
+module.exports.getPersonName = function(profileObj){
+  return profileObj.sname;
+}
+
+
 module.exports.nocache = function(req, res, next) {
   res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
   res.header('Expires', '-1');

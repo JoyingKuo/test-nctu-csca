@@ -3,12 +3,18 @@ var query = require('../../../../../db/msql');
 var Compulsory = cards.Compulsory;
 var Core = cards.Core;
 var SecondaryCore = cards.SecondaryCore;
+var Elective = cards.Elective;
+var Language = cards.Language;
+var General = cards.General;
+var PE = cards.PE;
+var Art = cards.Art;
+var Serve = cards.Serve;
+var Card = cards.Card;
 var methods = {};
 
 
-//:{"cosname":{"id":"計算機圖學概論"},"pre":{"sourceLaneId":"副核心與他組核心"},
 
-methods.insertToDB = function(req, res, next){
+var insertToDB = function(req, res){
 
     let cardData = req.body.check;
     let cardCode = cardData.code.cardId;
@@ -16,13 +22,12 @@ methods.insertToDB = function(req, res, next){
     let cardIni = cardData.pre.sourceLaneId
     let studentId = res.locals.studentId;
     query.insertCosMotion(studentId, cardCode, cardIni, cardTarget);
-    next();
 }
 
 methods.checkCard = function(req, res){
 
     let cardData = req.body.check;
-    console.log(cardData);
+    //console.log(cardData);
     let cardName = cardData.cosname.id;
     let cardCode = cardData.code.cardId;
     let cardType = cardData.type.type;
@@ -40,8 +45,29 @@ methods.checkCard = function(req, res){
         case "副核心與他組核心":
             theCard = new SecondaryCore(cardCode, cardType, studentId);
             break;
+        case "專業選修":
+            theCard = new Elective(cardCode, cardName);
+            break;
+        case "其他選修":
+            theCard = new Card(cardCode); // All courses can move here
+            break;
+        case "外語":
+            theCard = new Language(cardType); // All courses can move here
+            break;
+        case "通識":
+            theCard = new General(cardCode, cardType); 
+            break;
+        case "體育":
+            theCard = new PE(cardCode); 
+            break;
+        case "服務學習":
+            theCard = new Serve(cardType); 
+            break;
+        case "藝文賞析":
+            theCard = new Art(cardName); 
+            break;
         default:
-            theCard = new Compulsory(cardCode, cardType);
+            theCard = new Card(cardCode);
             break;
     }
     
@@ -49,8 +75,10 @@ methods.checkCard = function(req, res){
     let checkResult = { check:{ flag:'', reason: [] } };
     checkResult.check.reason = null;
     theCard.check(function(flag){
-        if(flag)
+        if(flag){
             checkResult.check.flag = true;
+            //insertToDB(req, res);
+        }
         else            
             checkResult.check.flag = false;
         res.json(checkResult);

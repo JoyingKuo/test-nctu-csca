@@ -4,8 +4,9 @@ var express = require('express');
 var utils = require('../../../../utils');
 var query = require('../../../../db/msql');
 var utils = require('../../../../utils');
+var getStudentId = require('../../course/getStudentId');
 var router = express.Router();
-
+var studentId = getStudentId.getStudentId.studentId; 
 var csrf = require('csurf');
 var csrfProtection = csrf();
 
@@ -31,14 +32,17 @@ router.post('/assistants/graduate/english', csrfProtection, function(req, res){
     res.json({ check: {state: eng_state } });
 });
 
-router.get('/assistants/graduate/english',function(req, res){
+router.get('/assistants/graduate/english', studentId, function(req, res){
     var personId =res.locals.studentId;
     query.findPerson(personId, function(err, result){
         if(err){
             res.redirect('/');
         }
         else {
-            //console.log(result);
+            var english = JSON.parse(result)[0].en_certificate;
+            res.json({ check: {state: english } });
+            ////console.log(result);
+            /*
             if(JSON.parse(result)[0].en_certificate == "1")
                 res.json({ check: {state: "1" } });
             else if(JSON.parse(result)[0].en_certificate === "21")
@@ -46,7 +50,7 @@ router.get('/assistants/graduate/english',function(req, res){
             else if(JSON.parse(result)[0].en_certificate === "22")
                 res.json({ check: {state: "22" } });
             else 
-                res.json({ check: {state: "0" } });
+                res.json({ check: {state: "0" } });*/
         }
     });
 });

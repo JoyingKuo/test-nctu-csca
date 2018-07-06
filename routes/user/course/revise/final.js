@@ -5,7 +5,7 @@ finalProcess.processFinal = function(req, res, next){
 
 	if(req.session.profile){
 		var courseResult = res.locals.courseResult;
-        //console.log(courseResult[6]);
+        ////console.log(courseResult[6]);
         var dimension = res.locals.dimension;
         var dimension_count = 0;
         var incomplete = [];

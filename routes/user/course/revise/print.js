@@ -16,7 +16,7 @@ print.processPrint = function(req, res, next){
       for(var i = 0; i<pass.length; i++){
 		detail[pass[i].cos_cname] = pass[i];
       }
-      for(var i = 0; i<free.length; i++){
+      /*for(var i = 0; i<free.length; i++){
 	    for(var s = 0; s<courseResult[0].course.length; s++){
 		    if(free[i].cn == courseResult[0].course[s].cn){
 			    var cosInfo = JSON.stringify(free[i]);
@@ -29,18 +29,18 @@ print.processPrint = function(req, res, next){
 			    break;
 	  	    }   
 	    }
-      }
+      }*/
 
-      for(var i = 0; i<courseResult[4].course.length; i++){
+      /*for(var i = 0; i<courseResult[4].course.length; i++){
         courseResult[4].course[i].reason = '';
         courseResult[4].course[i].cn = '';
         courseResult[4].course[i].en = '';
         courseResult[4].course[i].realCredit = '';
         courseResult[4].course[i].originalCredit = '';
         courseResult[4].course[i].score = ''; 
-      }
+      }*/
 
-      for(var q=0; q<5; q++){
+      for(var q=0; q<3; q++){
             var cosInfo = {
                     cn:'',
                     en:'',
@@ -55,10 +55,8 @@ print.processPrint = function(req, res, next){
                     reason:'',
                     move:''
             }
-            if(q<3){
-                courseResult[3].course.push(cosInfo);
-                courseResult[5].course.push(cosInfo);
-            }
+            courseResult[3].course.push(cosInfo);
+            courseResult[5].course.push(cosInfo);
             courseResult[4].course.push(cosInfo);
       }
       res.locals.courseResult = courseResult;

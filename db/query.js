@@ -1,17 +1,5 @@
 var query = require('./msql.js');
 
-
-/*query.Pass('0316035', function(err, result){
-
-
-        console.log(result);
-
-
-});*/
-
-
-
-query.Group('0316201', function(err, result){
-
-    console.log(result);
+query.showCosMap("0316248", function(err, res){
+    console.log(res);
 });

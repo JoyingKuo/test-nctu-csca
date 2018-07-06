@@ -67,22 +67,31 @@ Othercourse.processOther = function(req, res, next){
                 require: 2,
                 course: []
         }
+        var graduate = {
+                title: '抵免研究所課程',
+                credit:0,
+                course:[]
+        }
 	    var rules = JSON.parse(req.rules);
 	    var program = req.profile[0].program;
         var pass = JSON.parse(req.pass);
-       // console.log(pass);
+       // console.log("pass ");
+        //console.log(pass);
         var profile = JSON.parse(req.profile);
+       // console.log(req.profile);
         var englishState = profile[0].en_certificate;
         var noEnglish = 0;
 	    var offset = JSON.parse(req.free);
+        //console.log("offset");
         //console.log(offset);
         var compulse = req.course.compulse;
         var compulseCodeCheck = [];
         //record the complulse course code
-        for(var i = 0; i<compulse.legth; i++)
+        for(var i = 0; i<compulse.length; i++)
             for(var q = 0; q<compulse[i].cos_codes.length; q++)
                 compulseCodeCheck[compulse[i].cos_codes[q]] = true;
-        //console.log(offset);
+      // console.log(offset);
+        var TeacherTime = [];
 	    var generalCourse = JSON.parse(req.general);
 	    var generalCheck = [];
         var generalDetail = [];
@@ -101,8 +110,45 @@ Othercourse.processOther = function(req, res, next){
 	    var temp = parseInt(studentId.substring(0,2));
 	    var school_year = (100 + temp);
         var englishFree = [];
+        var offsetTeacherTime = [];
+        var repeatCounter = [];
+        var taken = [];
+        var offsetInfo = [];
+        var offsetNameCheck = [];
+        var offsetTaken = [];
+        var offsetTakenCheck = [];
+        
+        for(var i = 0; i<offset.length; i++){
+            if(offset[i].score !=null){
+                if(offsetTaken[offset[i].cos_code] == true){
+                    //console.log("find the same");
+                    if(parseInt(offset[i].score) > parseInt(offsetInfo[offset[i].cos_code].score)){
+                        //console.log(offset[i].score);
+                        offsetInfo[offset[i].cos_code] = offset[i];
+                    }
+                }
+                else{
+                    offsetTaken[offset[i].cos_code] = true;
+                    offsetInfo[offset[i].cos_code] = offset[i];
+                }
+            }
+            else{
+                offsetInfo[offset[i].cos_code] = offset[i];
+                offsetTaken[offset[i].cos_code] = true;
+            }
+        }
+        
+        for(var i = 0; i<offset.length; i++){
+            offset[i] = offsetInfo[offset[i].cos_code];
+            offsetNameCheck[offset[i].cos_cname] = true;
+        }
+        //console.log("after");
+        //console.log(offset);
+        
+
 		for(var i = 0; i<offset.length; i++){
-			var cosInfo = {
+			if(offsetTakenCheck[offset[i].cos_code] != true){
+            var cosInfo = {
                     cn:'',
                     en:'',
                     score: -1,
@@ -135,30 +181,66 @@ Othercourse.processOther = function(req, res, next){
                     var cosAdd = JSON.stringify(cosInfo);
                     cosAdd = JSON.parse(cosAdd);
                     cosAdd.realCredit = 1;
+                    cosAdd.code = offset[i].cos_code + '_one';
                     elective.credit++;
                     elective.course.push(cosAdd);
                 }
                 if(codeBrief == 'ART'){
+                    if(taken[cosInfo.code] == true){
+                        if(repeatCounter[cosInfo.code] == null)
+                            repeatCounter[cosInfo.code] = 1;
+                        else
+                            repeatCounter[cosInfo.code]++;
+                        var temp = cosInfo.code + '_' + repeatCounter[cosInfo.code];
+                        cosInfo.code = temp;
+                    }
+                    else
+                        taken[cosInfo.code] = true;
                     art.course.push(cosInfo);
                     art.credit += parseInt(offset[i].credit);
                 }
                 else if(offset[i].cos_cname == '服務學習(一)' || offset[i].cos_cname == '服務學習(二)'){
+                    //console.log("find service offset");
+                    //console.log(cosInfo);
                     cosInfo.type = offset[i].cos_typeext;
                     service.course.push(cosInfo);
                     service.credit += parseInt(offset[i].credit);
                 }
                 else{    
+                    if(offset[i].cos_cname == '導師時間'){
+                       // console.log(offset[i]);
+                        if(taken[cosInfo.code] == true){
+                            if(repeatCounter[cosInfo.code] == null)
+                                repeatCounter[cosInfo.code] = 1;
+                            else
+                                repeatCounter[cosInfo.code]++;
+                            var temp = cosInfo.code + '_' + repeatCounter[cosInfo.code];
+                            cosInfo.code = temp;
+                        }
+                        else
+                            taken[cosInfo.code] = true;
+                        offsetTeacherTime.push(cosInfo);
+                    }
                     compulsory.course.push(cosInfo);
-                    compulsory.credit += parseInt(offset[i].credit);
+                    compulsory.credit += cosInfo.realCredit;
                 }
             }
 			else if(offset[i].cos_type == '選修'){
                 if(compulseCodeCheck[offset[i].cos_code] === true){
+                    if(offset[i].cos_cname.substring(0,2) == '物理'){
+                        cosInfo.realCredit = parseInt(offset[i].credit) - 1;
+                        var cosAdd = JSON.stringify(cosInfo);
+                        cosAdd = JSON.parse(cosAdd);
+                        cosAdd.realCredit = 1;
+                        cosAdd.code = offset[i].cos_code + '_one';
+                        elective.credit++;
+                        elective.course.push(cosAdd);
+                    }
                     compulsory.course.push(cosInfo);
-                    compulsory.credit += parseInt(offset[i].credit);
+                    compulsory.credit += cosInfo.realCredit;
                 }
                 else{
-                    var temp = offset[i].cos_code_new.substring(0,3);
+                    var temp = offset[i].cos_code.substring(0,3);
                     if(temp == 'DCP' || temp == 'IOC' || temp == 'IOE' || temp == 'ILE' || temp == 'IDS'){
                         elective.course.push(cosInfo);
                         elective.credit += parseInt(offset[i].credit);
@@ -178,7 +260,7 @@ Othercourse.processOther = function(req, res, next){
                                     language.credit += parseInt(offset[i].credit);
                                 }
                         }
-                        else if(offset[i].cos_type == '通識'){
+                       else if(offset[i].cos_type == '通識'){
                                 cosInfo.dimension = offset[i].brief.substring(0,2);
                                 if(cosInfo.dimension == '當代')
                                     dimension[0] = true;
@@ -196,13 +278,26 @@ Othercourse.processOther = function(req, res, next){
                                 general.credit += parseInt(offset[i].credit);
                         }
                         else if(offset[i].cos_type == '服務學習'){
+                                cosInfo.type  = offset[i].cos_typeext;
                                 service.course.push(cosInfo);
                                 service.credit += parseInt(offset[i].credit);
                         }
                         else if(offset[i].cos_type == '體育'){
-                                peClass.course.push(cosInfo);
-                                peClass.credit += parseInt(offset[i].credit);
+                            if(taken[cosInfo.code] == true){
+                                if(repeatCounter[cosInfo.code] == null)
+                                    repeatCounter[cosInfo.code] = 1;
+                                else
+                                    repeatCounter[cosInfo.code]++;
+                                var temp = cosInfo.code + '_' + repeatCounter[cosInfo.code];
+                                cosInfo.code = temp;
+                            }
+                            else
+                                taken[cosInfo.code] = true;
+                            peClass.course.push(cosInfo);
+                            peClass.credit += parseInt(offset[i].credit);
                         }
+                        offsetTakenCheck[offset[i].cos_code] = true;
+                    }
 		}
         if(englishFree.length != 0){
             for(var i = 0; i<englishFree.length; i++){
@@ -219,7 +314,7 @@ Othercourse.processOther = function(req, res, next){
             generalCheck[generalCourse[g].cos_code] = true;
             generalDetail[generalCourse[g].cos_code] = generalCourse[g];
         }
-		////console.log("After checking free");
+		//////console.log("After checking free");
 		compulsory.require = parseInt(rules[0].require_credit);
 	    coreClass.require = parseInt(rules[0].core_credit);
 	    otherClass.require = parseInt(rules[0].sub_core_credit);
@@ -229,10 +324,19 @@ Othercourse.processOther = function(req, res, next){
 
         //record the cs table courses and cs courses' names
 		for(var x = 0; x<total.length; x++){
-	        CSname[total[x].cos_cname] = true;
-          	for(var a = 0; a<total[x].cos_codes.length; a++){
-	            rule[total[x].cos_codes[a]] = true;
-	        }
+	        if(temp > 3){
+                if(total[x].type == '必修'){
+                    CSname[total[x].cos_cname] = true;
+            	    for(var a = 0; a<total[x].cos_codes.length; a++){
+	                    rule[total[x].cos_codes[a]] = true;
+	                }   
+                }
+            }
+            else{
+                CSname[total[x].cos_cname] = true;
+                for(var a = 0; a<total[x].cos_codes.length; a++)
+                    rule[total[x].cos_codes[a]] = true;
+            }
 	    }
 		for(var q = 0; q<pass.length; q++){
 	        var cosInfo = {
@@ -270,7 +374,9 @@ Othercourse.processOther = function(req, res, next){
 		        if(cosInfo.complete === true){
 				    if(temp == 'DCP' || temp == 'IOC' || temp == 'IOE' || temp == 'ILE'){
 	                    if(pass[q].cos_cname == '服務學習(一)' || pass[q].cos_cname == '服務學習(二)'){
-	                        cosInfo.type = pass[q].cos_typeext;
+                            if(offsetNameCheck[pass[q].cos_cname] == true);
+                            else{
+                            cosInfo.type = pass[q].cos_typeext;
                             for(var w = 0; w< service.course.length; w++){
                                 if(service.course[w].cn == pass[q].cos_cname){
                                     if(pass[q].score >= service.course[w].score)
@@ -279,8 +385,10 @@ Othercourse.processOther = function(req, res, next){
                                  }
                             }
                             if(w == service.course.length){
+                                cosInfo.type = pass[q].cos_typeext;
                                 service.credit += parseInt(pass[q].cos_credit);
                                 service.course.push(cosInfo);
+                            }
                             }
 					    }
 	                    else{
@@ -308,13 +416,24 @@ Othercourse.processOther = function(req, res, next){
 								    }
                                 }
 						    }
-						    /*else{
+                            
+                            /*else{
                                 //compulsory.course.push(cosInfo);
 	                            //compulsory.credit += parseInt(pass[q].cos_credit);
 						    }*/
 	                    }
 	             }
 				 else if(temp == 'ART'){
+                    if(taken[cosInfo.code] == true){
+                       if(repeatCounter[cosInfo.code] == null)
+                           repeatCounter[cosInfo.code] = 1;
+                       else
+                           repeatCounter[cosInfo.code]++;
+                       var temp  = cosInfo.code + '_' + repeatCounter[cosInfo.code];
+                       cosInfo.code = temp;
+                    }
+                    else
+                        taken[cosInfo.code] = true;
                     art.credit += parseInt(pass[q].cos_credit);
                     art.course.push(cosInfo);
 				 }
@@ -381,6 +500,11 @@ Othercourse.processOther = function(req, res, next){
                            }
 					    }
                     }
+                    else if(pass[q].brief == '軍訓'){
+                        cosInfo.originalCredit = 0;
+                        cosInfo.realCredit = 0;
+                        otherElect.course.push(cosInfo);   
+                    }           
 	                else if(pass[q].cos_type == '通識'){
 				            var brief = pass[q].brief.substring(0,2);
                             dimension_count = 0;
@@ -436,13 +560,26 @@ Othercourse.processOther = function(req, res, next){
 	                }
 				    else{
 	                    if(temp == 'PYY'){
-						    cosInfo.type = pass[q].cos_typeext;
+						    if(taken[cosInfo.code] == true){
+                                if(repeatCounter[cosInfo.code] == null)
+                                    repeatCounter[cosInfo.code] = 1;
+                                else
+                                    repeatCounter[cosInfo.code]++;
+                                var temp = cosInfo.code + '_' + repeatCounter[cosInfo.code];
+                                cosInfo.code = temp;
+                            }
+                            else
+                                taken[cosInfo.code] = true;
+                            cosInfo.type = pass[q].cos_typeext;
                             peClass.course.push(cosInfo);
 	                        peClass.credit += parseInt(pass[q].cos_credit);
 	                    }
 	                    else{
 	                        if(pass[q].cos_typeext == '服務學習'){
-								service.course.push(cosInfo);
+								if(pass[q].cos_cname == '服務學習(一)')
+                                    cosInfo.reason = 'notCS';
+                                cosInfo.type = pass[q].cos_typeext;
+                                service.course.push(cosInfo);
 	                            service.credit += parseInt(pass[q].cos_credit);
 	                    }
 						/*else if(pass[q].cos_cname == '導師時間'){
@@ -452,7 +589,7 @@ Othercourse.processOther = function(req, res, next){
 	                    else{
 	                        if(CSname[cosInfo.cn] == true){
 							    cosInfo.complete = true;
-	                            cosInfo.reason = 'NotCS';
+	                            cosInfo.reason = 'CS';
 							    notCS[cosInfo.cn] = true;
 								free[cosInfo.cn] = cosInfo;
 							}
@@ -469,11 +606,26 @@ Othercourse.processOther = function(req, res, next){
                                         cosInfo.reason = 'general';
                                         cosInfo.dimension = generalDetail[pass[q].cos_code].brief.substring(0,2);
                                     }
+                                   // //console.log(cosInfo);
 								    otherElect.course.push(cosInfo);
                                     otherElect.credit += parseInt(pass[q].cos_credit);
 						        }
                             }
                             else{
+                                if(taken[cosInfo.code] == true){
+                                    if(repeatCounter[cosInfo.code] == null)
+                                        repeatCounter[cosInfo.code] = 1;
+                                    else
+                                        repeatCounter[cosInfo.code]++;
+                                    var temp = cosInfo.code + '_' + repeatCounter[cosInfo.code];
+                                    cosInfo.code = temp;
+                                    ////console.log(cosInfo);
+                                }
+                                else
+                                    taken[cosInfo.code] = true;
+                                TeacherTime.push(cosInfo);
+                                //cosInfo.reason = 'CS';
+                                ////console.log(cosInfo);
                                 otherElect.course.push(cosInfo);
                                 otherElect.credit += parseInt(pass[q].cos_credit);
                             }
@@ -524,6 +676,7 @@ Othercourse.processOther = function(req, res, next){
 	    courseResult.push(peClass);
 	    courseResult.push(service);
 	    courseResult.push(art);
+        courseResult.push(graduate);
 	}
 	else {
 			res.redirect('/');
@@ -533,6 +686,8 @@ Othercourse.processOther = function(req, res, next){
 	res.locals.English = EnglishCourse;
 	res.locals.free = free;
     res.locals.dimension = dimension;
+    res.locals.teacher = TeacherTime;
+    res.locals.offsetTeacher = offsetTeacherTime;
  	next();
 }
 
