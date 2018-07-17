@@ -8,8 +8,8 @@ var fs = require('fs');
 router.get('/assistants/researchGradeList'/*,csrfProtection*/, function(req, res){
 
  //   if(req.session.profile){ 
-        
-		query.showResearchGradeComment(/*req.body.semester*/'106-2', function(err,result){	
+                var input = {semester: '106-2', first_second: '1'};
+		query.showResearchGradeComment(input, function(err,result){	
 			if(err)
 			{
 				throw err;

@@ -7,8 +7,8 @@ const factory = {
         return new Promise(function(resolve, reject) {
             var c = new Client({
                 host: 'localhost',
-                user: 'root',
-                password: 'NctuCsCa',
+                user: 'cayee',
+                password: 'NctuCsCaDB',
                 db: 'ca',
                 charset: 'utf8'
             });
