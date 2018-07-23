@@ -18,21 +18,31 @@ class ProfessorsList extends React.Component {
   }
 }
 
-const getVisibleProfessors = (data, filterInput) => {
+const getVisibleProfessors = (data, mentor, filterInput) => {
   if (data.length === 0) return []
-  let updatedList = data
-  updatedList = updatedList.filter((item) => {
+  let updatedList = data.filter((item) => {
     return (
       (item.tname.toLowerCase().search(
         filterInput.toLowerCase()) !== -1)
     )
   })
+
+  let index = updatedList.findIndex((a) => {
+    return a.tname === mentor
+  })
+  if (index === -1) return updatedList
+  let object = {...updatedList[index]}
+  updatedList[index] = {...updatedList[0]}
+  updatedList[0] = {...object}
+
   return updatedList
 }
 
-const mapStateToProps = (state) => ({
-  professors: getVisibleProfessors(state.all.data, state.all.filter_string),
-  done: state.all.status === 'DONE'
-})
+const mapStateToProps = (state) => {
+  return {
+    professors: getVisibleProfessors(state.all.data, state.all.mentor, state.all.filter_string),
+    done: state.all.status === 'DONE'
+  }
+}
 
 export default connect(mapStateToProps)(ProfessorsList)

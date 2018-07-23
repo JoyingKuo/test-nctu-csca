@@ -18,7 +18,7 @@ router.get('/students/profile', function(req, res){
               		//////console.log("No Student Id");
               		return;
         	}
-        	query.findPerson(studentId, function(err,result){
+        	query.ShowUserInfo(studentId, function(err,result){
             		if(err){
                 		//////console.log("Can't find student");
                 		throw err;

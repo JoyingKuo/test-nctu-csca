@@ -6,9 +6,9 @@ const factory = {
     create: function() {
         return new Promise(function(resolve, reject) {
             var c = new Client({
-                host: 'localhost',
-                user: 'cayee',
-                password: 'NctuCsCaDB',
+                host: '140.113.168.202',
+                user: 'ca',
+                password: 'nctucscadb',
                 db: 'ca',
                 charset: 'utf8'
             });

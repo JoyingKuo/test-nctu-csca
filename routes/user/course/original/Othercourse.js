@@ -76,7 +76,7 @@ Othercourse.processOther = function(req, res, next){
         var rules = JSON.parse(req.rules);       //get students' curricular rules
         var program = req.profile[0].program;    //get students' program
         var pass = JSON.parse(req.pass);         //get students' pass course
-        //console.log(pass);
+       // console.log(pass);
         var profile = JSON.parse(req.profile);   //get students' profile
        // console.log(pass);
         ////console.log(profile);

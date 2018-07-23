@@ -7,9 +7,9 @@ var query = require('../../course/query');
 var StudentId = getStudentId.getStudentId.studentId;
 var queryProject = query.query.queryProject;
 
-router.get('/students/projectPage', StudentId, queryProject, function(req, res){
-   // console.log("student: " + StudentId);
-    res.send(res.locals.project);
+router.post('/students/projectPage', StudentId, queryProject, function(req, res){
+ 
+    res.send(req.project);
 });
 
 module.exports = router;

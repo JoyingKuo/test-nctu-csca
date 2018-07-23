@@ -35,6 +35,8 @@ function Transition (props) {
   return <Slide direction='up' {...props} />
 }
 
+const limitcount = 10
+
 const styles = theme => ({
   root: {
     display: 'flex',
@@ -96,34 +98,20 @@ class SendProjectAgree extends React.Component {
         alert('請填寫完整資訊')
         return
       }
-      participants.push(this.state.input[i].id)
+      if(i===0)
+        participants.push(this.props.studentIdcard.student_id)
+      else
+        participants.push(this.state.input[i].id)
       phones.push(this.state.input[i].phone)
       emails.push(this.state.input[i].email)
-    }
-
-    for(let i=0;i<participants.length;i++){
-      axios.post('/students/applyValid', {
-        id:participants[i]
-      })
-        .then(res => {
-          if(!res.data.status){
-            alert('因某些原因導致 ' + participants[i] + ' 同學 無法申請，如該學生如有審核中的專題或當學年已有專題將不能申請。')
-            return
-          }
-        })
-        .catch(err => {
-          //window.location.replace("/logout ");
-          console.log(err)
-        })
     }
 
     if(_this.state.projectNumber === ''){
       alert('請填寫專題一或二')
       return
     }
-
     let r = window.confirm('確定送出表單嗎?')
-    let Today = new Date();
+    let Today = new Date()
     let semester = ((Today.getFullYear()-1912)+ Number(((Today.getMonth()+1)>=8?1:0))) + '-' + ((Today.getMonth()+1)>=8?'1':'2')
     if(r){
       axios.post('/students/project_apply', {
@@ -142,7 +130,7 @@ class SendProjectAgree extends React.Component {
             _this.handleClose()
           }
           else{
-            alert('申請失敗，請重新送出，如有審核中的專題將不能申請。')
+            alert('申請失敗，請重新送出，如有成員中有審核中的專題將不能申請。')
           }
         })
         .catch(err => {
@@ -155,8 +143,8 @@ class SendProjectAgree extends React.Component {
 
   handleaddmenber () {
     let newnumber = this.state.menberNumber.length + 1
-    if (newnumber > 4) {
-      this.handleClickOpenSnackbar('專題成員不能超過四人！')
+    if (newnumber > limitcount - this.props.profile.scount) {
+      this.handleClickOpenSnackbar('專題成員不能超過該教授上限！')
       return
     }
     this.setState({
@@ -224,17 +212,19 @@ class SendProjectAgree extends React.Component {
     return (
       <div>
         {this.props.rwd
-          ? <MenuItem onClick={this.handleClickOpen}>
+          ? <MenuItem
+            disabled={this.props.profile.scount>=limitcount} onClick={this.handleClickOpen}>
             <ListItemIcon>
               <Face />
             </ListItemIcon>
-            <ListItemText inset primary='寄送專題申請！' />
+            <ListItemText inset primary={`寄送專題申請！`} />
           </MenuItem>
           : <Tooltip title='寄送專題申請！' placement='top'>
             <IconButton
               onClick={this.handleClickOpen}
               aria-expanded={this.state.expanded}
               aria-label='Show more'
+              disabled={this.props.profile.scount>limitcount}
             >
               <Face />
             </IconButton>
@@ -282,8 +272,9 @@ class SendProjectAgree extends React.Component {
             </FormControl>
             <div className='hidden-xs'>
               {this.state.menberNumber.map(t =>
-                <Grow in>
-                <div className='row' key={t}>
+                <Grow in  key={t}>
+                <div className='row'>
+                  <div className='col-sm-3 col-md-3 col-lg-3'>
                   <Input
                     placeholder='學號'
                     className='project-member-input'
@@ -296,6 +287,8 @@ class SendProjectAgree extends React.Component {
                     value={input[t-1].id}
                     onChange={(event)=>this.handleinputChange(event, 'id', t-1)}
                   />
+                  </div>
+                  <div className='col-sm-3 col-md-3 col-lg-3'>
                   <Input
                     placeholder='電話'
                     className='project-member-input'
@@ -307,6 +300,8 @@ class SendProjectAgree extends React.Component {
                     value={input[t-1].phone}
                     onChange={(event)=>this.handleinputChange(event, 'phone', t-1)}
                   />
+                  </div>
+                  <div className='col-sm-6 col-md-6 col-lg-6'>
                   <Input
                     placeholder='Email'
                     className='project-member-input'
@@ -318,6 +313,7 @@ class SendProjectAgree extends React.Component {
                     value={input[t-1].email}
                     onChange={(event)=>this.handleinputChange(event, 'email', t-1)}
                   />
+                  </div>
                 </div>
                 </Grow>
               )}
@@ -380,7 +376,15 @@ class SendProjectAgree extends React.Component {
                 </Grow>)}
             </div>
             <div className='row'>
-              <div className='bottom-icon pull-right'>
+              <div className='visible-xs visible-sm pull-right'>
+                <Button variant='fab' mini color='primary' aria-label='add' style={{margin: '5px'}} onClick={this.handleremovemenber}>
+                  <Remove />
+                </Button>
+                <Button variant='fab' mini color='primary' aria-label='remove' style={{margin: '5px'}} onClick={this.handleaddmenber}>
+                  <AddIcon />
+                </Button>
+              </div>
+              <div className='hidden-xs hidden-sm bottom-icon pull-right'>
                 <Button variant='fab' mini color='primary' aria-label='add' style={{margin: '5px'}} onClick={this.handleremovemenber}>
                   <Remove />
                 </Button>

@@ -23,7 +23,7 @@ router.get('/professors/profile', TeacherId, function(req, res){
               		return;
         	}
             //test ID T9229
-        	query.findPerson(teacherId, function(err,result){
+        	query.ShowUserInfo(teacherId, function(err,result){
             		if(err){
                 		//console.log("Can't find student");
                 		throw err;

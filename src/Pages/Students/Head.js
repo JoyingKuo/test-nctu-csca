@@ -4,15 +4,12 @@ import axios from 'axios'
 import FadeIn from 'react-fade-in'
 import {Grid,Row,Col} from 'react-bootstrap'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-import { BrowserRouter, Switch, Route } from 'react-router-dom'
 
 import HomeItem from './Home/Home.js'
 import MapItem from './Map/MapComponents/Map.js'
-import GradCreditCheckPage from './Graduation/GradCreditCheck.js'
+import GradCreditCheckPage from './Graduation_v2'
 import CreditItem from './Credit/Credit.js'
-import Project from './ProfeesorsList/index'
 import Mail from '../../Components/mail'
-import ProjectHome from './ProjectList/ProjectHome'
 import ProjectList from './ProjectList'
 import Mentor from './Mentor'
 import { Provider } from 'react-redux'
@@ -21,10 +18,14 @@ import thunk from 'redux-thunk'
 import Navbar from '../../Components/Navbar'
 import Loading from '../../Components/Loading'
 import professorStore from './Mentor/Reducers'
+import graduationStore from './Graduation_v2/Reducers'
 
 import defaultData from '../../Resources/FakeData'
 import { createStore, applyMiddleware } from 'redux'
+import { fetchProfessors } from './Mentor/Actions'
+import { fetchGraduationCourse } from './Graduation_v2/Actions'
 let store = createStore(professorStore, applyMiddleware(thunk))
+let store_graduation = createStore(graduationStore, applyMiddleware(thunk))
 
 let graduationItems = defaultData.GraduationItems
 let revise = defaultData.GraduationItems_Revised
@@ -37,10 +38,11 @@ let StudentCosPas
 
 
 class Head extends Component {
-
   constructor (props) {
     super(props)
     this.res = this.res.bind(this)
+    store.dispatch(fetchProfessors())
+    store_graduation.dispatch(fetchGraduationCourse())
   }
 
   state = {
@@ -65,7 +67,7 @@ class Head extends Component {
     this.setState({isLoading:false})
     this.select(0)
     setTimeout(function () {
-      _this.select(0)
+      _this.select(1)
     }, 100)
     // setTimeout(function () {
     //   if(_this.state.studentIdcard.sname === '資料錯誤')window.location.reload('/')
@@ -180,6 +182,7 @@ class Head extends Component {
       return(
         <a>
           <FadeIn>
+            <Provider store={store_graduation}>
             <GradCreditCheckPage
               items={graduationItems}
               result={graduationItems[11]}
@@ -187,6 +190,7 @@ class Head extends Component {
               reviseresult={revise[11]}
               studentProfile={this.state.studentIdcard}
               courseCategoryArray={this.state.print_courseCategoryArray}/>
+            </Provider>
           </FadeIn>
         </a>
 
@@ -304,7 +308,7 @@ class Head extends Component {
                   onTouchTaps={onTouchTaps}
                   onTouchProjectTaps={this.selectProject}
           />
-          {this.getpage()}
+            {this.getpage()}
         </Row>
       </Grid>
     )

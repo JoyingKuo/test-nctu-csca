@@ -8,7 +8,7 @@ module.exports.setProfile = function(req, res, next){
       var grade = parseInt(personId.substring(0,2)) + 100;
       
       //if(personId != '0316201'){
-      		query.findPerson(personId,function(err,result){
+      		query.ShowUserInfo(personId,function(err,result){
           		if(err){
                 		throw err;
                 		return;

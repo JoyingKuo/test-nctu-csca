@@ -7,7 +7,7 @@ router.get('/assistants/students' , function(req, res){
     if(req.session.profile){
 
         let student_id = req.query.student_id;
-        query.findPerson(student_id, function(err, result){
+        query.ShowUserInfo(student_id, function(err, result){
             if(err){
                     ////console.log("Can't find student");
                     res.status(500).send({ error: 'Something failed!' });

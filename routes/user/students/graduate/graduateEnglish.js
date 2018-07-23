@@ -35,7 +35,7 @@ var StudentId = getStudentId.getStudentId.studentId;
 
 router.get('/students/graduate/english', StudentId, function(req, res){
     let personId = req.profile[0].student_id;
-    query.findPerson(personId, function(err, result){
+    query.ShowUserInfo(personId, function(err, result){
         if(err){
             res.redirect('/');
         }

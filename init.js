@@ -87,7 +87,7 @@ module.exports.init = function(){
   app.use(require('./routes/user/students/project/ProInfoAndRsearchCount'));
   app.use(require('./routes/user/students/project/ProjectApplyFormStatus'));
   app.use(require('./routes/user/students/project/ProjectApplyFormDelete'));
-  app.use(require('./routes/user/students/project/editProjectPageInfo'));
+  app.use(require('./routes/user/students/project/EditProjectPageInfo'));
   app.use(require('./routes/user/students/project/ProjectPage'));
   app.use(require('./routes/user/students/mail/sendtoteacher'));
   app.use(require('./routes/user/students/mentorInfo')); 
@@ -112,12 +112,12 @@ module.exports.init = function(){
   app.use(require('./routes/user/professor/courseInfo/interval'));
   app.use(require('./routes/user/professor/courseInfo/courses'));
   app.use(require('./routes/user/professor/courseInfo/courseNow'));
-  app.use(require('./routes/user/professor/students/list'));
-  app.use(require('./routes/user/professor/students/projects'));
-  app.use(require('./routes/user/professor/students/applyList'));
-  app.use(require('./routes/user/professor/students/ApplyFormSetAgree'));
-  app.use(require('./routes/user/professor/students/setScore'));
-  app.use(require('./routes/user/professor/students/setResearchTitle'));
+  app.use(require('./routes/user/professor/students/AdviseeList'));
+  app.use(require('./routes/user/professor/students/research/FormalResearch'));
+  app.use(require('./routes/user/professor/students/research/ReserchApplyFormList'));
+  app.use(require('./routes/user/professor/students/research/SetApplyFormState'));
+  app.use(require('./routes/user/professor/students/research/SetResearchScore'));
+  app.use(require('./routes/user/professor/students/research/SetResearchTitle'));
   app.use(require('./routes/user/professor/students/researchInfo'));
   app.use(require('./routes/user/professor/info'));
   app.use(require('./routes/user/mail/getStudentList'));

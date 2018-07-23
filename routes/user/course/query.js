@@ -192,17 +192,188 @@ query.queryProject = function(req, res, next){
     else
         res.redirect('/');
 }
-//query the project number the teacher have
-query.queryProjectNum = function(req, res, next){
+
+//query the professor information and the research count of current year
+query.queryProInfoAndResearchCount = function(req, res, next){
     if(req.session.profile){
 		var studentId = res.locals.studentId;
-		//console.log(studentId);
-        table.tables.getProjectNum(studentId, function(projectNum){
-            req.projectNum = projectNum;
-            if(req.projectNum)
+        table.tables.getProInfoAndResearchCount(studentId, function(info){
+			req.info = info;
+            if(req.info)
                 next();
             else
                 return;
+        });
+    }
+    else
+        res.redirect('/');
+}
+
+//query the professor information and the research count of current year
+query.CheckStateAndCreateNewForm = function(req, res, next){
+    if(req.session.profile){
+		var info = req.body;
+		//console.log(info);
+        table.tables.getCheckStateAndCreateNewForm(info, function(signal){
+			req.signal = signal;
+            if(req.signal)
+                next();
+            else
+                return;
+        });
+    }
+    else
+        res.redirect('/');
+}
+// query the project apply form the student have (to know state)
+query.queryApplyForm = function(req, res, next){
+    if(req.session.profile){
+		var studentId = res.locals.studentId;
+        table.tables.getApplyForm(studentId, function(form){
+			req.form = form;
+            if(req.form)
+                next();
+            else
+                return;
+        });
+    }
+    else
+        res.redirect('/');
+}
+
+// delete the project apply form
+query.PerformDelete = function(req, res, next){
+    if(req.session.profile){
+		var info = req.body;
+        table.tables.DeleteForm(info, function(signal){
+			req.signal = signal;
+            if(req.signal)
+                next();
+            else
+                return;
+        });
+    }
+    else
+        res.redirect('/');
+}
+
+// edit the project page information
+query.PerformEditProjectPage = function(req, res, next){
+    if(req.session.profile){
+		var info = req.body;
+        table.tables.EditProjectPage(info, function(signal){
+			req.signal = signal;
+            if(req.signal)
+                next();
+            else
+                return;
+        });
+    }
+    else
+        res.redirect('/');
+}
+
+// query the mentor of specific student
+query.queryMentorInfo = function(req, res, next){
+    if(req.session.profile){
+		var studentId = res.locals.studentId;
+        table.tables.getMentorInfo(studentId, function(info){
+		req.info = info;
+        if(req.info)
+            next();
+        else
+            return;
+        });
+    }
+    else
+        res.redirect('/');
+}
+
+// set the project score
+query.SetProjectScore = function(req, res, next){
+    if(req.session.profile){
+		var info = req.body;
+        table.tables.setScore(info, function(signal){
+		req.signal = signal;
+        if(req.signal)
+            next();
+        else
+            return;
+        });
+    }
+    else
+        res.redirect('/');
+}
+// set the project title
+query.SetProjectTitle = function(req, res, next){
+    if(req.session.profile){
+		var info = req.body;
+        table.tables.setTitle(info, function(signal){
+		req.signal = signal;
+        if(req.signal)
+            next();
+        else
+            return;
+        });
+    }
+    else
+        res.redirect('/');
+}
+// query the project apply list the teacher have
+query.queryProjectApplyList = function(req, res, next){
+    if(req.session.profile){
+		var teacherId = res.locals.teacherId;
+        table.tables.getProjectApplyList(teacherId, function(groups){
+		req.groups = groups;
+        if(req.groups)
+            next();
+        else
+            return;
+        });
+    }
+    else
+        res.redirect('/');
+}
+// query the formal project list the teacher have
+query.queryProjectList = function(req, res, next){
+    if(req.session.profile){
+		var teacherId = res.locals.teacherId;
+        table.tables.getProjectList(teacherId, function(projects){
+		req.projects = projects;
+        if(req.projects)
+            next();
+        else
+            return;
+        });
+    }
+    else
+        res.redirect('/');
+}
+// accept/consider/reject the project apply
+query.SetApplyFormState = function(req, res, next){
+    if(req.session.profile){
+		var info = req.body;
+        table.tables.SetState(info, function(signal){
+		req.signal = signal;
+        if(req.signal)
+            next();
+        else
+            return;
+        });
+    }
+    else
+        res.redirect('/');
+}
+// accept/consider/reject the project apply
+query.queryResearchIntro = function(req, res, next){
+    if(req.session.profile){
+		var info = req.body;
+        table.tables.getResearchIntro(info, function(intro){
+		req.intro = intro;
+        if(req.intro)
+            next();
+        else
+            return;
         });
     }
     else

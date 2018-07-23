@@ -89,7 +89,7 @@ methods.redirectAfterAuth = function(req, res, next){
                 //console.log("no student id");
                 return;
             }
-            query.findPerson(personId, function(err, result){
+            query.ShowUserInfo(personId, function(err, result){
 		//console.log(result);
                 if(!result){
                     return;

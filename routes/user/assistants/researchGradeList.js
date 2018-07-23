@@ -19,7 +19,7 @@ router.get('/assistants/researchGradeList'/*,csrfProtection*/, function(req, res
 				res.redirect('/');
 		
         //	var json = JSON.stringify(result);
-           fs.writeFile('score.json',JSON.stringify(result),function(err){
+           fs.writeFile('score.json',result, function(err){
             if (err) 
                 console.log(err);
              console.log('videoLinks.json saved');

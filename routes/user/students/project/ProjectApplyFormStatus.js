@@ -1,31 +1,14 @@
 var express = require('express');
 var router = express.Router();
-var query = require('../../../../db/msql');
+var query = require('../../course/query');
+var getStudentId = require('../../course/getStudentId');
 var csrf = require('csurf');
 var csrfProtection = csrf();
 
-
-router.post('/students/applyState', csrfProtection, function(req, res){
-
-    if(req.session.profile){ 
-        
-		query.researchApplyFormPersonalReturn(req.body.id, function(err, result){
-            if(err){
-                throw err;
-                res.redirect('/');
-            }
-            if(!result)
-                res.redirect('/');
-			result = JSON.parse(result);
-//		    console.log(result); 	
-            res.send(result);
-
-        });
-	
-    }
-	else
-       res.redirect('/');
-
+var StudentId = getStudentId.getStudentId.studentId;
+var queryApplyForm = query.query.queryApplyForm;
+router.post('/students/applyState', csrfProtection, StudentId, queryApplyForm, function(req, res){
+    res.send(req.form);
 });
 
 module.exports = router;
