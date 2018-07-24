@@ -88,7 +88,6 @@ module.exports.init = function(){
   app.use(require('./routes/user/students/project/ProjectApplyFormStatus'));
   app.use(require('./routes/user/students/project/ProjectApplyFormDelete'));
   app.use(require('./routes/user/students/project/EditProjectPageInfo'));
-  app.use(require('./routes/user/students/project/ProjectPage'));
   app.use(require('./routes/user/students/mail/sendtoteacher'));
   app.use(require('./routes/user/students/mentorInfo')); 
  app.use(require('./routes/user/mail/sent'));

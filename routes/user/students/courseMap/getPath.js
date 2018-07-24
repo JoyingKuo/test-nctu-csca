@@ -3,7 +3,7 @@ const groupBMap = require('./groupBMap');
 const weightedUF = require('./weightedUF'); 
 
 function getMap(){
-    query.PassSpecify("0312512", "必修", function(err, pass){
+    query.ShowUserPartScore("0312512", "必修", function(err, pass){
         
         var pas = JSON.parse(pass);
        // console.log(pas);
@@ -21,7 +21,7 @@ function getMap(){
             Pass[pas[i].cos_cname] = true;
         }
        //console.log(Pass);
-        query.Group("0312512", function(err, group){
+        query.ShowCosGroup("0312512", function(err, group){
 
             let uf = new weightedUF(group); // init weightedUF
             let rules = getRule(pass, group);

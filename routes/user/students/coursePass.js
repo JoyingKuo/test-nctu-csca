@@ -13,7 +13,7 @@ router.get('/students/coursePass', function(req, res){
               ////console.log("No Student Id");
               return
         }
-        query.showCosMapPass(studentId, function(err,result){
+        query.ShowCosMapPass(studentId, function(err,result){
             if(err){
                 ////console.log("Can't find student");
                 throw err;

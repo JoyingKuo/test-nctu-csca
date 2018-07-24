@@ -12,7 +12,7 @@ router.get('/students/courses/recommend', StudentId, function(req, res){
     if(req.session.profile){
 
         var studentId = res.locals.studentId;
-        query.getRecommend(studentId, function(err, result){
+        query.ShowRecommendCos(studentId, function(err, result){
                 if(err){
                     throw err;
                     return;

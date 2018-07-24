@@ -10,7 +10,7 @@ router.get('/mail/getTeacherList',/* csrfProtection,*/ function(req, res){
 
     if(req.session.profile){ 
         
-        query.returnTeacherIdList(function(err, result){
+        query.ShowTeacherIdList(function(err, result){
             if(err){
                 throw err;
                 res.redirect('/');

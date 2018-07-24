@@ -9,7 +9,7 @@ router.post('/mail/delete', csrfProtection, function(req, res){
 
     if(req.session.profile){ 
         
-        query.mailDelete(req.body.mail_id);
+        query.DeleteMail(req.body.mail_id);
 	
     }
 	else

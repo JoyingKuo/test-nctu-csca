@@ -75,7 +75,7 @@ methods.getProfile = function(req, res, next){
 	if(body){
 		var studentId = body.username;
         	var email = body.email;
-		query.addEmail(studentId, email);
+		query.SetUserEmail(studentId, email);
 	}
         next();
    });

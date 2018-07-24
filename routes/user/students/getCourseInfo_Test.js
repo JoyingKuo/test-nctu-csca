@@ -8,7 +8,7 @@ var csrfProtection = csrf();
 
 
 
-        query.showCosMapIntro("資料結構", function(err,result){
+        query.ShowCosMapIntro("資料結構", function(err,result){
             if(err){
                 return next(err); // haven't handle yet
             }

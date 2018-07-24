@@ -50,7 +50,7 @@ router.post('/students/mail/sendtoteacher' , csrfProtection, function(req, res){
 			}
 		});
         var  teacher_list = [] 
-        query.returnTeacherIdList(function(err,result){
+        query.ShowTeacherIdList(function(err,result){
                 if(err)
                 {
                       throw err;     

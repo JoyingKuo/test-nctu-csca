@@ -21,7 +21,7 @@ var insertToDB = function(req, res){
     let cardTarget = cardData.next.targetLaneId
     let cardIni = cardData.pre.sourceLaneId
     let studentId = res.locals.studentId;
-    query.insertCosMotion(studentId, cardCode, cardIni, cardTarget);
+    query.SetCosMotion(studentId, cardCode, cardIni, cardTarget);
 }
 
 methods.checkCard = function(req, res){

@@ -25,7 +25,7 @@ router.post('/professors/courseInfo/score', csrfProtection, function(req, res){
         else
             unique_id = year + '-3-' + id;
         //console.log(unique_id);
-        query.showCosScoreDetail(cos_code, unique_id, function(err, result){
+        query.ShowCosScoreDetail(cos_code, unique_id, function(err, result){
             if(err){
                 throw err;
                 res.redirect('/');

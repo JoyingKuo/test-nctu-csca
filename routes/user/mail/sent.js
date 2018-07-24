@@ -10,7 +10,7 @@ router.post('/mail/sent', csrfProtection, function(req, res){
 
     if(req.session.profile){ 
         
-        query.mailReturnSendList(req.body.id, function(err, result){
+        query.ShowMailSendList(req.body.id, function(err, result){
             if(err){
                 throw err;
                 res.redirect('/');

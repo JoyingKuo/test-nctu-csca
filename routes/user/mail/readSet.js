@@ -14,7 +14,7 @@ router.post('/mail/readSet' , csrfProtection, function(req, res){
         
          var mailContent = {mail_id : req.body.mail_id , read_bit :req.body.read_bit};
            // console.log(mailContent);
-         query.mailReadSet(mailContent);
+         query.SetMailRead(mailContent);
         
     }
     else

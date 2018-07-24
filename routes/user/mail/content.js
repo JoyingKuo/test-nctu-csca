@@ -10,7 +10,7 @@ router.post('/mail/content', csrfProtection, function(req, res){
     if(req.session.profile){ 
         
        // console.log(req.body.mail_id);
-        query.mailReturnSingle(req.body.mail_id, function(err, result){
+        query.ShowMailInfo(req.body.mail_id, function(err, result){
             if(err){
                 throw err;
                 res.redirect('/');

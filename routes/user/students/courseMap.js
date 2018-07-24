@@ -13,7 +13,7 @@ router.get('/students/courseMap', function(req, res){
               ////console.log("No Student Id");
               return;
         }
-        query.showCosMap('0312512', function(err,result){
+        query.ShowCosMapRule('0312512', function(err,result){
             if(err){
                 ////console.log("Can't find student");
                 throw err;

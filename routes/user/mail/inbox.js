@@ -10,7 +10,7 @@ router.post('/mail/inbox', csrfProtection, function(req, res){
 
     if(req.session.profile){ 
 //        console.log(req.body.id);        
-        query.mailReturnReceiveList(req.body.id, function(err, result){
+        query.ShowMailRcdList(req.body.id, function(err, result){
             if(err){
                 throw err;
                 res.redirect('/');

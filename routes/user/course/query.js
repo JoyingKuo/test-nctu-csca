@@ -226,10 +226,10 @@ query.CheckStateAndCreateNewForm = function(req, res, next){
         res.redirect('/');
 }
 // query the project apply form the student have (to know state)
-query.queryApplyForm = function(req, res, next){
+query.queryApplyFormAndProject = function(req, res, next){
     if(req.session.profile){
 		var studentId = res.locals.studentId;
-        table.tables.getApplyForm(studentId, function(form){
+        table.tables.getApplyFormAndProject(studentId, function(form){
 			req.form = form;
             if(req.form)
                 next();

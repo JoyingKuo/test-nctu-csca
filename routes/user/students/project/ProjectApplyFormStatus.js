@@ -6,8 +6,8 @@ var csrf = require('csurf');
 var csrfProtection = csrf();
 
 var StudentId = getStudentId.getStudentId.studentId;
-var queryApplyForm = query.query.queryApplyForm;
-router.post('/students/applyState', csrfProtection, StudentId, queryApplyForm, function(req, res){
+var queryApplyFormAndProject = query.query.queryApplyFormAndProject;
+router.post('/students/applyState', csrfProtection, StudentId, queryApplyFormAndProject, function(req, res){
     res.send(req.form);
 });
 

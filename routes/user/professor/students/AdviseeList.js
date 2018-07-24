@@ -13,7 +13,7 @@ router.get('/professors/students/list', TeacherId, function(req, res){
     
         //var teacherId = req.body.id;
         var teacherId = res.locals.teacherId;
-        query.teacherStudents(teacherId, function(err, result){
+        query.ShowTeacherMentors(teacherId, function(err, result){
             if(err){
                 throw err;
                 res.redirect('/');

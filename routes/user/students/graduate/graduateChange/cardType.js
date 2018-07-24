@@ -30,7 +30,7 @@ cardsets.Compulsory.prototype.check = function(callback){
     let checkType = this.type;
     let studentId = this.sId;
     // check if the course code exist in the group table
-    query.Group(studentId, function(err, result){
+    query.ShowCosGroup(studentId, function(err, result){
         let table = JSON.parse(result);    
         for(let i = 0; i < table.length && checkType === "必修" ; i++){
             for(let j = 0; j < table[i].cos_codes.length; j++){

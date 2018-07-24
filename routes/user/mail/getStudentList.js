@@ -10,7 +10,7 @@ router.get('/mail/getStudentList', function(req, res){
 
     if(req.session.profile){ 
         
-        query.returnStudentIdList(function(err, result){
+        query.ShowStudentIdList(function(err, result){
             if(err){
                 throw err;
                 res.redirect('/');

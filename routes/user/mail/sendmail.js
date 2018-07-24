@@ -51,7 +51,7 @@ router.post('/mail/sendmail' , csrfProtection, function(req, res){
 		});
          var mailContent = {sender_id : req.body.sender_id , title :req.body.title, receiver_id: req.body.receiver_id, content: req.body.content};
            // console.log(mailContent);
-         query.mailCreate(mailContent);
+         query.CreateMail(mailContent);
         
     }
     else

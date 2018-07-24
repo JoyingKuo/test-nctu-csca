@@ -11,7 +11,7 @@ router.get('/professors/students/researchInfo'/*,csrfProtection*/, function(req,
       
 
 		var Info = {research_title : '車載專題', tname : '曾煜棋', first_second : '1', semester:'106-2'};
-		query.showResearchInfo(Info, function(err,result){
+		query.ShowResearchInfo(Info, function(err,result){
 	
 			if(err)
 			{

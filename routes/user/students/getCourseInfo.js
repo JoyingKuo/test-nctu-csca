@@ -27,7 +27,7 @@ router.post('/students/courseMap/courseInfo', csrfProtection, function(req, res)
         var result;
         var count = -1;
         
-        query.showCosMapIntro(name, function(err,result){
+        query.ShowCosMapIntro(name, function(err,result){
             if(err){
                 throw err;
                 return;

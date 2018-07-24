@@ -28,7 +28,7 @@ router.post('/professors/courseInfo/scoreInterval', csrfProtection, function(req
             unique_id = year + '-3-' + id;
        // console.log(unique_id);
 
-        query.showCosScoreInterval(cos_code, unique_id, function(err, result){
+        query.ShowCosScoreInterval(cos_code, unique_id, function(err, result){
             if(err){
                 throw err;
                 res.redirect('/');

@@ -38,7 +38,7 @@ router.get('/assistants/graduate/check', studentId, function(req, res){
 });
 
 var setSubmitState = function(studentId){
-  query.setStudentGraduateSubmit(studentId, '1');
+  query.SetGraduateSubmitStatus(studentId, '1');
 }
 
 module.exports = router;

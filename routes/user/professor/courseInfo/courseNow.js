@@ -14,7 +14,7 @@ router.get('/professors/courseInfo/courseNow', TeacherId, function(req, res){
         
         var teacherId = res.locals.teacherId;
         //console.log("teacherId: " + teacherId); 
-        query.teacherCosNow(teacherId, function(err, result){
+        query.ShowTeacherCosNow(teacherId, function(err, result){
             if(err){
                 throw err;
                 res.redirect('/');

@@ -10,7 +10,7 @@ router.post('/assistants/researchTeacher', csrfProtection, function(req, res){
 
     if(req.session.profile){ 
         
-        query.showGivenGradeStudentResearch(req.body.year, function(err, result){
+        query.ShowGivenGradeStudentResearch(req.body.year, function(err, result){
             if(err){
                 throw err;
                 res.redirect('/');

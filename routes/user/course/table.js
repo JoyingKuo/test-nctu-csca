@@ -21,7 +21,7 @@ function queryProfile(studentId, callback){
 }
 
 function queryPass(studentId, callback){
-	query.Pass(studentId, function(err, pass){
+	query.ShowUserAllScore(studentId, function(err, pass){
 		if(!pass){
 			////console.log("Can't find the student.");
 			return;
@@ -36,7 +36,7 @@ function queryPass(studentId, callback){
 }
 
 function queryRule(studentId, callback){
-	query.graduateRule(studentId, function(err, rules){
+	query.ShowGraduateRule(studentId, function(err, rules){
 		if(!rules){
 			////console.log("Can't find the student.");
 			return;
@@ -70,7 +70,7 @@ function queryCourse(studentId, callback){
 		result = JSON.parse(result);
         //console.log(result);
 		info.program = result[0].program;
-	        query.Group(studentId, function(err, result){
+	        query.ShowCosGroup(studentId, function(err, result){
 			if(!result){
 				////console.log("Cannot find the student.");
 				return;
@@ -169,7 +169,7 @@ function processCourse(info, callback){
 }
 
 function queryList(studentId, callback){
-	query.studentGraduateList(studentId, function(err, list){
+	query.ShowGraduateStudentList(studentId, function(err, list){
                 if(!list){
                         console.log("Can't find the student.");
                         return;
@@ -184,7 +184,7 @@ function queryList(studentId, callback){
 }
 
 function queryFree(studentId, callback){
-	query.offset(studentId, function(err, free){
+	query.ShowUserOffset(studentId, function(err, free){
 		if(!free){
 			////console.log("Can't find free course list");
 			return;
@@ -199,7 +199,7 @@ function queryFree(studentId, callback){
 }
 
 function queryNow(studentId, callback){
-	query.on_cos_data(studentId, function(err, now){
+	query.ShowUserOnCos(studentId, function(err, now){
 		if(!now){
 			////console.log("Can't find now course");
 			return;
@@ -214,9 +214,9 @@ function queryNow(studentId, callback){
 }
 
 function queryGeneral(callback){
-	query.general_cos_rule(function(err, general){
+	//*general cos rule*/
+	query.ShowCosMotionLocate('0416004', function(err, general){
 		if(!general){
-			////console.log("Can't find geberal courses");
 			return;
 		}
 		if(err){
@@ -229,7 +229,7 @@ function queryGeneral(callback){
 }
 
 function queryChange(studentId, callback){
-    query.cosMotion(studentId, function(err, change){
+    query.ShowCosMotionLocate(studentId, function(err, change){
         if(!change){
             //console.log(" No change");
             return;
@@ -245,22 +245,57 @@ function queryChange(studentId, callback){
 }
 
 function queryProject(studentId, callback){
-    query.showResearchPage(studentId, function(err, project){
+    query.ShowStudentResearchInfo(studentId, function(err, project){
         if(!project)
             return;
         if(err){
             throw err;
             return;
         }
-        else
-            callback(project);
+        else{
+			project = JSON.parse(project);
+			callback(project);
+		}
+            
     });
 }
-
+function queryApplyFormAndProject(studentId ,callback){
+	query.ShowStudentResearchApplyForm(studentId,'1', function(err, result){
+        if(!result)
+            return;
+        if(err){
+            throw err;
+            return;
+        }
+        else{
+			
+			result = JSON.parse(result);
+			query.ShowStudentResearchApplyForm(studentId,'2', function(err, form){
+				if(!form)
+					return;
+				if(err){
+					throw err;
+					return;
+				}
+				else{
+					form = JSON.parse(form);
+					queryProject(studentId,function(project){
+						var allForm = [...project,...result,...form,];
+						//console.log(allForm);
+						callback(allForm);
+					});
+					
+					
+				}
+			});
+		}
+            
+    });		
+}
 function queryProInfoAndResearchCount(studentId, callback){	
     var info;
     var IDlist;
-    query.findTeacherResearchCountAndInfo(function(err, result){
+    query.ShowTeacherInfoResearchCnt(function(err, result){
         if(err){
             throw err;
             return;
@@ -306,7 +341,7 @@ function CheckStateAndCreateNewForm(info ,callback){
 		//console.log(info);
 		for(var i = 0;i< info.student_num; i++){
 			var count=0;
-			query.researchApplyFormPersonalReturn(info.participants[i],info.first_second,function(err,result){
+			query.ShowStudentResearchApplyForm(info.participants[i],info.first_second,function(err,result){
 				if(err){
 					throw err;
 					return;
@@ -347,8 +382,10 @@ function CheckStateAndCreateNewForm(info ,callback){
 									var Student_info = {phone : info.phones[m], student_id : info.participants[m], research_title : info.research_title, tname : info.tname,first_second : info.first_second, email : info.email[m], semester: info.semester};
 									CreateNewForm(Student_info);					
 							}
-							var signal = {signal : 1};	
-							callback(signal);
+							setTimeout(function(){
+								var signal = {signal :1};
+								callback(signal);
+							},1000);
 						}
 					}
 				}
@@ -357,66 +394,42 @@ function CheckStateAndCreateNewForm(info ,callback){
 		}
 }
 function CreateNewForm(studentInfo){
-	query.researchApplyFormCreate(studentInfo, function(err){
+	query.CreateResearchApplyForm(studentInfo, function(err){
 		if(err){
 			throw err;
 			return;
 		}
     });
 }
-function queryApplyForm(studentId ,callback){
-	query.researchApplyFormPersonalReturn(studentId,'1', function(err, result){
-        if(!result)
-            return;
-        if(err){
-            throw err;
-            return;
-        }
-        else{
-			
-			result = JSON.parse(result);
-			query.researchApplyFormPersonalReturn(studentId,'2', function(err, form){
-				if(!form)
-					return;
-				if(err){
-					throw err;
-					return;
-				}
-				else{
-					form = JSON.parse(form);
-					var allForm = [...result,...form];
-					callback(allForm);
-					
-				}
-			});
-		}
-            
-    });		
-}
+
 function PerformDelete(info ,callback){
 	var formInfo = {research_title : info.research_title, tname : info.tname, first_second:info.first_second, semester: info.semester};
-	query.researchApplyFormDelete(formInfo);
+	query.DeleteResearchApplyForm(formInfo);
 		
-	var signal = {signal : '1'};
-	callback(signal);	
+	setTimeout(function(){
+		var signal = {signal :1};
+		callback(signal);
+	},2000);
 }
 function PerformEditProjectPage(info ,callback){
 	//var set_project = {tname: req.body.tname, research_title :req.body.research_title, first_second:req.body.first_second,semester:req.body.semester,  new_title : req.body.new_title, new_link: req.body.new_link, new_intro:req.body.new_intro};
-	query.setResearchPage(info, function(err){
+	query.SetResearchInfo(info, function(err){
 		if(err){
 			throw err;
 			return;
 		}
 		else{
-			var signal = {signal : 1};
-			callback(signal);
+			setTimeout(function(){
+				var signal = {signal :1};
+				callback(signal);
+			},1000);			
 		}
 	});
 	
 }
 function queryMentorInfo(studentId ,callback){
 	
-    query.mentorReturn(studentId, function(err, result){
+    query.ShowStudentMentor(studentId, function(err, result){
 		if(err){
 			throw err;
 			return;
@@ -431,21 +444,25 @@ function queryMentorInfo(studentId ,callback){
 }
 function SetProjectScore(info ,callback){
     var content = {student_id:info.student_id,tname:info.tname, research_title:info.research_title, first_second: info.first_second, semester: info.year, new_score:info.new_score, new_comment: info.comment};
-    query.setResearchScoreComment(content);
+    query.SetResearchScoreComment(content);
 	
-	var signal = {signal:1};
-    callback(signal);
+	setTimeout(function(){
+			var signal = {signal :1};
+			callback(signal);
+	},1000);
 }
 function SetProjectTitle(info ,callback){
     var content = {research_title : info.research_title, tname : info.tname, first_second : info.first_second, semester:info.year, new_title : info.new_title};
-	var num = query.updateResearchTitle(content);
-	//console.log(num);
-	var signal = {signal:1};
-    callback(signal);
+	var num = query.SetResearchTitle(content);
+	
+	setTimeout(function(){
+		var signal = {signal :1};
+		callback(signal);
+	},1000);
 }
 function queryProjectApplyList(teacherId ,callback){
 	
-    query.researchApplyFormTeaReturn(teacherId, function(err,result){
+    query.ShowTeacherResearchApplyFormList(teacherId, function(err,result){
 		if(err) {
                   throw err;     
                   return;
@@ -455,30 +472,43 @@ function queryProjectApplyList(teacherId ,callback){
                  return; 
 			 
             result = JSON.parse(result);
+			//console.log(result);
             if(result.length == 0){
                 var groups = [];
             }
             else{
-				var temp = result[0].research_title;
-				var groups =  [];
-				var project = {
-					research_title: '',
-					first_second:'',
-					participants: [],
-					year: '',
-					status:''
-				}
-				project.research_title = temp;
-				//project.status = result[i].agree;
+				var index = [];
+				var groups = [];
+				
+				var count = 0;
 				for(var i = 0; i<result.length; i++){
-					if(result[i].agree == 3)
-						continue;
+					if(index[result[i].research_title] == null){
+						var project = {
+							research_title: '',
+							first_second:'',
+							participants: [],
+							year: '',
+							status:''
+						}
+						project.research_title = result[i].research_title;
+						project.first_second = result[i].first_second;
+						project.year = result[i].semester;
+						project.status = result[i].agree;
+						if(result[i].agree != '3'){
+							groups.push(project);
+							index[result[i].research_title] = count;
+							count++;
+						}
+							
+					}  
+				}
+				for(var i = 0; i<result.length; i++){
+					
 					var student = {
 						student_id: '',
 						sname: '',
 						email: '',
 						phone: '',
-						state: '',
 						year: '',
 						first_second:''
 					}
@@ -486,140 +516,106 @@ function queryProjectApplyList(teacherId ,callback){
 					student.sname = result[i].sname;
 					student.email = result[i].email;
 					student.phone = result[i].phone;
-					student.state = result[i].agree;
-	
-					student.first_second = result[i].first_second;
 					student.year = result[i].semester;
-					if(result[i].research_title == temp){
-						project.participants.push(student);
-						if(i == result.length - 1){   
-	
-						project.status = project.participants[0].state;
-						project.first_second = project.participants[0].first_second;
-						project.year = project.participants[0].year; 
-						groups.push(project);
-						}
-					}
-					else{
-				
-					// project.status = result[i-1].agree;
-					project.first_second = project.participants[0].first_second;
-					project.status = project.participants[0].state;
-					project.year = project.participants[0].year;
-						groups.push(project);
-						temp = result[i].research_title;
-						var new_project = {
-							research_title: '',
-							first_second:'',
-							participants: [],
-							year:'',
-							status:''
-						}
-						new_project.research_title = result[i].research_title;
-						new_project.participants.push(student);
-						project = new_project;
-						if(i == result.length - 1){
-							project.status = project.participants[0].state;
-							project.first_second = project.participants[0].first_second;
-							project.year = project.participants[0].year;
-							groups.push(project);
-						}	
-					}	
+					student.first_second = result[i].first_second;
+					if(result[i].agree != '3'){
+						var id = index[result[i].research_title];
+						groups[id].participants.push(student);
+					}			
 				}
 			}
 	       callback(groups) ;   
     
     });	
 }
-function queryProjectList(teacherId ,callback){  
-    query.findTeacherResearch(teacherId, function(err, result){
-        if(err){
-            throw err;
-            return;
-        }
-        if(!result)
-            return;
-		
-		console.log(result);
-        if(result.length == 0){
-			var projects = {
-                groups: []
+function queryProjectList(teacherId ,callback){
+	query.ShowTeacherResearchStudent(teacherId, function(err, result){
+            if(err){
+                throw err;
+                return;
             }
-		}	
-        else{
-			var index = [];
-			var temp = result[0].research_title;
-			var projects = {
-				grade02:0,
-				grade03:0,
-				grade04:0,
-				grade05:0,
-				total_number:0,
-				groups: []
-			}
+            if(!result)
+                return;
+        
+            result = JSON.parse(result);
+            if(result.length == 0){
+                var projects = {  
+                 groups:[]
+                }
+            }
+            else{
+				var index = [];
+				var temp = result[0].research_title;
+				var projects = {
+					grade02:0,
+					grade03:0,
+					grade04:0,
+					grade05:0,
+					total_number:0,
+					groups: []
+				}
+				
+				var count = 0;
 	
-			var count = 0;
-			for(var i = 0; i<result.length; i++){
-				if(index[result[i].research_title] == null){
-					var project = {
-							research_title: '',
-							participants : [],
-							year:'',
-							first_second: ''
+				for(var i = 0; i<result.length; i++){
+					//console.log(index[result[i].research_title]);
+					if(index[result[i].research_title] == null){
+						var project = {
+								research_title: '',
+								participants : [],
+								year:'',
+								first_second: ''
+						}
+						project.year = result[i].semester;
+						project.research_title = result[i].research_title;
+						project.first_second = result[i].first_second;
+						projects.groups.push(project);
+						index[result[i].research_title] = count;
+						count++;
+					}  
+				}
+				for(var i = 0; i<result.length; i++){
+					
+					var student = {
+						student_id: '',
+						sname: '',
+						detail: '',
+						score: null
 					}
-					project.year = result[i].semester;
-					project.research_title = result[i].research_title;
-					project.first_second = result[i].first_second;
-					projects.groups.push(project);
-					index[result[i].research_title] = count;
-					count++;
-				}  
-			}
-	
-			for(var i = 0; i<result.length; i++){
-				
-				var student = {
-					student_id: '',
-					sname: '',
-					detail: '',
-					score: null
+					student.student_id = result[i].student_id;
+					student.score = parseInt(result[i].score);
+					var grade = student.student_id.substring(0,2);
+					
+					switch(grade){
+						case '02':
+							projects.grade02++;
+							break;
+						case '03':
+							projects.grade03++;
+							break;
+						case '04':
+							projects.grade04++;
+							break;
+						case '05':
+							projects.grade05++;
+							break;
+					}
+					student.sname = result[i].sname;
+					student.detail = result[i].class_detail;
+					var id = index[result[i].research_title];
+					projects.groups[id].participants.push(student);
+							
 				}
-				student.student_id = result[i].student_id;
-				student.score = parseInt(result[i].score);
-				var grade = student.student_id.substring(0,2);
-				
-				switch(grade){
-					case '02':
-						projects.grade02++;
-						break;
-					case '03':
-						projects.grade03++;
-						break;
-					case '04':
-						projects.grade04++;
-						break;
-					case '05':
-						projects.grade05++;
-						break;
-				}
-				student.sname = result[i].sname;
-				student.detail = result[i].class_detail;
-				var id = index[result[i].research_title];
-				projects.groups[id].participants.push(student);
-						
-			}
 				projects.total_number = projects.grade04;
-        }
-		
-        callback(projects);
-
-    });
+            }
+            callback(projects);
+        });
 }
 function SetApplyFormState(info ,callback){  
     if(info.agree =='1'){
 		for(var i = 0; i<info.student.length;i++){
 			var req_member = { student_id : info.student[i].student_id, tname:info.tname, research_title:info.research_title, first_second:info.first_second, semester: info.year};
-			query.createNewResearch(req_member, function(err){
+			query.CreateNewResearch(req_member, function(err){
 				if(err){
 					throw err;
 					return;
@@ -627,23 +623,27 @@ function SetApplyFormState(info ,callback){
 			});				
 		}
 		var formInfo = {research_title:info.research_title, tname : info.tname, first_second:info.first_second, agree:info.agree, semester:info.year};
-		query.researchApplyFormSetAgree(formInfo);
+		query.SetResearchApplyFormStatus(formInfo);
 		
-		var signal = {signal : 1};
-		callback(signal);
+		setTimeout(function(){
+			var signal = {signal :1};
+			callback(signal);
+		},1000);
 				
 	}
 	else{
 		var formInfo = {research_title : info.research_title, tname:info.tname, first_second:info.first_second, agree:info.agree, semester:info.year};
-		query.researchApplyFormSetAgree(formInfo);
+		query.SetResearchApplyFormStatus(formInfo);
 		
-		var signal = {signal : 1};
-		callback(signal);	
+		setTimeout(function(){
+			var signal = {signal :1};
+			callback(signal);
+		},1000);	
 	}
 }
 function queryResearchIntro(info ,callback){  
     var Info = {research_title:info.research_title, tname:info.tname, first_second:info.first_second, semester:info.year};
-	query.showResearchInfo(Info, function(err,result){
+	query.ShowResearchInfo(Info, function(err,result){
 		if(err){
 			throw err;
 			return;
@@ -717,8 +717,8 @@ table.getCheckStateAndCreateNewForm = function(info, callback){
         callback(signal);
     });
 }
-table.getApplyForm = function(studentId, callback){
-    queryApplyForm(studentId ,function(form){
+table.getApplyFormAndProject = function(studentId, callback){
+    queryApplyFormAndProject(studentId ,function(form){
         callback(form);
     });
 }
