@@ -85,7 +85,8 @@ module.exports.init = function(){
   app.use(require('./routes/user/students/graduate/failCos'));
   app.use(require('./routes/user/students/project/NewProjectApply'));
   app.use(require('./routes/user/students/project/ProInfoAndRsearchCount'));
-  app.use(require('./routes/user/students/project/ProjectApplyFormStatus'));
+  app.use(require('./routes/user/students/project/ResearchInfoOfPro'));
+ app.use(require('./routes/user/students/project/ProjectApplyFormStatus'));
   app.use(require('./routes/user/students/project/ProjectApplyFormDelete'));
   app.use(require('./routes/user/students/project/EditProjectPageInfo'));
   app.use(require('./routes/user/students/mail/sendtoteacher'));
@@ -105,25 +106,28 @@ module.exports.init = function(){
   app.use(require('./routes/user/assistants/researchTeacher'));
   app.use(require('./routes/user/assistants/mail/mailLogin.js'));
   app.use(require('./routes/user/assistants/researchGradeList.js'));
+ app.use(require('./routes/user/assistants/ResearchGradeDownload.js'));
+  app.use(require('./routes/user/assistants/StudentResearchList.js'));
+ app.use(require('./routes/user/assistants/ProResearchList.js'));
+ app.use(require('./routes/user/assistants/advisee/TeacherList.js'));
+ app.use(require('./routes/user/assistants/advisee/StudentList.js'));
   app.use(require('./routes/user/students/graduate/graduateReorderReset'));
   app.use(require('./routes/user/professor/profile'));
   app.use(require('./routes/user/professor/courseInfo/score'));
   app.use(require('./routes/user/professor/courseInfo/interval'));
   app.use(require('./routes/user/professor/courseInfo/courses'));
   app.use(require('./routes/user/professor/courseInfo/courseNow'));
-  app.use(require('./routes/user/professor/students/AdviseeList'));
+  app.use(require('./routes/user/professor/students/AdviseeList.js'));
   app.use(require('./routes/user/professor/students/research/FormalResearch'));
-  app.use(require('./routes/user/professor/students/research/ReserchApplyFormList'));
+  app.use(require('./routes/user/professor/students/research/ResearchApplyFormList'));
   app.use(require('./routes/user/professor/students/research/SetApplyFormState'));
   app.use(require('./routes/user/professor/students/research/SetResearchScore'));
   app.use(require('./routes/user/professor/students/research/SetResearchTitle'));
-  app.use(require('./routes/user/professor/students/researchInfo'));
   app.use(require('./routes/user/professor/info'));
   app.use(require('./routes/user/mail/getStudentList'));
   app.use(require('./routes/user/mail/getTeacherList'));
   app.use(require('./routes/user/mail/sendmail'));
   app.use(require('./routes/user/mail/readSet'));
   
-
   return app;
 };

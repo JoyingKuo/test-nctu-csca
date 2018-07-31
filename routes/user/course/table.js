@@ -331,7 +331,7 @@ function queryProInfoAndResearchCount(studentId, callback){
 				info.push({ tname: result[i].tname,teacher_id:result[i].teacher_id, phone:result[i].phone, email: result[i].email, expertise: result[i].expertise, info : result[i].info, path : path, scount: "0" });
 		}
 		callback(info);
-		
+
     });
 
 }
@@ -536,8 +536,9 @@ function queryProjectList(teacherId ,callback){
             }
             if(!result)
                 return;
-        
+			
             result = JSON.parse(result);
+	   // console.log(result);		
             if(result.length == 0){
                 var projects = {  
                  groups:[]
@@ -564,11 +565,13 @@ function queryProjectList(teacherId ,callback){
 								research_title: '',
 								participants : [],
 								year:'',
-								first_second: ''
+								first_second: '',
+								intro:''
 						}
 						project.year = result[i].semester;
 						project.research_title = result[i].research_title;
 						project.first_second = result[i].first_second;
+						project.intro = result[i].intro;
 						projects.groups.push(project);
 						index[result[i].research_title] = count;
 						count++;

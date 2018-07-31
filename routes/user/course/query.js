@@ -229,6 +229,7 @@ query.CheckStateAndCreateNewForm = function(req, res, next){
 query.queryApplyFormAndProject = function(req, res, next){
     if(req.session.profile){
 		var studentId = res.locals.studentId;
+		
         table.tables.getApplyFormAndProject(studentId, function(form){
 			req.form = form;
             if(req.form)
@@ -379,4 +380,19 @@ query.queryResearchIntro = function(req, res, next){
     else
         res.redirect('/');
 }
+// query the project list of specificthe student want to see
+query.queryTotalProjects = function(req, res, next){
+    if(req.session.profile){
+        table.tables.getProjectList(req.body.teacher_id, function(projects){
+        req.projects = projects;
+        if(req.projects)
+            next();
+        else
+            return;
+        });
+    }
+    else
+        res.redirect('/');
+}
+
 exports.query = query;

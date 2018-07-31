@@ -1,0 +1,127 @@
+import React from 'react'
+import PropTypes from 'prop-types'
+import { withStyles } from '@material-ui/core/styles'
+import Dialog from '@material-ui/core/Dialog'
+import AppBar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar'
+import IconButton from '@material-ui/core/IconButton'
+import Typography from '@material-ui/core/Typography'
+import CloseIcon from '@material-ui/icons/Close'
+import Slide from '@material-ui/core/Slide'
+import Tooltip from '@material-ui/core/Tooltip'
+import List from '@material-ui/icons/List'
+import MenuItem from '@material-ui/core/MenuItem'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import ListItemText from '@material-ui/core/ListItemText'
+import Button from '@material-ui/core/Button'
+import DialogActions from '@material-ui/core/DialogActions'
+import FakeData from './FakeData'
+import Card from './Card'
+import axios from 'axios/index'
+
+const styles = {
+  appBar: {
+    position: 'relative'
+  },
+  flex: {
+    flex: 1
+  }
+}
+
+function Transition(props) {
+  return <Slide direction="up" {...props} />;
+}
+
+class Index extends React.Component {
+  state = {
+    open: false,
+    data: FakeData
+  }
+
+  handleClickOpen = () => {
+    this.setState({ open: true });
+  }
+
+  handleClose = () => {
+    this.setState({ open: false });
+  }
+
+  componentDidMount () {
+
+    axios.post('/students/project/ResearchInfoOfPro', {
+      teacher_id: this.props.profile.teacher_id
+    })
+      .then(res => {
+        this.setState({
+          data: res.data
+        })
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
+  render() {
+    const { classes } = this.props;
+    return (
+      <div>
+        {this.props.rwd
+          ?
+          <MenuItem className={classes.menuItem} onClick={this.handleClickOpen}>
+            <ListItemIcon className={classes.icon}>
+              <List />
+            </ListItemIcon>
+            <ListItemText classes={{ primary: classes.primary }} inset primary="Send Email!" />
+          </MenuItem>
+          :
+          <Tooltip title='Send email to professor!' placement='top' classes={classes.tooltip}>
+            <IconButton
+              onClick={this.handleClickOpen}
+              aria-expanded={this.state.expanded}
+              aria-label='Show more'
+            >
+              <List />
+            </IconButton>
+          </Tooltip>
+        }
+        <Dialog
+          fullScreen
+          open={this.state.open}
+          onClose={this.handleClose}
+          TransitionComponent={Transition}
+        >
+          <AppBar className={classes.appBar}>
+            <Toolbar>
+              <IconButton color="inherit" onClick={this.handleClose} aria-label="Close">
+                <CloseIcon />
+              </IconButton>
+              <Typography variant="title" color="inherit" className={classes.flex}>
+                查看教授專題
+              </Typography>
+            </Toolbar>
+          </AppBar>
+          <div className='container d-flex flex-md-column'>
+            {
+              this.state.data.groups.map(t=>
+                <Card data={t} profile={this.props.profile}/>)
+            }
+          </div>
+          <DialogActions>
+            <Button onClick={this.handleClose} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={this.handleClose} color="primary">
+              Subscribe
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    )
+  }
+}
+
+Index.propTypes = {
+  classes: PropTypes.object.isRequired
+}
+
+export default withStyles(styles)(Index)
