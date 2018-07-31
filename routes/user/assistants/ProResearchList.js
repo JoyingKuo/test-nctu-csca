@@ -21,7 +21,7 @@ router.get('/assistants/project/ProResearchList', function(req, res){
 			ID_list = JSON.parse(ID_list);
 			for(var i=0; i<ID_list.length; i++){
 				var list ={
-					professor_name:ID_list[i].name,
+					professor_name:ID_list[i].tname,
 					accepted:{
 						projects:[]
 					},
@@ -29,12 +29,12 @@ router.get('/assistants/project/ProResearchList', function(req, res){
 						projects:[]
 					}
 				}
-				Index[ID_list[i].id] = Count;
+				Index[ID_list[i].teacher_id] = Count;
 				Count ++;
 				group.push(list);
 			}
 			for(var i=0; i<ID_list.length; i++){
-				query.ShowTeacherResearchStudent(ID_list[i].id, function(err, result){
+				query.ShowTeacherResearchStudent(ID_list[i].teacher_id, function(err, result){
 					if(err){
 						throw err;
 						return;
@@ -81,7 +81,7 @@ router.get('/assistants/project/ProResearchList', function(req, res){
 			}
 			for(var i=0; i<ID_list.length; i++){
 				
-				query.ShowTeacherResearchApplyFormList(ID_list[i].id, function(err, result){
+				query.ShowTeacherResearchApplyFormList(ID_list[i].teacher_id, function(err, result){
 					if(err){
 						throw err;
 						return;

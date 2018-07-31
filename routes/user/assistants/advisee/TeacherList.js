@@ -18,8 +18,8 @@ router.get('/assistants/advisee/TeacherList', function(req, res){
 				var list =[];
 				for(var i=0;i<result.length;i++){
 					var info ={
-						id : result[i].id,
-						name : result[i].name,
+						id : result[i].teacher_id,
+						name : result[i].tname,
 						email : result[i].email,
 						all_students : parseInt(result[i].all_students),
 						failed_students : parseInt(result[i].failed_students)
