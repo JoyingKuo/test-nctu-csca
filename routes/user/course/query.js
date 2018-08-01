@@ -339,6 +339,7 @@ query.queryProjectApplyList = function(req, res, next){
 query.queryProjectList = function(req, res, next){
     if(req.session.profile){
 		var teacherId = res.locals.teacherId;
+		
         table.tables.getProjectList(teacherId, function(projects){
 		req.projects = projects;
         if(req.projects)

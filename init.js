@@ -118,6 +118,7 @@ module.exports.init = function(){
   app.use(require('./routes/user/professor/courseInfo/courses'));
   app.use(require('./routes/user/professor/courseInfo/courseNow'));
   app.use(require('./routes/user/professor/students/AdviseeList.js'));
+ app.use(require('./routes/user/professor/students/StudentList.js'));
   app.use(require('./routes/user/professor/students/research/FormalResearch'));
   app.use(require('./routes/user/professor/students/research/ResearchApplyFormList'));
   app.use(require('./routes/user/professor/students/research/SetApplyFormState'));
