@@ -264,7 +264,8 @@ query.PerformEditProjectPage = function(req, res, next){
 		var info = req.body;
         table.tables.EditProjectPage(info, function(signal){
 			req.signal = signal;
-            if(req.signal)
+            		console.log(req.signal);
+		if(req.signal)
                 next();
             else
                 return;

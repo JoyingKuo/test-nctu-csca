@@ -25,10 +25,10 @@ router.post('/assistants/advisee/StudentList', csrfProtection, function(req, res
 					query.ShowUserInfo(result[i].student_id, function(err,profile){
 						if(err){
 							throw err;
-							return;
+							res.redirect('/');
 						}
 						if(!profile){
-							return;
+							res.redirect('/');
 						}
 						else{
 							profile = JSON.parse(profile);

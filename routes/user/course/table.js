@@ -254,6 +254,7 @@ function queryProject(studentId, callback){
         }
         else{
 			project = JSON.parse(project);
+			//console.log(project);
 			callback(project);
 		}
             
@@ -412,19 +413,20 @@ function PerformDelete(info ,callback){
 	},2000);
 }
 function PerformEditProjectPage(info ,callback){
-	//var set_project = {tname: req.body.tname, research_title :req.body.research_title, first_second:req.body.first_second,semester:req.body.semester,  new_title : req.body.new_title, new_link: req.body.new_link, new_intro:req.body.new_intro};
-	query.SetResearchInfo(info, function(err){
+	var set_project = {tname: info.tname, research_title : info.research_title, first_second:info.first_second,semester:info.semester,  new_title : info.research_title, new_link: null, new_intro:info.new_intro};
+	//console.log(set_project);	
+query.SetResearchInfo(set_project, function(err){
 		if(err){
 			throw err;
 			return;
 		}
-		else{
-			setTimeout(function(){
-				var signal = {signal :1};
-				callback(signal);
-			},1000);			
-		}
+		
 	});
+	 setTimeout(function(){
+                var signal = {signal :1};
+                callback(signal);
+                        },500);
+
 	
 }
 function queryMentorInfo(studentId ,callback){
@@ -454,7 +456,7 @@ function SetProjectScore(info ,callback){
 function SetProjectTitle(info ,callback){
     var content = {research_title : info.research_title, tname : info.tname, first_second : info.first_second, semester:info.year, new_title : info.new_title};
 	var num = query.SetResearchTitle(content);
-	
+	console.log(content);	
 	setTimeout(function(){
 		var signal = {signal :1};
 		callback(signal);

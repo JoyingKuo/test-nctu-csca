@@ -29,7 +29,7 @@ router.get('/assistants/project/StudentResearchList', function(req, res){
 							program:''
 						},
 						project:{
-							status:3,
+							status:2,
 							title:'',
 							professor_name:''
 						}
@@ -81,8 +81,8 @@ router.get('/assistants/project/StudentResearchList', function(req, res){
 							
 							if(applyform[0].agree == 0 || applyform[0].agree == 2)
 								project[id].project.status = 1;
-							else if(applyform[0].agree == 3)
-								project[id].project.status =2;
+							//else if(applyform[0].agree == 3)
+							//	project[id].project.status =2;
 							
 							project[id].project.title = applyform[0].research_title;
 							project[id].project.professor_name = applyform[0].tname;
