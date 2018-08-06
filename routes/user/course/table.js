@@ -209,6 +209,7 @@ function queryNow(studentId, callback){
 			return;
 		}
 		else
+			console.log(now);
 			callback(now);
 	});
 }

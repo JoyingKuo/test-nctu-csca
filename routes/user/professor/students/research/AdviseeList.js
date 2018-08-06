@@ -2,68 +2,57 @@ var express = require('express');
 var router = express.Router();
 var query = require('../../../../db/msql');
 var getTeacherId = require('../../course/getTeacherId');
-var csrf = require('csurf');
-var csrfProtection = csrf();
-var Promise = require('promise');
+
 
 var TeacherId = getTeacherId.getTeacherId.teacherId;
+router.get('/professors/students/StudentList',TeacherId, function(req, res){
 
-function getInfo(student_id) {
-    query.ShowUserInfo(student_id, function(err2, studentsInfo) {
-        var individual = {
-            student_id: '',
-            sname: '',
-            program: '',
-            graduate: '',
-            graduate_submit: '',
-            email: ''
-        }
-        if (err2) {
-            throw err2;
-            res.redirect('/');
-        }
-        if (!studentsInfo)
-            res.redirect('/');
-        studentsInfo = JSON.parse(studentsInfo);
-        individual.student_id = studentsInfo[0].student_id;
-        individual.sname = studentsInfo[0].sname;
-        individual.program = studentsInfo[0].program;
-        individual.graduate = studentsInfo[0].graduate;
-        individual.graduate_submit = studentsInfo[0].graduate_submit;
-        individual.email = studentsInfo[0].email;
-        //individual["fail"] = studentsInfo.fail;
-        return individual;
-    });
-}
-
-router.get('/professors/students/list', TeacherId, function(req, res) {
-
-    if (req.session.profile) {
-
-        //var teacherId = req.body.id;
+    if(req.session.profile){
+    
         var teacherId = res.locals.teacherId;
-        query.ShowTeacherMentors(teacherId, function(err1, mentors) {
-            if (err1) {
-                throw err1;
+        
+        query.ShowTeacherMentors(teacherId, function(err, result){
+            if(err){
+                throw err;
                 res.redirect('/');
             }
-            if (!mentors)
+            if(!result)
                 res.redirect('/');
-            mentors = JSON.parse(mentors);
-            var students = [];
-            var promise = Promise((resolve, reject) {
-                for (let i = 0; i < mentors.length; i++) {
-                    var student_id = mentors[i].student_id;
-                    students.push(getInfo(student_id));
+            else{
+                var info = [];
+                result = JSON.parse(result);
+                
+                for(var i=0;i<result.length;i++){
+                    query.ShowUserInfo(result[i].student_id, function(err,profile){
+                        if(err){
+                            throw err;
+                            return;
+                        }
+                        if(!profile){
+                            return;
+                        }
+                        else{
+                            profile = JSON.parse(profile);
+                            profile ={
+                                student_id: profile[0].student_id,
+                                sname: profile[0].sname,
+                                program: profile[0].program,
+                                graduate: profile[0].graduate,
+                                graduate_submit: profile[0].graduate_submit,
+                                email: profile[0].email,
+                                failed:(profile[0].failed =="failed")?true:false
+                            }
+                            info.push(profile);
+                        }
+                        if(info.length == result.length)
+                            res.send(info);
+                    });
+    
                 }
-                resolve(students);
-                reject("failure");
-            });
-            promise.then(function(students) {
-                res.send(students);
-            })
+            }
         });
-    } else
+    }
+    else
         res.redirect('/');
 
 });
