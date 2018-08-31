@@ -131,6 +131,6 @@ module.exports.init = function(){
   app.use(require('./routes/user/mail/getTeacherList'));
   app.use(require('./routes/user/mail/sendmail'));
   app.use(require('./routes/user/mail/readSet'));
-  
+  app.use(require('./routes/user/TestAPI.js'));  
   return app;
 };

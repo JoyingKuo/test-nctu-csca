@@ -1,5 +1,5 @@
 import React from 'react'
-import './Map.css'
+//import './Map.css'
 
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
@@ -270,12 +270,6 @@ class Map extends React.Component {
               <MenuItem style={fontStyle} value={3} primaryText="建議修課"/>
             </SelectField>
           </MuiThemeProvider>
-        </div>
-        <div>
-          <div className="green" style={{backgroundColor: '#616161'}}></div>
-          <div className="text">已通過</div>
-          <div className="red" style={{backgroundColor: '#a42926'}}></div>
-          <div className="text">未通過</div>
         </div>
       </div>
       <Provider store={store}>

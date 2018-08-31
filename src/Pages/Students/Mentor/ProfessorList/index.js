@@ -8,9 +8,11 @@ class ProfessorsList extends React.Component {
     let id = 0
     if (this.props.done) {
       return (
-        this.props.professors.map(profile =>
-          <ProfessorOverviewCard profile={profile} key={id++} studentIdcard={this.props.studentIdcard} />
-        )
+        <div>
+          {this.props.professors.map(profile =>
+            <ProfessorOverviewCard profile={profile} key={id++} studentIdcard={this.props.studentIdcard} />
+        )}
+        </div>
       )
     }
     return (
@@ -29,7 +31,7 @@ const getVisibleProfessors = (data, mentor, filterInput, page) => {
     )
   })
 
-  const onePage = 10
+  const onePage = 7
   let idx = page - 1
 
   // search mentor

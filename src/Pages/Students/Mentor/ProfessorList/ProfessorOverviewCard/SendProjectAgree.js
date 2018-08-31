@@ -23,6 +23,9 @@ import InputAdornment from '@material-ui/core/InputAdornment'
 import ExpansionPanel from '@material-ui/core/ExpansionPanel'
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary'
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails'
+import AppBar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar'
+import Typography from '@material-ui/core/Typography'
 import { withStyles } from '@material-ui/core/styles'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import FormControl from '@material-ui/core/FormControl'
@@ -30,12 +33,13 @@ import Select from '@material-ui/core/Select'
 import InputLabel from '@material-ui/core/InputLabel'
 import Grow from '@material-ui/core/Grow'
 import axios from 'axios/index'
+import withMobileDialog from '@material-ui/core/withMobileDialog/index'
 
 function Transition (props) {
   return <Slide direction='up' {...props} />
 }
 
-const limitcount = 10
+const limitcount = 7
 
 const styles = theme => ({
   root: {
@@ -51,6 +55,13 @@ const styles = theme => ({
   },
   tooltip: {
     fontSize: '12px'
+  },
+  flex: {
+    flex: 1,
+  },
+  appBar: {
+    backgroundColor: '#01579B',
+    color: '#FFF'
   }
 })
 
@@ -74,6 +85,7 @@ class SendProjectAgree extends React.Component {
     this.handleCloseSnackbar = this.handleCloseSnackbar.bind(this)
     this.handleremovemenber = this.handleremovemenber.bind(this)
     this.handleTitleChange = this.handleTitleChange.bind(this)
+    this.handleSend = this.handleSend.bind(this)
   }
 
 
@@ -202,7 +214,6 @@ class SendProjectAgree extends React.Component {
   }
 
   handleinputChange = (event, str, index) => {
-    event.preventDefault()
     let newinput = [...this.state.input]
     newinput[index][str] = event.target.value
     this.setState({ input: newinput })
@@ -211,7 +222,7 @@ class SendProjectAgree extends React.Component {
   render () {
     const { expanded } = this.state
     const { input } = this.state
-    const { classes } = this.props
+    const { classes, fullScreen } = this.props
     return (
       <div>
         {this.props.rwd
@@ -241,11 +252,21 @@ class SendProjectAgree extends React.Component {
           aria-labelledby='alert-dialog-slide-title'
           aria-describedby='alert-dialog-slide-description'
           fullWidth
+          fullScreen={fullScreen}
         >
-          <DialogTitle id='alert-dialog-slide-title'>
-            {'專題申請'}
+          <DialogTitle id='alert-dialog-slide-title' disableTypography>
+            <AppBar className={classes.appBar} >
+            <Toolbar >
+              <Typography variant="title" color="inherit" className={classes.flex} style={{fontSize: '15px'}} >
+                寄送專題申請
+              </Typography>
+              <Button style={{fontSize: '12px'}} color="inherit" onClick={this.handleClose} className='pull-right'>
+                取消
+              </Button>
+            </Toolbar>
+          </AppBar>
           </DialogTitle>
-          <DialogContent className='dialog-content-height'>
+          <DialogContent className='dialog-content-height' style={{marginTop: '50px'}}>
             <Input
               placeholder='主題(可填寫尚未決定)'
               fullWidth
@@ -407,10 +428,7 @@ class SendProjectAgree extends React.Component {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.handleClose} color='primary'>
-              取消
-            </Button>
-            <Button onClick={this.handleSend} color='primary'>
+            <Button onClick={this.handleSend} className={classes.appBar} color='primary'>
               送出
             </Button>
           </DialogActions>
@@ -424,4 +442,4 @@ function TransitionUp (props) {
   return <Slide {...props} direction='up' />
 }
 
-export default withStyles(styles)(SendProjectAgree)
+export default withStyles(styles)(withMobileDialog()(SendProjectAgree))

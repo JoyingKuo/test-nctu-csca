@@ -75,12 +75,15 @@ class Edit extends React.Component {
       })
 
       let file = this.state.image
+
       let uploadTask = storageRef.child(directory + 'image.jpg').put(file)
       uploadTask.on('state_changed', function (snapshot) {
+        _this.props.store_projects_image('loading', _this.props.project.research_title, _this.props.project.semester)
       }, function (error) {
         console.log(error)
       }, function () {
         uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+          console.log(downloadURL)
           _this.props.store_projects_image(downloadURL, _this.props.project.research_title, _this.props.project.semester)
         })
       })
@@ -94,6 +97,7 @@ class Edit extends React.Component {
       let file = this.state.file
       let uploadTask = storageRef.child(directory + 'file.pdf').put(file)
       uploadTask.on('state_changed', function (snapshot) {
+        _this.props.store_projects_file('loading', _this.props.project.research_title, _this.props.project.semester)
       }, function (error) {
         console.log(error)
       }, function () {
@@ -152,9 +156,8 @@ class Edit extends React.Component {
                 </div>
               </LabeledInput>
               <LabeledInput label='簡介'>
-                <div className='col-md-12'>
                   <CKEditor style={{height: '50vh'}} activeClass='p10' content={this.state.ckeditorContent} events={{'change': this.onChange}} />
-                </div>
+
               </LabeledInput>
               <div className='justify-content-center pull-right'>
                 <button type='submit' style={{margin: '2px', backgroundColor: '#795548', borderColor: '#795548'}} className='btn btn-success btn-large' onClick={this.handleSubmit}>儲存</button>

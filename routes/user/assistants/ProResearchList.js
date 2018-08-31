@@ -66,10 +66,12 @@ router.get('/assistants/project/ProResearchList', function(req, res){
 								id: '',
 								name: '',
 								program: '',	
+								score: null,
 							}
 							student.id = result[i].student_id;
 							student.name = result[i].sname;
 							student.program = result[i].class_detail;
+							student.score = result[i].score;
 							
 							var id = index[result[i].research_title];
 							var Id = Index[result[i].teacher_id];

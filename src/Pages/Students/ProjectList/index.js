@@ -24,19 +24,12 @@ const styles = {
 class index extends React.Component {
   constructor (props) {
     super(props)
-    this.props.fetch_data()
-  }
-
-  onClick (project, t) {
-    if (t === '1') {
-      this.setState({project: this.state.newprojectList.filter(t => t.research_title === project.real_title)[0], index: 1})
-    } else {
-      this.deletedata('/students/formDelete', project)
-    }
+    props.fetch_data()
   }
 
   render () {
     let id = 0
+    this.props.fetch_data()
     return (
       <div className='container'>
         <div>
@@ -66,7 +59,8 @@ class index extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  data: state.Student.ProjectList.data
+  data: state.Student.ProjectList.data,
+  studentProfile: state.Student.User.studentIdcard
 })
 const mapDispatchToProps = (dispatch) => ({
   fetch_data: () => dispatch(fetchProjects())
