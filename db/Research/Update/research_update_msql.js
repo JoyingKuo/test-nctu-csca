@@ -6,6 +6,24 @@ var s = require('./research_update_sqlString.js');
 var pool = psw.dbpsw();
 
 module.exports = { 
+    SetResearchAddStatus:function(data, callback){
+        if(typeof(data)==='string')
+            data=JSON.parse(data);
+        const resource=pool.acquire();
+        resource.then(function(c){
+            var sql_SetResearchAddStatus=c.prepare(s.SetResearchAddStatus);
+            c.query(sql_SetResearchAddStatus(data), function(err, result){
+                if(err)
+                {
+                    callback(err, undefined);
+                    pool.release(c); 
+                    throw err;
+                }
+                callback(null, JSON.stringify(result));
+                pool.release(c); 
+            });
+        });
+    },
     SetResearchInfo:function(data, callback){
         if(typeof(data)==='string')
             data=JSON.parse(data);
@@ -68,6 +86,40 @@ module.exports = {
             });
         });
     }, 
+    ChangeResearch:function(data){
+        if(typeof(data) === 'string')
+            data=JSON.parse(data);
+        const resource=pool.acquire();
+        resource.then(function(c){
+            var sql_ChangeResearch=c.prepare(s.ChangeResearch);
+            c.query(sql_ChangeResearch(data), function(err){
+                if(err)
+                {
+                    pool.release(c);
+                    throw err;
+                }
+                pool.release(c);
+            });
+        });
+    }, 
+    DeleteResearch:function(data, callback){
+        if(typeof(data)==='string')
+            data=JSON.parse(data);
+        const resource=pool.acquire();
+        resource.then(function(c){
+            var sql_DeleteResearch=c.prepare(s.DeleteResearch);
+            c.query(sql_DeleteResearch(data), function(err, result){
+                if(err)
+                {
+                    callback(err, undefined);
+                    pool.release(c); 
+                    throw err;
+                }
+                callback(null, JSON.stringify(result));
+                pool.release(c); 
+            });
+        });
+    },
     SetResearchTitle:function(data){
         if(typeof(data) === 'string')
             data=JSON.parse(data);
@@ -78,6 +130,24 @@ module.exports = {
                 if(err)
                     throw err;
                 pool.release(c);
+            });
+        });
+    }, 
+    SetFirstSecond:function(data, callback){
+        if(typeof(data)==='string')
+            data=JSON.parse(data);
+        const resource=pool.acquire();
+        resource.then(function(c){
+            var sql_SetFirstSecond=c.prepare(s.SetFirstSecond);
+            c.query(sql_SetFirstSecond(data), function(err, result){
+                if(err)
+                {
+                    callback(err, undefined);
+                    pool.release(c); 
+                    throw err;
+                }
+                callback(null, JSON.stringify(result));
+                pool.release(c); 
             });
         });
     }, 

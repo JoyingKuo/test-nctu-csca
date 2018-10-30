@@ -14,8 +14,9 @@ import Mail from '../../Components/mail'
 
 import Navbar from '../../Components/Navbar'
 
+// Redux
 import {connect} from 'react-redux'
-import {UpdateUserInfo} from '../../Redux/Students/Actions/User'
+import {fetchUser} from '../../Redux/Teachers/Actions/User'
 
 class Head extends Component {
   constructor (props) {
@@ -23,21 +24,20 @@ class Head extends Component {
     this.state = {
       selectedIndex: 0,
     }
+    this.props.FetchUser()
   }
 
   componentWillMount () {
-    let _this = this
-
-    axios.get('/professors/profile').then(res => {
-      this.props.UpdateUserInfo({
-        name: res.data[0].tname,
-        status: res.data[0].status,
-        id: res.data[0].teacher_id
-      })
-      this.select(2)
-    }).catch(err => {
-      console.log(err)
-    })
+    // axios.get('/professors/profile').then(res => {
+    //   this.props.UpdateUserInfo({
+    //     name: res.data[0].tname,
+    //     status: res.data[0].status,
+    //     id: res.data[0].teacher_id
+    //   })
+    //   this.select(2)
+    // }).catch(err => {
+    //   console.log(err)
+    // })
   }
 
   componentDidMount () {
@@ -67,7 +67,7 @@ class Head extends Component {
         document.getElementById('page'))
     } else if (index === 2) {
       ReactDOM.render(
-        <Col  style={{background: '#737374'}}>
+        <Col>
           <FadeIn>
             <GroupItem idCard={this.props.idCard} />
           </FadeIn>
@@ -78,7 +78,7 @@ class Head extends Component {
         <Col>
           <a>
             <FadeIn>
-              <FamilyItem tname={this.props.idCard.name} tid={this.props.idCard.id} tmail={this.props.idCard.mail} />
+              <FamilyItem tname={this.props.idCard.tname} tid={this.props.idCard.id} tmail={this.props.idCard.mail} />
             </FadeIn>
           </a>
         </Col>,
@@ -119,13 +119,13 @@ class Head extends Component {
       <Grid id='Head' fluid>
         <Row style={{background: '#F5F5F5'}}>
           <Navbar type='teacher'
-            name={this.props.idCard.name}
-            subname={this.props.idCard.id}
+            name={this.props.idCard.tname}
+            subname={this.props.idCard.teacher_id}
             selectedIndex={this.state.selectedIndex}
             onTouchTaps={onTouchTaps}
           />
           <Col xs={12} mdHidden lgHidden>
-            { this.state.selectedIndex === 3 || this.state.selectedIndex === 5
+            { this.state.selectedIndex === 2 || this.state.selectedIndex === 3 || this.state.selectedIndex === 5
               ? ''
               : <div className='alert alert-danger'>
                 行動版網頁尚會跑版，可用電腦登入打開網頁以享有更佳的視覺效果，謝謝
@@ -141,12 +141,12 @@ class Head extends Component {
   }
 }
 
-const mapState = (state)=>({
+const mapState = (state) => ({
   idCard: state.Teacher.User.idCard
 })
 
-const mapDispatch = (dispatch)=>({
-  UpdateUserInfo: (payload) => dispatch(UpdateUserInfo(payload))
+const mapDispatch = (dispatch) => ({
+  FetchUser: () => dispatch(fetchUser())
 })
 
 export default connect(mapState, mapDispatch)(Head)

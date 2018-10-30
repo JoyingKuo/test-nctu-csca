@@ -1,10 +1,10 @@
 import React from 'react'
-import {GridList} from 'material-ui/GridList'
-import axios from 'axios'
+import { GridList } from 'material-ui/GridList'
 import './style.css'
 import { connect } from 'react-redux'
 import { fetchProjects } from '../../../Redux/Students/Actions/ProjectList'
 import ProjectTile from './ProjectTile'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
 const styles = {
   root: {
@@ -24,14 +24,13 @@ const styles = {
 class index extends React.Component {
   constructor (props) {
     super(props)
-    props.fetch_data()
+    this.props.fetch_data()
   }
 
   render () {
     let id = 0
-    this.props.fetch_data()
     return (
-      <div className='container'>
+      <MuiThemeProvider className='container'>
         <div>
           <div className='divide-horizontal-list '>
             <div className='divide-horizontal-span-list' ref='top'>
@@ -39,21 +38,21 @@ class index extends React.Component {
             </div>
           </div>
           <div style={styles.root} className='hidden-xs hidden-sm'>
-            <GridList style={styles.gridList} cols={2} cellHeight={'270px'} padding={1}>
-              {this.props.data.map((tile) => (
-                <ProjectTile data={tile} key={id++} />
-          ))}
+            <GridList style={styles.gridList} cols={2} cellHeight={270} padding={1}>
+              {this.props.data.map((tile, index) => (
+                <ProjectTile data={tile} key={index} />
+              ))}
             </GridList>
           </div>
           <div style={styles.root} className='visible-xs visible-sm'>
-            <GridList cols={1} cellHeight={'270px'} padding={1}>
-              {this.props.data.map((tile) => (
-                <ProjectTile data={tile} key={id++} rwd />
-          ))}
+            <GridList cols={1} cellHeight={270} padding={1}>
+              {this.props.data.map((tile, index) => (
+                <ProjectTile data={tile} key={index} rwd />
+              ))}
             </GridList>
           </div>
         </div>
-      </div>
+      </MuiThemeProvider>
     )
   }
 }

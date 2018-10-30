@@ -9,7 +9,7 @@ var bodyParser = require('body-parser');
 var csrf = require('csurf');
 var csrfProtection = csrf();
 var helmet = require('helmet');
-
+var api = require('./api/Index');
 
 module.exports.init = function(){
 
@@ -51,18 +51,32 @@ module.exports.init = function(){
         //res.locals.studentId = utils.getPersonId(JSON.parse(req.session.profile));
       next();
   });
-  app.use(express.static('public'));
+  app.use(express.static('./public'));
   app.use('/', express.static('./public', {index: 'index.html'}));
   app.use('/students/head', express.static('./public', {index: 'index.html'}));
+  app.use('/students/grad', express.static('./public', {index: 'index.html'}));
+  app.use('/students/map', express.static('./public', {index: 'index.html'}));
+  app.use('/students/professor', express.static('./public', {index: 'index.html'}));
+  app.use('/students/project', express.static('./public', {index: 'index.html'}));
   app.use('/teachers/head', express.static('./public', {index: 'index.html'}));
   app.use('/assistants/head', express.static('./public', {index: 'index.html'}));
+  app.use('/assistants/grad', express.static('./public', {index: 'index.html'}));
+  app.use('/assistants/project', express.static('./public', {index: 'index.html'}));
+  app.use('/assistants/family', express.static('./public', {index: 'index.html'}));
+  app.use('/assistants/family/:tid', express.static('./public', {index: 'index.html'}));
+  app.use('/assistants/verify', express.static('./public', {index: 'index.html'}));
+
+  
 /*
   app.use('/', express.static('./public', { index: 'index.login.html'}));
   app.use('/students/head', express.static('./public', { index: 'index.student.html'}));
   app.use('/assistants/head', express.static('./public', { index: 'index.assistant.html'}));
 */
+ 
   app.use('/assistants/head/s/:sid', express.static('./public', { index: 'index.html'}));
+  //app.use('/api/', api());
 
+  
   app.use(require('./routes/user/students/profile'));
   app.use(require('./routes/user/students/courseMap'));
   app.use(require('./routes/user/students/getCourseInfo/getCourseInfo'));
@@ -80,15 +94,18 @@ module.exports.init = function(){
   app.use(require('./routes/user/students/graduate/graduateEnglish'));
   app.use(require('./routes/user/students/graduate/graduateReorder'));
   app.use(require('./routes/user/students/graduate/graduateChange/graduateChange'));
+  app.use(require('./routes/user/students/graduate/graduateChange/switchCourse.js'));
   app.use(require('./routes/user/students/graduate/graduateOrderResult'));
   app.use(require('./routes/user/students/graduate/graduateOrderInfo'));
   app.use(require('./routes/user/students/graduate/failCos'));
+  app.use(require('./routes/user/students/graduate/graduateMoveReset.js'));
   app.use(require('./routes/user/students/project/NewProjectApply'));
   app.use(require('./routes/user/students/project/ProInfoAndRsearchCount'));
   app.use(require('./routes/user/students/project/ResearchInfoOfPro'));
  app.use(require('./routes/user/students/project/ProjectApplyFormStatus'));
   app.use(require('./routes/user/students/project/ProjectApplyFormDelete'));
   app.use(require('./routes/user/students/project/EditProjectPageInfo'));
+  app.use(require('./routes/user/students/project/ShowStudentResearchStatus'));
   app.use(require('./routes/user/students/mail/sendtoteacher'));
   app.use(require('./routes/user/students/mentorInfo')); 
  app.use(require('./routes/user/mail/sent'));
@@ -112,6 +129,7 @@ module.exports.init = function(){
  app.use(require('./routes/user/assistants/advisee/TeacherList.js'));
  app.use(require('./routes/user/assistants/advisee/StudentList.js'));
   app.use(require('./routes/user/assistants/StudentGradeList.js'));
+  app.use(require('./routes/user/assistants/SetFirstSecond.js'));
   app.use(require('./routes/user/students/graduate/graduateReorderReset'));
   app.use(require('./routes/user/professor/profile'));
   app.use(require('./routes/user/professor/courseInfo/score'));
@@ -131,6 +149,18 @@ module.exports.init = function(){
   app.use(require('./routes/user/mail/getTeacherList'));
   app.use(require('./routes/user/mail/sendmail'));
   app.use(require('./routes/user/mail/readSet'));
-  app.use(require('./routes/user/TestAPI.js'));  
+  app.use(require('./routes/user/professor/students/StudentInfo'));
+  // app.use(require('./routes/user/CreateSecondResearch'));
+  app.use(require('./routes/user/assistants/SetAddStatus'));
+  app.use(require('./routes/user/testAPI.js'));
+  app.use(require('./routes/user/students/createOffsetApplyForm.js')); 
+  app.use(require('./routes/user/assistants/ShowUserOffsetApplyForm.js'));
+  app.use(require('./routes/user/assistants/AddToOffset.js'));
+  app.use(require('./routes/user/assistants/SetOffsetApplyFormAgreeStatus.js'));
+  app.use(require('./routes/user/assistants/graduate/graduateList'));
+  app.use(require('./routes/user/assistants/graduate/gradeStudent'));
+  app.use(require('./routes/user/assistants/graduate/graduateStudent'));
+  app.use(require('./routes/user/assistants/graduate/graduateListDownload'));
+
   return app;
 };

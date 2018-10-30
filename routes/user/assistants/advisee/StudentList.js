@@ -4,7 +4,7 @@ var query = require('../../../../db/msql');
 var csrf = require('csurf');
 var csrfProtection = csrf();
 
-
+//router.get('/assistants/advisee/StudentList', function(req, res){
 router.post('/assistants/advisee/StudentList', csrfProtection, function(req, res){
 
     if(req.session.profile){
@@ -39,6 +39,7 @@ router.post('/assistants/advisee/StudentList', csrfProtection, function(req, res
 								graduate: profile[0].graduate,
 								graduate_submit: profile[0].graduate_submit,
 								email: profile[0].email,
+                                recent_failed: (profile[0].recent_failed == "true")?true:false,
 								failed:(profile[0].failed =="failed")?true:false
 							}
 							info.push(profile);

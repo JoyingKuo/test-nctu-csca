@@ -60,10 +60,10 @@ const styles = {
 const semester = ['','上','下','暑']
 const InfoCard = (props)=>(
   <MuiThemeProvider>
-      <Card style={props.selected.failed ? {backgroundColor:'#fff',border:'2px solid #F50057'}:{}}>
+      <Card style={props.selected.recent_failed ? {backgroundColor:'#fff',border:'2px solid #F50057'}:{}}>
         <CardHeader
           avatar={
-            <Avatar style={props.selected.failed ? {backgroundColor:'#F50057',color:'#fff'}:{backgroundColor:'#3949AB',color:'#fff'}}>
+            <Avatar style={props.selected.recent_failed ? {backgroundColor:'#F50057',color:'#fff'}:{backgroundColor:'#3949AB',color:'#fff'}}>
             {props.selected.sname[0]}
             </Avatar>
           }
@@ -72,11 +72,11 @@ const InfoCard = (props)=>(
         >
         <span style={{position:'absolute',right:20}}>
           <MailButton
-            sender={props.sender}  
-            sender_email={props.sender_email} 
-            receiver={props.selected.sname}
+            sender={props.tid}  
+            sender_email={props.tmail} 
+            receiver={props.selected.student_id}
             receiver_email={props.selected.email}
-            failed={props.selected.failed}
+            failed={props.selected.recent_failed}
           />
         </span>
         </CardHeader>
@@ -90,7 +90,7 @@ const InfoCard = (props)=>(
           <YAxis domain={[0, 100]}/>
           <CartesianGrid strokeDasharray="3 3"/>
           <Tooltip/>
-          <Line type="monotone" dataKey="avg" stroke={`${props.selected.failed?'#F50057':'#8884d8'}`} activeDot={{r: 8}}/>
+          <Line type="monotone" dataKey="avg" stroke={`${props.selected.recent_failed?'#F50057':'#8884d8'}`} activeDot={{r: 8}}/>
         </LineChart>
         </ResponsiveContainer>
         </div>
@@ -132,7 +132,7 @@ class Index extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      initItem: [],
+      initItem: [/*FakeData.StudentList.map((v,i)=>({...v,id:i}))*/],
       chooseInfo: null,
       dialogOpen: false // for 行動版
     }
@@ -142,8 +142,8 @@ class Index extends React.Component {
   // handleChange(){
   //   this.setState
   // }
-  choose(v){
-    if(! ('score' in this.state.initItem[v])){
+  choose (v) {
+    if (!('score' in this.state.initItem[v])) {
       let tmp = this.state.initItem
       // tmp[v].score = FakeData.StudentScore
       // this.setState({
@@ -156,25 +156,24 @@ class Index extends React.Component {
       }).then(res => {
         tmp[v].score = res.data
         this.setState({
-          chooseInfo:v,
+          chooseInfo: v,
           initItem: tmp,
-          dialogOpen:(window.innerWidth<768)
+          dialogOpen: (window.innerWidth < 768) && res.data !== []
         })
       }).catch(err => {
         console.log(err)
       })
-    }
-    else{
+    } else {
       this.setState({
-        chooseInfo:v,
-        dialogOpen:(window.innerWidth<768)
+        chooseInfo: v,
+        dialogOpen: (window.innerWidth < 768)
       })
     }
   }
 
-  fetchData(){
-    axios.get('/professors/students/list', {
-      id: this.props.tid,
+  fetchData () {
+    axios.get('/professors/students/StudentList', {
+      id: this.props.tid
     }).then(res => {
       this.setState({initItem: res.data.map((v,i)=>({...v,id:i}))})
     }).catch(err => {
@@ -182,12 +181,12 @@ class Index extends React.Component {
     })
   }
 
-  componentWillMount(){
-    this.fetchData();
+  componentWillMount () {
+    this.fetchData()
   }
 
-  componentWillReceiveProps(nextProps){
-    if(this.props.tid !== nextProps.tid){
+  componentWillReceiveProps (nextProps) {
+    if(this.props.tid !== nextProps.tid) {
       this.fetchData()
     }
   }
@@ -198,33 +197,33 @@ class Index extends React.Component {
         <Grid fluid={true}>
           <Row>
             <Col lg={6} md={6} sm={6} style={styles.layout}>
-              <List items={this.state.initItem} choose={this.choose}/>
+              <List items={this.state.initItem} choose={this.choose} />
             </Col>
             {/* for smaller screen */}
             <MuiThemeProvider>
               <Dialog
                 modal={false}
                 open={this.state.dialogOpen}
-                onRequestClose={()=>this.setState({dialogOpen:false})}
-                autoScrollBodyContent={true}
-                contentStyle={{maxWidth:'none',width:'90%',position:'absolute',top:0,left:'5%'}}
+                onRequestClose={() => this.setState({dialogOpen: false})}
+                autoScrollBodyContent
+                contentStyle={{maxWidth: 'none', width: '90%', position: 'absolute', top: 0, left: '5%'}}
               >
-              <InfoCard 
-                selected={this.state.initItem[this.state.chooseInfo]}
-                sender={this.props.tname}
-                sender_email={this.props.tmail}
-              />
-              </Dialog>
-            </MuiThemeProvider>
-            {/* for larger screen */}
-            <Col lg={6} md={6} sm={6} xsHidden style={styles.layout}>
-              {this.state.chooseInfo !== null ? 
-                <InfoCard 
+                <InfoCard
                   selected={this.state.initItem[this.state.chooseInfo]}
                   sender={this.props.tname}
                   sender_email={this.props.tmail}
                 />
-                : 
+              </Dialog>
+            </MuiThemeProvider>
+            {/* for larger screen */}
+            <Col lg={6} md={6} sm={6} xsHidden style={styles.layout}>
+              {this.state.chooseInfo !== null ?
+                <InfoCard
+                  selected={this.state.initItem[this.state.chooseInfo]}
+                  sender={this.props.tname}
+                  sender_email={this.props.tmail}
+                />
+                :
                 <MuiThemeProvider>
                   <Card>
                     <CardText style={{textAlign:'center',fontSize:'1.2em',minHeight:500,color:'rgb(144,144,144)'}}>請點選左方欄位以檢視學生成績</CardText>

@@ -12,14 +12,10 @@ import pic from '../../../../../Resources/defalt.jpg'
 import { withStyles } from '@material-ui/core/styles'
 import classnames from 'classnames'
 import RwdIconButton from './RwdIconButton'
-import WriteEmail from './WriteEmail'
-import SendProjectAgree from './SendProjectAgree'
-import ReviewProject from './ReviewProject'
 import './index.css'
 import firebase from 'firebase'
 import { storeProfessorsImage } from '../../../../../Redux/Students/Actions/Professor/index'
 import { connect } from 'react-redux'
-import LazyLoad from 'react-lazy-load'
 
 let config = {
   apiKey: 'AIzaSyAFVgUFaZk23prpVeXTkFvXdUhSXy5xzNU',
@@ -71,10 +67,7 @@ class Index extends React.Component {
   }
 
   handleImageDounLoad () {
-    let directory = this.props.profile.path
-    if (this.props.profile.path === '') {
-      directory = 'professors/T555.jpg'
-    }
+    let directory = 'professor/' + this.props.profile.teacher_id + '.jpg'
     let pathReference = storageRef.child(directory)
     pathReference.getDownloadURL().then(url => {
       this.props.store_image(url)
@@ -118,34 +111,34 @@ class Index extends React.Component {
                     <div className='group-year' >Email：{this.props.profile.email}</div>
                   </div>
                 </div>
-                {/*<div className='hidden-xs hidden-sm icon-button'>*/}
-                {/*<div className='col-md-1 col-lg-1 icon-button_'>*/}
-                {/*<WriteEmail profile={this.props.profile} studentIdcard={this.props.studentIdcard} />*/}
-                {/*</div>*/}
-                {/*<div className='col-md-1 col-lg-1 icon-button_'>*/}
-                {/*<SendProjectAgree profile={this.props.profile} studentIdcard={this.props.studentIdcard} />*/}
-                {/*</div>*/}
-                {/*<div className='col-md-1 col-lg-1 icon-button_'>*/}
-                {/*<ReviewProject profile={this.props.profile} studentIdcard={this.props.studentIdcard} />*/}
-                {/*</div>*/}
-                {/*<div className='col-md-1 col-lg-1  icon-button_'>*/}
-                {/*<IconButton*/}
-                {/*className={classnames(classes.expand, {*/}
-                {/*[classes.expandOpen]: this.state.expanded*/}
-                {/*})}*/}
-                {/*onClick={this.handleExpandClick}*/}
-                {/*aria-expanded={this.state.expanded}*/}
-                {/*aria-label='Show more'*/}
-                {/*>*/}
-                {/*<ExpandMoreIcon />*/}
-                {/*</IconButton>*/}
-                {/*</div>*/}
-                {/*</div>*/}
+                {/* <div className='hidden-xs hidden-sm icon-button'> */}
+                {/* <div className='col-md-1 col-lg-1 icon-button_'> */}
+                {/* <WriteEmail profile={this.props.profile} studentIdcard={this.props.studentIdcard} /> */}
+                {/* </div> */}
+                {/* <div className='col-md-1 col-lg-1 icon-button_'> */}
+                {/* <SendProjectAgree profile={this.props.profile} studentIdcard={this.props.studentIdcard} /> */}
+                {/* </div> */}
+                {/* <div className='col-md-1 col-lg-1 icon-button_'> */}
+                {/* <ReviewProject profile={this.props.profile} studentIdcard={this.props.studentIdcard} /> */}
+                {/* </div> */}
+                {/* <div className='col-md-1 col-lg-1  icon-button_'> */}
+                {/* <IconButton */}
+                {/* className={classnames(classes.expand, { */}
+                {/* [classes.expandOpen]: this.state.expanded */}
+                {/* })} */}
+                {/* onClick={this.handleExpandClick} */}
+                {/* aria-expanded={this.state.expanded} */}
+                {/* aria-label='Show more' */}
+                {/* > */}
+                {/* <ExpandMoreIcon /> */}
+                {/* </IconButton> */}
+                {/* </div> */}
+                {/* </div> */}
               </div>
             </div>
             <div className='row'>
               <div className=''>
-                <div className='col-xs-9 col-sm-9 visible-xs visible-sm' style={{marginTop: '10px'}}>
+                <div className='col-xs-9 col-sm-9 visible-xs visible-sm' style={{ marginTop: '10px' }}>
                   <div className='group-year-rwd' >專題人數：{this.props.profile.scount}{this.props.profile.scount > 6 ? <font color='#a52a2a' >（名額已滿）</font> : ''}</div>
                   <div className='group-year-rwd' >研究領域：{this.props.profile.expertise}</div>
                   <div className='group-year-rwd' >Email：{this.props.profile.email}</div>
@@ -167,11 +160,11 @@ class Index extends React.Component {
             </div>
             <Collapse in={this.state.expanded} timeout='auto' unmountOnExit>
               <div className='container'>
-                <div className='row' style={{marginTop: '5px'}}>
+                <div className='row' style={{ marginTop: '5px' }}>
                   <Divider />
                   經歷：<br />
                   {this.props.profile.info === '' ? '尚無資料' : this.props.profile.info}
-                  <div style={{height: '50px'}} />
+                  <div style={{ height: '50px' }} />
                 </div>
               </div>
             </Collapse>

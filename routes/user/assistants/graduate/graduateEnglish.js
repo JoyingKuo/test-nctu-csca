@@ -56,7 +56,7 @@ router.get('/assistants/graduate/english', studentId, function(req, res){
 });
 
 var setSubmitState = function(studentId, state){
-  query.SetEnCertificate(studentId, state);
+  query.setEnCertificate(studentId, state);
 }
 
 module.exports = router;

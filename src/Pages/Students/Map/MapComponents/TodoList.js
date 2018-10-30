@@ -1,6 +1,5 @@
 import React from 'react'
 import Todo from './Todo'
-// import './Map.css'
 
 const TodoList = ({ todos, onTodoClick }) => (
   <div>
@@ -8,8 +7,8 @@ const TodoList = ({ todos, onTodoClick }) => (
       <Todo
         key={todo.id}
         {...todo}
-            />
-        )}
+      />
+    )}
   </div>
 )
 

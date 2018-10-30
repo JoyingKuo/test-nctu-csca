@@ -70,7 +70,6 @@ CScourse.processCS = function(req, res, next){
 			offsetNameCheck[offset[i].cos_cname] = true;
 		}
 		// determine compulsory courses
-        //console.log(req.course);
 		var compulse = req.course.compulse;
         var teacherCount = 0;
         // compulse from database

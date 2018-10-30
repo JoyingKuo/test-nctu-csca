@@ -7,10 +7,11 @@ import TeacherHead from './Pages/Teachers/Head'
 import Head from './Pages/Students/Head'
 import AssistantHead from './Pages/Assistants/Head'
 import AssistantHome from './Pages/Assistants/Home'
-import AssistantGrad from './Pages/Assistants/Graduation'
-import AssistantProject from './Pages/Assistants/Project_v2'
+import AssistantGrad from './Pages/Assistants/Graduation_v2'
+import AssistantProject from './Pages/Assistants/Project_v3'
+import AssistantVerify from './Pages/Assistants/Verify'
 import AssistantMail from './Pages/Assistants/Mail'
-import StudentDetail from './Pages/Assistants/Graduation/StudentDetail'
+import StudentDetail from './Components/StudentDetail'
 import StudentList from './Pages/Assistants/Family/StudentList'
 import TeacherList from './Pages/Assistants/Family'
 import StudentHome from './Pages/Students/Home/Home'
@@ -30,7 +31,7 @@ const Router = () => (
       <Switch>
         <Route exact path='/' component={Login} />
         {/* students route */}
-        {/*<Route exact path='/students/head/' render={() => <StudentHome />} />*/}
+        <Route exact path='/students/head/' render={() => <StudentHome />} />
         <Route exact path='/students/grad' render={() => <StudentGrad />} />
         <Route exact path='/students/map' render={() => <StudentMap />} />
         <Route exact path='/students/professor' render={() => <StudentProfessor />} />
@@ -43,6 +44,7 @@ const Router = () => (
         <Route exact path='/assistants/project' render={() => <Frame><AssistantProject /></Frame>} />
         <Route exact path='/assistants/family' render={() => <Frame><TeacherList /></Frame>} />
         <Route exact path='/assistants/family/:tid' component={StudentList} />
+        <Route exact path='/assistants/verify' component={AssistantVerify} />
         <Route exact path='/assistants/mail' render={() => <Frame><AssistantMail /></Frame>} />
         <Route exact path='/assistants/head/s/:sid' component={StudentDetail} />
 

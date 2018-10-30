@@ -22,7 +22,8 @@ router.get('/assistants/advisee/TeacherList', function(req, res){
 						name : result[i].tname,
 						email : result[i].email,
 						all_students : parseInt(result[i].all_students),
-						failed_students : parseInt(result[i].failed_students)
+						recent_failed : parseInt(result[i].recent_failed),
+                        failed_students : parseInt(result[i].failed_students)
 					}
 					list.push(info);
 				}

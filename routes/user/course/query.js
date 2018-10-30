@@ -146,7 +146,8 @@ query.queryNow = function(req, res, next){
 //query courses that could be taken as general courses
 query.queryGeneral = function(req, res, next){
     if(req.session.profile){
-    	table.tables.getGeneral(function(general){
+        var studentId = res.locals.studentId;
+    	table.tables.getGeneral(studentId, function(general){
         	req.general = general;
                 if(req.general)
                 	next();
@@ -339,9 +340,9 @@ query.queryProjectApplyList = function(req, res, next){
 // query the formal project list the teacher have
 query.queryProjectList = function(req, res, next){
     if(req.session.profile){
-		var teacherId = res.locals.teacherId;
-		
-        table.tables.getProjectList(teacherId, function(projects){
+	
+        var info = req.body;
+        table.tables.getProjectList(info, function(projects){
 		req.projects = projects;
         if(req.projects)
             next();

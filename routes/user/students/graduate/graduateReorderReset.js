@@ -11,7 +11,7 @@ var csrfProtection = csrf();
 router.post('/students/graduate/reorder/reset', csrfProtection, function(req, res){
 
     var studentId = utils.getPersonId(JSON.parse(req.session.profile));
-    query.DeleteCosMotion(studentId);
+    query.cosMotionDelete(studentId);
     res.send("Hello Danny");
 
 });

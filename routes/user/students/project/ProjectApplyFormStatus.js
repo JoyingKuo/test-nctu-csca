@@ -7,7 +7,7 @@ var getStudentId = require('../../course/getStudentId');
 var StudentId = getStudentId.getStudentId.studentId;
 var queryApplyFormAndProject = query.query.queryApplyFormAndProject;
 router.get('/students/projectPage', StudentId, queryApplyFormAndProject, function(req, res){
-    	//console.log(req.form);
+ //   	console.log(req.form);
 	res.send(req.form);
 });
 

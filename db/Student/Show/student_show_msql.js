@@ -17,6 +17,23 @@ function parseEng(cos){
     return cos;
 }
 
+function parseOffsetCos(cos){
+    // parse cos_cname blank and parentheses
+    if(cos.indexOf('（') > -1){
+        let index = cos.indexOf('（')
+        cos = cos.substring(0, index) + '(' + cos.substring(index+1);
+    }
+    if(cos.indexOf('）') > -1){
+        let index = cos.indexOf('）')
+        cos = cos.substring(0, index) + ')' + cos.substring(index+1);
+    }
+    while(cos.indexOf(' ') != -1){
+        let index = cos.indexOf(' ')
+        cos = cos.substring(0, index) + cos.substring(index+1);
+    }
+    return cos;
+}
+
 module.exports = {
 	ShowUserInfo: function(id, callback) {
         if (id.match(/^[0-9].*/g)) {
@@ -31,6 +48,7 @@ module.exports = {
                         pool.release(c);
                         return;
                     }
+                    console.log(result.length)
                     if(result.length)
                     {
                         result[0]['status'] = 'c';
@@ -50,6 +68,12 @@ module.exports = {
                                 for(let i in failed)
                                     if(failed[i]['failed'] == 'failed'){
                                         result[0]['failed'] = 'failed';
+                                        break;
+                                    }
+                                result[0]['recent_failed'] = 'false';
+                                for(let i in failed)
+                                    if(failed[i]['sem'] == '106-2' && failed[i]['failed'] == 'failed'){
+                                        result[0]['recent_failed'] = 'true';
                                         break;
                                     }
                                 if(result.info.numRows != 0){
@@ -102,8 +126,8 @@ module.exports = {
         const resource = pool.acquire();
         resource.then(function(c) {
             var sql_ShowUserAllScore = c.prepare(s.ShowUserAllScore);
-            var year = '1' + id[0] + id[1];
-            c.query(sql_ShowUserAllScore({ id: id, year: year }), function(err, result) {
+            var enroll_year = '1' + id[0] + id[1];
+            c.query(sql_ShowUserAllScore({ id: id, enroll_year: enroll_year }), function(err, result) {
                 if (err){
                     callback(err, undefined);
                     pool.release(c);
@@ -148,7 +172,7 @@ module.exports = {
     ShowRecommendCos:function(id, callback){
         const resource = pool.acquire();
         resource.then(function(c){
-            var semester = '106-2%';
+            var semester = '107-1%';
             var sql_ShowRecommendCos = c.prepare(s.ShowRecommendCos);
             var sql_findCurrentCos = c.prepare(s.findCurrentCos);
             var sql_findTeacher = c.prepare(s.findTeacher);
@@ -172,7 +196,6 @@ module.exports = {
                         for(let i = 0;i<rec.length;i++){
                             //select all cos info into variable data
                             let data = cos.filter(function(c){return parseEng(c.cos_cname)===rec[i]});
-                            
                             //for every cos data
                             for(let d_num = 0;d_num<data.length;d_num++)
                             {
@@ -208,6 +231,21 @@ module.exports = {
         resource.then(function(c){
             var sql_ShowStudentIdList = c.prepare(s.ShowStudentIdList);
             c.query(sql_ShowStudentIdList({}), function(err, result){
+                if(err){
+                    callback(err, undefined);
+                    pool.release(c);
+                    return;
+                }
+                callback(null, JSON.stringify(result));
+                pool.release(c);
+            });
+        });
+    },
+    ShowGradeStudentIdList:function(grade,callback){
+        const resource = pool.acquire();
+        resource.then(function(c){
+            var sql_ShowGradeStudentIdList = c.prepare(s.ShowGradeStudentIdList);
+            c.query(sql_ShowGradeStudentIdList({grade}), function(err, result){
                 if(err){
                     callback(err, undefined);
                     pool.release(c);
@@ -260,6 +298,10 @@ module.exports = {
                         pool.release(c);
                         return;
                     }
+                    for(let i in result){
+                        if(typeof(result[i]['cos_cname'])==='string')
+                            result[i]['cos_cname'] = parseOffsetCos(result[i]['cos_cname']);
+                    }
                     callback(null, JSON.stringify(result));
                     pool.release(c);
                 });
@@ -270,6 +312,10 @@ module.exports = {
                         callback(err, undefined);
                         pool.release(c);
                         return;
+                    }
+                    for(let i in result){
+                        if(typeof(result[i]['cos_cname'])==='string')
+                            result[i]['cos_cname'] = parseOffsetCos(result[i]['cos_cname']);
                     }
                     callback(null, JSON.stringify(result));
                     pool.release(c);
@@ -361,23 +407,63 @@ module.exports = {
             var sql_ShowSemesterScore = c.prepare(s.ShowSemesterScore);
             c.query(sql_ShowSemesterScore({id}), function(err, result) {
                 c.query(sql_ShowCosScore({id}), function(err, cos){
-                
-                result = JSON.parse(JSON.stringify(result));
-                cos = JSON.parse(JSON.stringify(cos));
-                var score = JSON.parse(JSON.stringify(cos,["cn","en","score","pass"]));
+                    result = JSON.parse(JSON.stringify(result));
+                    cos = JSON.parse(JSON.stringify(cos));
+                    var score = JSON.parse(JSON.stringify(cos,["cn","en","score","pass"]));
 
-                for(let sem_num = 0;sem_num<result.length;sem_num++){
-                    result[sem_num]["score"]=[];
-                    for(let cos_num = 0;cos_num<cos.length;cos_num++){
-                        if(result[sem_num].semester===cos[cos_num].semester){
-                            result[sem_num]["score"].push(score[cos_num]);
+                    for(let sem_num = 0;sem_num<result.length;sem_num++){
+                        result[sem_num]["score"]=[];
+                        for(let cos_num = 0;cos_num<cos.length;cos_num++){
+                            if(result[sem_num].semester===cos[cos_num].semester){
+                                result[sem_num]["score"].push(score[cos_num]);
+                            }
                         }
                     }
+                    callback(null, JSON.stringify(result));
+                    pool.release(c);
+                })
+            })
+        })
+    },
+    ShowUserOffsetApplyForm: function(data, callback){
+        const resource = pool.acquire();
+        resource.then(function(c){
+            var sql_ShowUserOffsetApplyFormSingle = c.prepare(s.ShowUserOffsetApplyFormSingle);
+            var sql_ShowUserOffsetApplyFormAll = c.prepare(s.ShowUserOffsetApplyFormAll);
+            if(data['student_id'])
+                c.query(sql_ShowUserOffsetApplyFormSingle(data),function(err,result){
+                    if(err){
+                        callback(err, undefined);
+                        pool.release(c);
+                        return;
+                    }
+                    callback(null, JSON.stringify(result));
+                });
+            else if(data['all_student'])
+                c.query(sql_ShowUserOffsetApplyFormAll([]),function(err,result){
+                    if(err){
+                        callback(err, undefined);
+                        pool.release(c);
+                        return;
+                    }
+                    callback(null, JSON.stringify(result));
+                });
+        });
+    },
+    ShowGivenGradeStudent: function(data, callback){
+        const resource=pool.acquire();
+        resource.then(function(c) {
+            var sql_ShowGivenGradeStudent = c.prepare(s.ShowGivenGradeStudent);
+            c.query(sql_ShowGivenGradeStudent(data), function(err, result){
+                if(err)
+                {
+                    callback(err, undefined);
+                    pool.release(c);
+                    return ;
                 }
                 callback(null, JSON.stringify(result));
                 pool.release(c);
-                })
-            })
+            });
         })
     }
 }

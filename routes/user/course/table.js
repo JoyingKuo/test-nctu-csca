@@ -2,13 +2,14 @@ const request = require('request');
 var query = require('../../../db/msql');
 var utils = require('../../../utils');
 var fs = require('fs');
+var nodemailer = require('nodemailer');
 //資電A 資工B 網多C
 var table = {};
 
 function queryProfile(studentId, callback){
     query.ShowUserInfo(studentId, function(err, profile){
         if(!profile){
-            console.log("Can't find the student");
+            //console.log("Can't find the student");
             return;
         }
         if(err){
@@ -30,8 +31,11 @@ function queryPass(studentId, callback){
 			throw err;
 			return;
 		}
-		else
+		else{
+
+           // console.log(pass);
 			callback(pass);
+        }
 	});
 }
 
@@ -80,6 +84,7 @@ function queryCourse(studentId, callback){
 				return;
 			}
                 	else{
+                       // console.log(result);
                     		info.group = result;
                     		////console.log("tablequerycourseelse");
 	           	 	processCourse(info, function(course){		
@@ -121,6 +126,7 @@ function processCourse(info, callback){
 					break;  
 			} 
 		 }
+                //console.log(course);
                 callback(course);
 	}
 	else if(program == '資工'){
@@ -162,7 +168,7 @@ function processCourse(info, callback){
 						break;
 			}	
 		
-		}
+		}      
                 callback(course);
 	}
 
@@ -171,7 +177,7 @@ function processCourse(info, callback){
 function queryList(studentId, callback){
 	query.ShowGraduateStudentList(studentId, function(err, list){
                 if(!list){
-                        console.log("Can't find the student.");
+                        //console.log("Can't find the student.");
                         return;
                 }
                 if(err){
@@ -209,14 +215,13 @@ function queryNow(studentId, callback){
 			return;
 		}
 		else
-			console.log(now);
 			callback(now);
 	});
 }
 
-function queryGeneral(callback){
+function queryGeneral(studentId, callback){
 	//*general cos rule*/
-	query.ShowCosMotionLocate('0416004', function(err, general){
+	query.ShowCosMotionLocate(studentId, function(err, general){
 		if(!general){
 			return;
 		}
@@ -261,18 +266,8 @@ function queryProject(studentId, callback){
             
     });
 }
-function queryApplyFormAndProject(studentId ,callback){
-	query.ShowStudentResearchApplyForm(studentId,'1', function(err, result){
-        if(!result)
-            return;
-        if(err){
-            throw err;
-            return;
-        }
-        else{
-			
-			result = JSON.parse(result);
-			query.ShowStudentResearchApplyForm(studentId,'2', function(err, form){
+function queryApplyFormAndProject(studentId ,callback){			
+			query.ShowStudentResearchApplyForm(studentId, function(err, form){
 				if(!form)
 					return;
 				if(err){
@@ -282,7 +277,7 @@ function queryApplyFormAndProject(studentId ,callback){
 				else{
 					form = JSON.parse(form);
 					queryProject(studentId,function(project){
-						var allForm = [...project,...result,...form,];
+						var allForm = [...project,...form];
 						//console.log(allForm);
 						callback(allForm);
 					});
@@ -290,9 +285,9 @@ function queryApplyFormAndProject(studentId ,callback){
 					
 				}
 			});
-		}
+		
             
-    });		
+	
 }
 function queryProInfoAndResearchCount(studentId, callback){	
     var info;
@@ -338,62 +333,56 @@ function queryProInfoAndResearchCount(studentId, callback){
 
 }
 function CheckStateAndCreateNewForm(info ,callback){
-		var success=0;
-		var state_info=[];
-		//console.log(info);
 		for(var i = 0;i< info.student_num; i++){
-			var count=0;
-			query.ShowStudentResearchApplyForm(info.participants[i],info.first_second,function(err,result){
-				if(err){
-					throw err;
-					return;
-				}
-				if(!result)
-					return;
-				
-				result = JSON.parse(result);
-				count +=1;
-		
-				for(var j =0; j<result.length;j++){
-					
-					if(result[j].agree != '1' ){
-						success = 0;
-						break;
-					}
-					else 
-						success = 1;					
-				}
-				if(result.length == 0)
-					success =1;
-				
-				if(success ==0)
-					state_info.push(0);					
-				else
-					state_info.push(1);	
-				if(count == info.student_num){
-					
-					for(var k=0; k< count;k++){
-		
-						if(state_info[k]==0){
-							var signal = {signal : 0};
-							callback(signal);
-							break;
-						}
-						if((k == count -1)&&(state_info[k])==1){
-							for(var m = 0; m<info.student_num; m++){
-									var Student_info = {phone : info.phones[m], student_id : info.participants[m], research_title : info.research_title, tname : info.tname,first_second : info.first_second, email : info.email[m], semester: info.semester};
-									CreateNewForm(Student_info);					
-							}
-							setTimeout(function(){
-								var signal = {signal :1};
-								callback(signal);
-							},1000);
-						}
-					}
-				}
-						
-			}); 
+			var Student_info = {phone : info.phones[i], student_id : info.participants[i], research_title : info.research_title, tname : info.tname,first_second : info.first_second[i], email : info.email[i], semester: info.semester};
+			CreateNewForm(Student_info);	
 		}
+		setTimeout(function(){
+			var mailString= '';
+			var nameString='';
+			for(var j = 0; j< info.email.length; j++){
+				mailString = mailString + info.email[j] + ',';
+				nameString = nameString + info.participants[j] + ',';
+			}
+			var transporter = nodemailer.createTransport({
+			service: 'Gmail',
+			auth: {
+				user: 'nctucsca@gmail.com',
+				pass: 'axc3262757'
+			}
+			});
+			
+			var options = {
+				//寄件者
+				from: 'nctucsca@gmail.com',
+				//收件者
+				to: info.teacher_email, 
+				//副本
+				cc: /*req.body.sender_email*/mailString,
+				//密件副本
+				bcc: '',
+				//主旨
+				subject: '[交大資工線上助理]專題申請郵件通知', // Subject line
+				//純文字
+				/*text: 'Hello world2',*/ // plaintext body
+				//嵌入 html 的內文
+				html: '<p>此信件由系統自動發送，請勿直接回信！若有任何疑問，請直接聯絡 老師：'+info.teacher_email + ',學生：' + mailString +'謝謝。</p><br/><p>請進入交大資工線上助理核可申請表/確認申請表狀態：<a href = "https://csca.nctu.edu.tw"> 點此進入系統</a></p><br/><br/><p>Best Regards,</p><p>交大資工線上助理 NCTU CSCA</p>'
+				//附件檔案
+				/*attachments: [ {
+					filename: 'text01.txt',
+					content: '聯候家上去工的調她者壓工，我笑它外有現，血有到同，民由快的重觀在保導然安作但。護見中城備長結現給都看面家銷先然非會生東一無中；內他的下來最書的從人聲觀說的用去生我，生節他活古視心放十壓心急我我們朋吃，毒素一要溫市歷很爾的房用聽調就層樹院少了紀苦客查標地主務所轉，職計急印形。團著先參那害沒造下至算活現興質美是為使！色社影；得良灣......克卻人過朋天點招？不族落過空出著樣家男，去細大如心發有出離問歡馬找事'
+				}]*/
+			};
+			
+			transporter.sendMail(options, function(error, info){
+				if(error){
+					console.log(error);
+				}
+			});
+			
+			var signal = {signal :1};
+			callback(signal);
+		},1000);
 }
 function CreateNewForm(studentInfo){
 	query.CreateResearchApplyForm(studentInfo, function(err){
@@ -457,7 +446,7 @@ function SetProjectScore(info ,callback){
 function SetProjectTitle(info ,callback){
     var content = {research_title : info.research_title, tname : info.tname, first_second : info.first_second, semester:info.year, new_title : info.new_title};
 	var num = query.SetResearchTitle(content);
-	console.log(content);	
+	//console.log(content);	
 	setTimeout(function(){
 		var signal = {signal :1};
 		callback(signal);
@@ -489,9 +478,9 @@ function queryProjectApplyList(teacherId ,callback){
 						var project = {
 							research_title: '',
 							first_second:'',
-							participants: [],
 							year: '',
-							status:''
+							status:'',
+							participants: []
 						}
 						project.research_title = result[i].research_title;
 						project.first_second = result[i].first_second;
@@ -512,27 +501,30 @@ function queryProjectApplyList(teacherId ,callback){
 						sname: '',
 						email: '',
 						phone: '',
-						year: '',
-						first_second:''
+						first_second:'',
+						student_status:''
 					}
 					student.student_id = result[i].student_id;
 					student.sname = result[i].sname;
 					student.email = result[i].email;
 					student.phone = result[i].phone;
-					student.year = result[i].semester;
 					student.first_second = result[i].first_second;
+					student.student_status = result[i].status;
 					if(result[i].agree != '3'){
 						var id = index[result[i].research_title];
 						groups[id].participants.push(student);
 					}			
 				}
 			}
+			
 	       callback(groups) ;   
     
     });	
 }
-function queryProjectList(teacherId ,callback){
-	query.ShowTeacherResearchStudent(teacherId, function(err, result){
+function queryProjectList(info, callback){
+    var teacherId = info.teacherId;
+    var sem = info.sem;
+	query.ShowGradeTeacherResearchStudent(teacherId,'', function(err, result){
             if(err){
                 throw err;
                 return;
@@ -551,11 +543,13 @@ function queryProjectList(teacherId ,callback){
 				var index = [];
 				var temp = result[0].research_title;
 				var projects = {
-					grade02:0,
+                    cs_number:0, //*
+                    other_number:0, //*
+					/*grade02:0,
 					grade03:0,
 					grade04:0,
-					grade05:0,
-					total_number:0,
+					grade05:0,*/
+					//total_number:0,
 					groups: []
 				}
 				
@@ -564,24 +558,24 @@ function queryProjectList(teacherId ,callback){
 				for(var i = 0; i<result.length; i++){
 					//console.log(index[result[i].research_title]);
 					if(index[result[i].research_title] == null){
+                        if(result[i].semester != sem) continue;
 						var project = {
 								research_title: '',
 								participants : [],
 								year:'',
 								first_second: '',
-								intro:''
 						}
 						project.year = result[i].semester;
-						project.research_title = result[i].research_title;
+                        project.research_title = result[i].research_title;
 						project.first_second = result[i].first_second;
-						project.intro = result[i].intro;
 						projects.groups.push(project);
 						index[result[i].research_title] = count;
 						count++;
 					}  
 				}
+				var cs_number = 0, other_number = 0, cnt = 0;
 				for(var i = 0; i<result.length; i++){
-					
+					if(result[i].semester != sem) continue;
 					var student = {
 						student_id: '',
 						sname: '',
@@ -590,7 +584,7 @@ function queryProjectList(teacherId ,callback){
 					}
 					student.student_id = result[i].student_id;
 					student.score = parseInt(result[i].score);
-					var grade = student.student_id.substring(0,2);
+					/*var grade = student.student_id.substring(0,2);
 					
 					switch(grade){
 						case '02':
@@ -605,19 +599,66 @@ function queryProjectList(teacherId ,callback){
 						case '05':
 							projects.grade05++;
 							break;
-					}
+					}*/
 					student.sname = result[i].sname;
 					student.detail = result[i].class_detail;
 					var id = index[result[i].research_title];
 					projects.groups[id].participants.push(student);
-							
+					//setTimeout(function(){	
+					query.ShowStudentResearchInfo(student.student_id, function(error, res){
+                        if(error){
+                            throw error;
+                            return;
+                        }
+                        if(!res){
+                            return;
+                        }
+                        res = JSON.parse(res);
+                        if(res[0].status == "1"){
+                            cs_number++;
+                        }
+                        else{
+                            other_number++;
+                        }
+                        //cnt++;
+                    });
+                    //},1000);
 				}
-				projects.total_number = projects.grade04;
-            }
-            callback(projects);
+                /*setTimeout(function(){
+                query.ShowStudentResearchInfo("0512204", function(error, res){
+                    if(error){
+                        throw error;
+                        return;
+                    }
+                    if(!res){
+                        return;
+                    }
+                    res = JSON.parse(res);
+                    if(res.status == "1"){
+                        cs_number++;
+                    }
+                    else{
+                        other_number++;
+                    }
+                    cnt++;
+                    console.log(cnt);
+                });    
+                },1000);*/
+
+                //project.cs_number = cs_number;
+                //projects.other_number = other_number;
+                //projects.total_number = projects.grade04;
+           }
+           setTimeout(function(){
+               //if(cnt == 1){
+                   projects.cs_number = cs_number;
+                   projects.other_number = other_number; 
+                   callback(projects);
+               //}
+            },1000);
         });
 }
-function SetApplyFormState(info ,callback){  
+function SetApplyFormState(info ,callback){ 
     if(info.agree =='1'){
 		for(var i = 0; i<info.student.length;i++){
 			var req_member = { student_id : info.student[i].student_id, tname:info.tname, research_title:info.research_title, first_second:info.first_second, semester: info.year};
@@ -626,12 +667,49 @@ function SetApplyFormState(info ,callback){
 					throw err;
 					return;
 				}
-			});				
+			});
+            				
 		}
-		var formInfo = {research_title:info.research_title, tname : info.tname, first_second:info.first_second, agree:info.agree, semester:info.year};
-		query.SetResearchApplyFormStatus(formInfo);
+		var formInfo = {research_title:info.research_title, tname : info.tname, first_second:info.first_second, semester:info.year};
+		query.DeleteResearchApplyForm(formInfo);
 		
 		setTimeout(function(){
+			var mailString= '';
+			var nameString='';
+			for(var j = 0; j< info.student.length; j++){
+				mailString = mailString + info.student[j].mail + ',';
+				nameString = nameString + info.student[j].student_id + ',';
+			}
+			var transporter = nodemailer.createTransport({
+			service: 'Gmail',
+			auth: {
+				user: 'nctucsca@gmail.com',
+				pass: 'axc3262757'
+			}
+			});
+			
+			var options = {
+				//寄件者
+				from: 'nctucsca@gmail.com',
+				//收件者
+				to: mailString, 
+				//副本
+				cc: '',
+				//密件副本
+				bcc: '',
+				//主旨
+				subject: '[交大資工線上助理]專題申請狀態改變通知', // Subject line
+				
+				html: '<p>此信件由系統自動發送，請勿直接回信！若有任何疑問，請直接聯絡您的老師跟同學,謝謝。</p><br/><p>申請狀態已變更, 請進入交大資工線上助理確認申請表狀態：<a href = "https://csca.nctu.edu.tw"> 點此進入系統</a></p><br/><br/><p>Best Regards,</p><p>交大資工線上助理 NCTU CSCA</p>'
+				//附件檔案
+				
+			};
+			
+			transporter.sendMail(options, function(error, info){
+				if(error){
+					console.log(error);
+				}
+			});
 			var signal = {signal :1};
 			callback(signal);
 		},1000);
@@ -640,8 +718,48 @@ function SetApplyFormState(info ,callback){
 	else{
 		var formInfo = {research_title : info.research_title, tname:info.tname, first_second:info.first_second, agree:info.agree, semester:info.year};
 		query.SetResearchApplyFormStatus(formInfo);
-		
 		setTimeout(function(){
+			var mailString= '';
+			var nameString='';
+			for(var j = 0; j< info.student.length; j++){
+				mailString = mailString + info.student[j].mail + ',';
+				nameString = nameString + info.student[j].student_id + ',';
+			}
+			var transporter = nodemailer.createTransport({
+			service: 'Gmail',
+			auth: {
+				user: 'nctucsca@gmail.com',
+				pass: 'axc3262757'
+			}
+			});
+			
+			var options = {
+				//寄件者
+				from: 'nctucsca@gmail.com',
+				//收件者
+				to: mailString, 
+				//副本
+				cc: /*req.body.sender_email*/'',
+				//密件副本
+				bcc: '',
+				//主旨
+				subject: '[交大資工線上助理]專題申請狀態改變通知', // Subject line
+				//純文字
+				/*text: 'Hello world2',*/ // plaintext body
+				//嵌入 html 的內文
+				html: '<p>此信件由系統自動發送，請勿直接回信！若有任何疑問，請直接聯絡 老師：' + ',學生：' + mailString +'謝謝。</p><br/><p>申請狀態已變更, 請進入交大資工線上助理確認申請表狀態：<a href = "https://csca.nctu.edu.tw"> 點此進入系統</a></p><br/><br/><p>Best Regards,</p><p>交大資工線上助理 NCTU CSCA</p>'
+				//附件檔案
+				/*attachments: [ {
+					filename: 'text01.txt',
+					content: '聯候家上去工的調她者壓工，我笑它外有現，血有到同，民由快的重觀在保導然安作但。護見中城備長結現給都看面家銷先然非會生東一無中；內他的下來最書的從人聲觀說的用去生我，生節他活古視心放十壓心急我我們朋吃，毒素一要溫市歷很爾的房用聽調就層樹院少了紀苦客查標地主務所轉，職計急印形。團著先參那害沒造下至算活現興質美是為使！色社影；得良灣......克卻人過朋天點招？不族落過空出著樣家男，去細大如心發有出離問歡馬找事'
+				}]*/
+			};
+			
+			transporter.sendMail(options, function(error, info){
+				if(error){
+					console.log(error);
+				}
+			});
 			var signal = {signal :1};
 			callback(signal);
 		},1000);	
@@ -698,8 +816,8 @@ table.getNow = function(studentId, callback){
         callback(now);
     });
 }
-table.getGeneral = function(callback){
-    queryGeneral(function(general){
+table.getGeneral = function(studentId, callback){
+    queryGeneral(studentId, function(general){
         callback(general);
     });
 }
@@ -758,8 +876,10 @@ table.getProjectApplyList = function(teacherId, callback){
         callback(groups);
     });
 }
-table.getProjectList = function(teacherId, callback){
-    queryProjectList(teacherId, function(projects){
+table.getProjectList = function(info, callback){
+//table.getProjectList = function(teacherId, callback){
+    queryProjectList(info, function(projects){
+    //queryProjectList(teacherId, function(projects){
         callback(projects);
     });
 }

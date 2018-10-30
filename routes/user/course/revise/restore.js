@@ -14,14 +14,14 @@ restore.processRestore = function(req, res, next){
         var tempPre = [];
         var tempNext = [];
         
-        for(var i = 0; i<11; i++){
+        for(var i = 0; i<12; i++){
             var course = {
                 pre:[],
                 next:[]
             }
             restore.push(course);
         }
-        for(var i = 0; i<11; i++){
+        for(var i = 0; i<12; i++){
             var course = {
                 pre:[],
                 next:[]
@@ -29,6 +29,7 @@ restore.processRestore = function(req, res, next){
             restoreIndex.push(course);
         }
         for(var i = 0; i<courses.length; i++){
+            if(courses[i].now_pos == '...') continue;
             if(courses[i].orig_pos == '共同必修'){
                 restore[0].pre[courses[i].cos_cname] = true;
                 restoreIndex[0].pre.push(courses[i].cos_cname);    
@@ -56,22 +57,24 @@ restore.processRestore = function(req, res, next){
             else if(courses[i].orig_pos == '通識'){
                 restore[6].pre[courses[i].cos_cname] = true;
                 restoreIndex[6].pre.push(courses[i].cos_cname);
-            }
-            else if(courses[i].orig_pos == '體育'){
                 restore[7].pre[courses[i].cos_cname] = true;
                 restoreIndex[7].pre.push(courses[i].cos_cname);
             }
-            else if(courses[i].orig_pos == '服務學習'){
+            else if(courses[i].orig_pos == '體育'){
                 restore[8].pre[courses[i].cos_cname] = true;
                 restoreIndex[8].pre.push(courses[i].cos_cname);
             }
-            else if(courses[i].orig_pos == '藝文賞析'){
+            else if(courses[i].orig_pos == '服務學習'){
                 restore[9].pre[courses[i].cos_cname] = true;
                 restoreIndex[9].pre.push(courses[i].cos_cname);
             }
-            else if(courses[i].orig_pos == '抵免研究所課程'){
+            else if(courses[i].orig_pos == '藝文賞析'){
                 restore[10].pre[courses[i].cos_cname] = true;
                 restoreIndex[10].pre.push(courses[i].cos_cname);
+            }
+            else if(courses[i].orig_pos == '抵免研究所課程'){
+                restore[11].pre[courses[i].cos_cname] = true;
+                restoreIndex[11].pre.push(courses[i].cos_cname);
             }
             if(courses[i].now_pos == '共同必修'){
                 restore[0].next[courses[i].cos_cname] = true;
@@ -100,22 +103,24 @@ restore.processRestore = function(req, res, next){
             else if(courses[i].now_pos == '通識'){
                 restore[6].next[courses[i].cos_cname] = true;
                 restoreIndex[6].next.push(courses[i].cos_cname);
-            }
-            else if(courses[i].now_pos == '體育'){
-                restore[7].next[courses[i].cos_cname] = true;
+                restore[7].next[courses[i].cos_name] = true;
                 restoreIndex[7].next.push(courses[i].cos_cname);
             }
-            else if(courses[i].now_pos == '服務學習'){
+            else if(courses[i].now_pos == '體育'){
                 restore[8].next[courses[i].cos_cname] = true;
                 restoreIndex[8].next.push(courses[i].cos_cname);
             }
-            else if(courses[i].now_pos == '藝文賞析'){
+            else if(courses[i].now_pos == '服務學習'){
                 restore[9].next[courses[i].cos_cname] = true;
                 restoreIndex[9].next.push(courses[i].cos_cname);
             }
-            else if(courses[i].now_pos == '抵免研究所課程'){
+            else if(courses[i].now_pos == '藝文賞析'){
                 restore[10].next[courses[i].cos_cname] = true;
                 restoreIndex[10].next.push(courses[i].cos_cname);
+            }
+            else if(courses[i].now_pos == '抵免研究所課程'){
+                restore[11].next[courses[i].cos_cname] = true;
+                restoreIndex[11].next.push(courses[i].cos_cname);
             }
         }
        //console.log(restore);
@@ -128,14 +133,14 @@ restore.processRestore = function(req, res, next){
                console.log("i" + i+" p: "+q);
                console.log(courseResult[i].course[q]);
            }*/
-            if(restore[i].pre[courseResult[i].course[q].code] == true){
-               restore[i].pre[courseResult[i].course[q].code] = false;
+            if(restore[i].pre[courseResult[i].course[q].cn] == true){
+               restore[i].pre[courseResult[i].course[q].cn] = false;
              /*  if(i == 3){
                 console.log("in first loop");
                 console.log("i:" + i + " p: " + q);
                 console.log(courseResult[i].course[q].code);
                }*/
-                tempPre[courseResult[i].course[q].code] = courseResult[i].course[q];
+                tempPre[courseResult[i].course[q].cn] = courseResult[i].course[q];
                 //console.log( tempPre[courseResult[i].course[q].code]); 
                 courseResult[i].credit -= courseResult[i].course[q].realCredit;
                 courseResult[i].course.splice(q,1);
@@ -148,7 +153,7 @@ restore.processRestore = function(req, res, next){
        for(var i = 0; i<courseResult.length; i++){
         for(var q = 0; q<restoreIndex[i].next.length; q++){
                 //console.log("i:" + i + " q:" + q);
-                if(typeof(tempPre[restoreIndex[i].next[q]]) != undefined && tempPre[restoreIndex[i].next[q]]){
+                if(typeof(tempPre[restoreIndex[i].next[q]]) != undefined && tempPre[restoreIndex[i].next[q]] ){
                     courseResult[i].course.push(tempPre[restoreIndex[i].next[q]]);
                     courseResult[i].credit += tempPre[restoreIndex[i].next[q]].realCredit;
                 }

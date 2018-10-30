@@ -30,8 +30,8 @@ var currentOther = nowOther.currentOther.processOther;
 var currentCS = nowCS.currentCS.processCS;
 
 router.get('/assistants/graduate/revised', StudentId, StudentProfile, queryFree, queryGeneral, queryPass, queryChange, queryCourse, queryNow,queryRule, processOther, processCS, currentOther, currentCS, processRestore, processResult, function(req, res){
-	res.send(res.locals.courseResult);
+         res.send(res.locals.courseResult);
 
-});
+        });
 
 module.exports = router;

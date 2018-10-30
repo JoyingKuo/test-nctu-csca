@@ -45,11 +45,14 @@ router.post('/students/mail/sendtoteacher' , csrfProtection, function(req, res){
 		transporter.sendMail(options, function(error, info){
 			if(error){
 				console.log(error);
-			}else{
-				console.log('訊息發送: ' + info.response);
 			}
 		});
-        var  teacher_list = [] 
+
+        setTimeout(function(){
+                var signal = {signal :1};
+                 res.send(signal);
+                 },1000);
+      /*  var  teacher_list = [] 
         query.ShowTeacherIdList(function(err,result){
                 if(err)
                 {
@@ -75,9 +78,9 @@ router.post('/students/mail/sendtoteacher' , csrfProtection, function(req, res){
                   
             var mailContent = {sender_id : req.body.id , title :req.body.title, receiver_id: teacher_id, content: req.body.content};
            // console.log(mailContent);
-            query.mailCreate(mailContent);
+            query.CreateMail(mailContent);
        
-        });
+        });*/
          /*console.log("ID: " + mailContent.id);
         console.log("title: " + mailContent.title);
         console.log("content: " + mailContent.content);

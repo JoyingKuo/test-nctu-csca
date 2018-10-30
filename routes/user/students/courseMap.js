@@ -1,33 +1,27 @@
-var bodyParser = require('body-parser');
 var express = require('express');
 var router = express.Router();
 var query = require('../../../db/msql');
-var utils = require('../../../utils');
+var getStudentId = require('../course/getStudentId');
 
-router.get('/students/courseMap', function(req, res){
+var StudentId = getStudentId.getStudentId.studentId;
+router.get('/students/courseMap',StudentId, function(req, res){
 
     if(req.session.profile){
-        var studentId = utils.getPersonId(JSON.parse(req.session.profile));
-
-        if(!studentId){
-              ////console.log("No Student Id");
-              return;
-        }
-        query.ShowCosMapRule('0312512', function(err,result){
+        var studentId = res.locals.studentId;
+        query.ShowCosMapRule(studentId, function(err,result){
             if(err){
-                ////console.log("Can't find student");
+                
                 throw err;
-                return;
+                res.redirect('/');
             }
             if(!result){
-                return;
+                res.redirect('/');
             }
 	    res.send(result);
-	    //query.close();
         });
     }
     else
-      return;
+      res.redirect('/');
 
 });
 

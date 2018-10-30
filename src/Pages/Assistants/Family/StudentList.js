@@ -1,13 +1,13 @@
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
-import { 
+import {
   Paper,
   Table,
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableRow, 
-  Dialog, 
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Dialog,
   DialogContent,
   Slide,
   Button
@@ -32,13 +32,22 @@ const styles = () => ({
     width:'90%'
   },
   icon:{
-    fontSize: 14,
+    fontSize: 16,
     color: '#f50057',
     marginRight: 4
   },
   NavBtn:{
     top:10,
-    left:10
+    left:10,
+    fontSize:15,
+    fontWeight: 300,
+  },
+  font:{
+    fontSize:16,
+    fontWeight:400,
+  },
+  header:{
+    fontSize:16
   }
 })
 
@@ -50,7 +59,7 @@ class StudentList extends React.Component{
   constructor(props){
     super(props)
     this.state = {
-      studentList: [],
+      studentList: [/*FakeData.StudentList*/],
       chooseInfo: null,
       cardShow: false
     }
@@ -63,8 +72,8 @@ class StudentList extends React.Component{
     }).then(res=>{
       this.setState({
         studentList:res.data.sort((a,b)=>{
-          if(a.failed){
-            if(b.failed){
+          if(a.recent_failed){
+            if(b.recent_failed){
               return a.student_id.localeCompare(b.student_id, 'zh-Hant-TW')
             }
             else{
@@ -72,7 +81,7 @@ class StudentList extends React.Component{
             }
           }
           else{
-            if(b.failed){
+            if(b.recent_failed){
               return 1
             }
             else{
@@ -88,6 +97,12 @@ class StudentList extends React.Component{
   handleOpen(r){
     if(! ('score' in this.state.studentList[r])){
       let tmp = this.state.studentList
+        // tmp[r].score = FakeData.StudentScore
+        // this.setState({
+        //   chooseInfo:r,
+        //   studentList: tmp,
+        //   cardShow: true
+        // })
       axios.post('/StudentGradeList', {
         student_id: this.state.studentList[r].student_id
       }).then(res => {
@@ -95,7 +110,7 @@ class StudentList extends React.Component{
         this.setState({
           chooseInfo:r,
           studentList: tmp,
-          cardShow: true
+          cardShow: res.data !== []
         })
       }).catch(err => {
         console.log(err)
@@ -123,8 +138,8 @@ class StudentList extends React.Component{
             <TableHead>
               <TableRow>
                 <TableCell padding='none'></TableCell>
-                <TableCell>學號</TableCell>
-                <TableCell>姓名</TableCell>
+                <TableCell className={classes.header}>學號</TableCell>
+                <TableCell className={classes.header}>姓名</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -133,12 +148,12 @@ class StudentList extends React.Component{
                 return (
                   <TableRow key={student.student_id} onClick={()=>this.handleOpen(index)} className={classes.table}>
                     <TableCell numeric padding='none'>
-                      {student.failed && <span><i className={`fa fa-exclamation-triangle ${classes.icon}`}/></span>}
+                      {student.recent_failed && <span><i className={`fa fa-exclamation-triangle ${classes.icon}`}/></span>}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className={classes.font}>
                       {student.student_id}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className={classes.font}>
                       {student.sname}
                     </TableCell>
                   </TableRow>
@@ -155,9 +170,9 @@ class StudentList extends React.Component{
           fullWidth={true}
         >
           <DialogContent>
-            <InfoCard 
+            <InfoCard
               selected={this.state.studentList[this.state.chooseInfo]}
-              sender={this.props.idCard.name}
+              sender={this.props.idCard.id}
               sender_email={this.props.idCard.email}
             />
           </DialogContent>

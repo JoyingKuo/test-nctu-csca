@@ -5,6 +5,7 @@ import defaultData from '../../../../Resources/FakeData'
 export const storeCourse = createAction('STORE_COURSE')
 export const storeCoursePass = createAction('STORE_COURSE_PASS')
 export const ShowCourseCondition = createAction('SHOW_COURSE_CONDITION')
+export const ShowCourseOrSug = createAction('SHOW_COURSE_OR_SUG')
 
 export const fetchCourse = (page = 1) => dispatch => {
   axios.get('/students/courseMap').then(res => {
@@ -13,8 +14,8 @@ export const fetchCourse = (page = 1) => dispatch => {
     dispatch(storeCourse(defaultData.Course))
     console.log(err)
   })
-
 }
+
 export const fetchCoursePass = (page = 1) => dispatch => {
   axios.get('/students/coursePass').then(res => {
     dispatch(storeCoursePass(res.data))
@@ -23,6 +24,7 @@ export const fetchCoursePass = (page = 1) => dispatch => {
     console.log(err)
   })
 }
-export const showCourseCondition = (page = 1) => dispatch => {
-  dispatch(ShowCourseCondition())
+
+export const showCourseOrSug = (page = 1) => dispatch => {
+  dispatch(ShowCourseOrSug())
 }

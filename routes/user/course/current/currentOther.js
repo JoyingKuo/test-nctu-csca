@@ -7,6 +7,8 @@ currentOther.processOther = function(req, res, next){
     
 	var total = req.course.total;
 	var courseResult = res.locals.courseResult;
+   // console.log("course result:");
+   // console.log(courseResult);
 	
 	if(req.session.profile){
 
@@ -17,8 +19,12 @@ currentOther.processOther = function(req, res, next){
         var taken = [];
         
         for(var i = 0; i< courseResult.length; i++)
-            for(var q = 0; q<courseResult[i].course.length; q++){
-                taken[courseResult[i].course[q].code] = true;
+            //console.log("first loop:");
+           // console.log(courseResult[i]);
+            if(courseResult[i].course != undefined){
+                for(var q = 0; q<courseResult[i].course.length; q++){
+                    taken[courseResult[i].course[q].code] = true;
+                }   
             }
         var school_year = (100 + temp);
   		var rule= [];
@@ -40,7 +46,7 @@ currentOther.processOther = function(req, res, next){
             cosInfo.code = now[q].cos_code;
             cosInfo.cn = now[q].cos_cname;
             cosInfo.en = now[q].cos_ename;
-  			cosInfo.year = 106 - school_year + 1;
+  			cosInfo.year = 107 - school_year + 1;
   			cosInfo.semester = 1;
             cosInfo.originalCredit = parseInt(now[q].cos_credit);            
 			for(var x = 0; x<total.length; x++){
@@ -54,7 +60,7 @@ currentOther.processOther = function(req, res, next){
                         //////console.log("CS course");
                         //////console.log(now[q]);
                         if(now[q].cos_cname == '服務學習(一)' || now[q].cos_cname == '服務學習(二)'){
-                            courseResult[8].course.push(cosInfo);
+                            courseResult[9].course.push(cosInfo);
                         }
                         else{
                             if(now[q].cos_cname != '導師時間'){
@@ -68,7 +74,7 @@ currentOther.processOther = function(req, res, next){
   			 		else if(temp == 'ART'){
                         if(taken[now[q].cos_code] === true)
                             cosInfo.code = now[q].cos_code + "_now";
-                        courseResult[9].course.push(cosInfo);
+                        courseResult[10].course.push(cosInfo);
   		            }
                     else{
                         if(now[q].cos_type == '外語'){
@@ -76,20 +82,23 @@ currentOther.processOther = function(req, res, next){
   				 		}
                         else if(now[q].cos_type == '通識'){
   						    var brief = now[q].brief.substring(0,2);
-                            //////console.log("general course:");
-                            //////console.log(now[q]);
+                            //console.log("general course:");
+                            //console.log(now[q]);
                             cosInfo.dimension = brief;
                             courseResult[6].course.push(cosInfo);
+                            var temp_cosInfo = Object.assign({}, cosInfo);
+                            temp_cosInfo.dimension = now[q].brief_new.substring(0,5);
+                            courseResult[7].course.push(temp_cosInfo);
                         }
   			            else{
                             if(temp == 'PYY'){
   						        if(taken[now[q].cos_code] === true)
                                     cosInfo.code = now[q].cos_code + "_now";
-                                courseResult[7].course.push(cosInfo);
+                                courseResult[8].course.push(cosInfo);
                             }
                             else{
                                 if(now[q].cos_typeext == '服務學習'){
-  								    courseResult[8].course.push(cosInfo);
+  								    courseResult[9].course.push(cosInfo);
                                 }
   								else if(now[q].cos_cname == '導師時間'){
   									courseResult[0].course.push(cosInfo);

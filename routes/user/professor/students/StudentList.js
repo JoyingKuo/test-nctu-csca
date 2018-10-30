@@ -40,6 +40,7 @@ router.get('/professors/students/StudentList',TeacherId, function(req, res){
 								graduate: profile[0].graduate,
 								graduate_submit: profile[0].graduate_submit,
 								email: profile[0].email,
+                                recent_failed:(profile[0].recent_failed =="true")?true:false,
 								failed:(profile[0].failed =="failed")?true:false
 							}
 							info.push(profile);

@@ -11,7 +11,7 @@ class ProfessorsList extends React.Component {
         <div>
           {this.props.professors.map(profile =>
             <ProfessorOverviewCard profile={profile} key={id++} studentIdcard={this.props.studentIdcard} />
-        )}
+          )}
         </div>
       )
     }
@@ -21,10 +21,15 @@ class ProfessorsList extends React.Component {
   }
 }
 
-const getVisibleProfessors = (data, mentor, filterInput, page) => {
+const getVisibleProfessors = (data, mentor, filterInput, page, projectNumber) => {
   if (data.length === 0) return []
   // filter
-  let updatedList = data.filter((item) => {
+  let number = projectNumber === '0' ? 0 : projectNumber === '3' ? 3 : 5
+  let _data = data.filter(t =>
+    Number(t.scount) >= number
+  )
+
+  let updatedList = _data.filter((item) => {
     return (
       (item.tname.toLowerCase().search(
         filterInput.toLowerCase()) !== -1)
@@ -43,9 +48,9 @@ const getVisibleProfessors = (data, mentor, filterInput, page) => {
     updatedList.slice(idx * onePage, (idx + 1) * onePage)
     return updatedList
   }
-  let object = {...updatedList[index]}
-  updatedList[index] = {...updatedList[0]}
-  updatedList[0] = {...object}
+  let object = { ...updatedList[index] }
+  updatedList[index] = { ...updatedList[0] }
+  updatedList[0] = { ...object }
 
   // handle page
   updatedList.slice(idx * onePage, (idx + 1) * onePage)
@@ -55,7 +60,7 @@ const getVisibleProfessors = (data, mentor, filterInput, page) => {
 
 const mapStateToProps = (state) => {
   return {
-    professors: getVisibleProfessors(state.Student.Professor.data, state.Student.Professor.mentor, state.Student.Professor.filter_string, state.Student.Professor.page),
+    professors: getVisibleProfessors(state.Student.Professor.data, state.Student.Professor.mentor, state.Student.Professor.filter_string, state.Student.Professor.page, state.Student.Professor.project_number),
     done: state.Student.Professor.status === 'DONE'
   }
 }

@@ -24,7 +24,7 @@ CScourse.processCS = function(req, res, next){
         var offsetTeacherTime = res.locals.offsetTeacher;
         ////console.log(TeacherTime);
         var TeacherSame = [];
-		var temp = parseInt(studentId.substring(0,2));
+		var temp = parseInt(studentId.substring(1,2));
 		var school_year = (100 + temp);
 		var program = req.profile[0].program;
         var Tcount = 0;
@@ -34,7 +34,7 @@ CScourse.processCS = function(req, res, next){
 			return;
 		}
 		var pass = JSON.parse(req.pass);
-		////console.log(pass);
+//		console.log(pass);
 		var rules = JSON.parse(req.rules);
                 //language.require = 8;
 		for(var i=0; i<pass.length; i++){
@@ -111,7 +111,7 @@ CScourse.processCS = function(req, res, next){
                             originalCredit:'',
                             type:'必修',
                             complete:'',
-                            grade:'0',
+                            grade: null,
                             english:false,
                             year:'',
                             semester:'',
@@ -131,7 +131,7 @@ CScourse.processCS = function(req, res, next){
                                     originalCredit:0,
                                     type:'必修',
                                     complete:'',
-                                    grade:'0',
+                                    grade: null,
                                     english:false,
                                     year:'',
                                     semester:'',
@@ -146,14 +146,14 @@ CScourse.processCS = function(req, res, next){
                                     cosInfo.en = compulse[q].cos_ename;
                                     cosInfo.complete = true;
                                     cosInfo.score = parseInt(detail[cosNumber[k]].score);
-                                    cosInfo.realCredit = parseInt(detail[cosNumber[k]].cos_credit);
+                                    cosInfo.realCredit = parseFloat(detail[cosNumber[k]].cos_credit);
                                     cosInfo.code = detail[cosNumber[k]].cos_code + '_' + Tcount;
-                                    cosInfo.year = parseInt(detail[cosNumber[k]].year) - school_year + 1;
+                                    cosInfo.year = parseInt(detail[cosNumber[k]].cos_year) - school_year + 1;
                                     cosInfo.semester = parseInt(detail[cosNumber[k]].semester);
-                                    cosInfo.originalCredit = parseInt(detail[cosNumber[k]].cos_credit);
+                                    cosInfo.originalCredit = parseFloat(detail[cosNumber[k]].cos_credit);
                                     cosInfo.type = detail[cosNumber[k]].cos_type;
                                     courseResult[0].course.push(cosInfo);
-                                    courseResult[0].credit += parseInt(detail[cosNumber[k]].cos_credit);
+                                    courseResult[0].credit += parseFloat(detail[cosNumber[k]].cos_credit);
                                     Tcount++;
                                     //console.log(Tcount);
                                     //console.log(cosInfo);
@@ -173,7 +173,7 @@ CScourse.processCS = function(req, res, next){
                             originalCredit:0,
                             type:'必修',
                             complete:false,
-                            grade:'0',
+                            grade: null,
                             english:false,
                             year:'',
                             semester:'',
@@ -210,7 +210,7 @@ CScourse.processCS = function(req, res, next){
                                 		originalCredit: '',
                                         type:'',
                                 		complete:'0',
-                                		grade:'0',
+                                		grade: null,
                                 		english: false,
                                 		year:'',
                                 		semester:'',
@@ -222,15 +222,15 @@ CScourse.processCS = function(req, res, next){
                                
 					if(taken[cosNumber[k]] === true){
                         cosInfo.code = cosNumber[k];
-						cosInfo.year = parseInt(detail[cosNumber[k]].year) - school_year + 1;
+						cosInfo.year = parseInt(detail[cosNumber[k]].cos_year) - school_year + 1;
 						cosInfo.semester = parseInt(detail[cosNumber[k]].semester);
-						cosInfo.originalCredit = parseInt(detail[cosNumber[k]].cos_credit);
+						cosInfo.originalCredit = parseFloat(detail[cosNumber[k]].cos_credit);
                         cosInfo.type = detail[cosNumber[k]].cos_type;
 						var reg = detail[cosNumber[k]].cos_cname.substring(0,2);
                         var reg2 = compulse[q].cos_cname.substring(0,3);
 						trueCounter++;
 				     	if(detail[cosNumber[k]].pass_fail == '通過'){
-							cosInfo.realCredit = parseInt(detail[cosNumber[k]].cos_credit);
+							cosInfo.realCredit = parseFloat(detail[cosNumber[k]].cos_credit);
                             cosInfo.complete = true;
                             cosInfo.score = parseInt(detail[cosNumber[k]].score);
                             cosInfo.grade = detail[cosNumber[k]].score_level;
@@ -290,8 +290,8 @@ CScourse.processCS = function(req, res, next){
                                         if(more.length == 1){
                                                 if(more[0].complete == true){
                                                         code = more[0].code;
-                                                        credit = parseInt(detail[more[0].code].cos_credit);
-                                                        courseResult[0].credit += credit;
+                                                        credit = parseFloat(detail[more[0].code].cos_credit);
+                                                       // courseResult[0].credit += credit;
                                                         if(detail[code].cos_typeext == '英文授課'){
                                                         	 if((more[0].cn!= '基礎程式設計')&&(detail[code].cos_cname!= '跨領域專題(一)')&&(detail[code].cos_cname!= '資訊工程專題(一)(英文授課)')&&(detail[code].cos_cname!= '資訊工程專題(二)(英文授課)')&&(detail[code].cos_cname!= '資訊工程研討(英文授課)')&&(detail[code].cos_cname!= '資訊工程研討')){
 									if(code.substring(0,3) == 'DCP'){
@@ -300,14 +300,65 @@ CScourse.processCS = function(req, res, next){
 									}
                                                                 }
                                                         }
-							courseResult[0].course.push(more[0]);
+                             //console.log("temp:");
+                             //console.log(temp);
+                             if(more[0].cn == '微處理機系統實驗'){
+                                if(temp > 3){
+                                    var cosAdd = JSON.stringify(more[0]);
+                                    cosAdd = JSON.parse(cosAdd);
+                                    cosAdd.realCredit = 1;  
+                                    cosAdd.code = more[0].code + '_one';
+                                    more[0].realCredit = 2;
+                                    if(courseResult[3].credit < courseResult[3].require) {
+                                        courseResult[3].credit += cosAdd.realCredit;
+                                        courseResult[3].course.push(cosAdd);
+                                    }
+                                    else{
+                                        courseResult[4].credit += cosAdd.realCredit;
+                                        courseResult[4].course.push(cosAdd);
+                                    }
+                                    courseResult[0].credit += more[0].realCredit;
+                                    courseResult[0].course.push(more[0]);
+                                } 
+                                else{
+                                  courseResult[0].credit += credit;
+                                  courseResult[0].course.push(more[0]);  
+                                 }  
+                             }     
+                             else if(more[0].cn == '數位電路實驗'){
+                                if(temp > 3 && credit > 2){
+                                    var cosAdd = JSON.stringify(more[0]);
+                                    cosAdd = JSON.parse(cosAdd);
+                                    cosAdd.realCredit = 1;  
+                                    cosAdd.code = more[0].code + '_one';
+                                    more[0].realCredit = 2;
+                                    if(courseResult[3].credit < courseResult[3].require) {
+                                        courseResult[3].credit += cosAdd.realCredit;
+                                        courseResult[3].course.push(cosAdd);
+                                    }
+                                    else{
+                                        courseResult[4].credit += cosAdd.realCredit;
+                                        courseResult[4].course.push(cosAdd);
+                                    }
+                                    courseResult[0].credit += more[0].realCredit;
+                                    courseResult[0].course.push(more[0]);
+                                } 
+                                else{
+                                  courseResult[0].credit += credit;
+                                  courseResult[0].course.push(more[0]);  
+                                 }  
+                             } 
+                             else{                                     
+                                 courseResult[0].credit += credit;                             
+							     courseResult[0].course.push(more[0]);
+                             }
                                                  }
                                                  else
-                                                        courseResult[0].course.push(more[0]);
+                                                     courseResult[0].course.push(more[0]);
                                         }
 					else{
                                                 for(var d = 0; d<more.length; d++){
-                                                        credit = parseInt(detail[more[d].code].cos_credit);
+                                                        credit = parseFloat(detail[more[d].code].cos_credit);
                                                         if(more[d].complete == true){
                                                                 if(more[d].score >= max){
                                                                         index = d;
@@ -318,7 +369,7 @@ CScourse.processCS = function(req, res, next){
                                                 
                                                 code = more[index].code;
                                                 if(more[index].complete == true){
-                                                        courseResult[0].credit += credit;
+                                                        //courseResult[0].credit += credit;
                                                         if(detail[code].cos_typeext == '英文授課'){
                                                         	if((more[index].cn!= '基礎程式設計')&&(detail[code].cos_cname!= '跨領域專題(一)')&&(detail[code].cos_cname!= '資訊工程專題(一)(英文授課)')&&(detail[code].cos_cname!= '資訊工程專題(二)(英文授課)')&&(detail[code].cos_cname!= '資訊工程研討(英文授課)')&&(detail[code].cos_cname!= '資訊工程研討')){
 									if(code.substring(0,3) == 'DCP'){
@@ -327,8 +378,58 @@ CScourse.processCS = function(req, res, next){
 									}
                                                                 }
                                                         }
-							courseResult[0].course.push(more[index]);
-                                                }
+                            if(more[index].cn =='微處理機系統實驗'){
+                                if(temp > 3){
+                                    var cosAdd = JSON.stringify(more[index]);
+                                    cosAdd = JSON.parse(cosAdd);
+                                    cosAdd.realCredit = 1;
+                                    cosAdd.code = more[index].code + '_one';
+                                    more[index].realCredit = 2;
+                                    if(courseResult[3].credit < courseResult[3].require){
+                                        courseResult[3].credit += cosAdd.realCredit;
+                                        courseResult[3].course.push(cosAdd);
+                                    }
+                                    else{
+                                        courseResult[4].credit += cosAdd.realCredit;
+                                        courseResult[4].course.push(cosAdd);
+                                    }
+                                    courseResult[0].credit += more[index].realCredit;
+                                    courseResult[0].course.push(more[index]);
+                                }
+                                else{
+                                    courseResult[0].credit += credit;
+                                    courseResult[0].course.push(more[index]);
+                                }
+                             }
+
+                             else if(more[index].cn =='數位電路實驗'){
+                                if(temp > 3 && credit > 2){
+                                    var cosAdd = JSON.stringify(more[index]);
+                                    cosAdd = JSON.parse(cosAdd);
+                                    cosAdd.realCredit = 1;
+                                    cosAdd.code = more[index].code + '_one';
+                                    more[index].realCredit = 2;
+                                    if(courseResult[3].credit < courseResult[3].require){
+                                        courseResult[3].credit += cosAdd.realCredit;
+                                        courseResult[3].course.push(cosAdd);
+                                    }
+                                    else{
+                                        courseResult[4].credit += cosAdd.realCredit;
+                                        courseResult[4].course.push(cosAdd);
+                                    }
+                                    courseResult[0].credit += more[index].realCredit;
+                                    courseResult[0].course.push(more[index]);
+                                }
+                                else{
+                                    courseResult[0].credit += credit;
+                                    courseResult[0].course.push(more[index]);
+                                }
+                             }
+                             else{
+                                courseResult[0].credit += credit;
+                                courseResult[0].course.push(more[index]);
+                            }
+                            }
                                                 else
                                                         courseResult[0].course.push(more[index]);
                                         }
@@ -350,7 +451,7 @@ CScourse.processCS = function(req, res, next){
                                  cn:'',
                                  en:'',
                                  score: -1,
-				                 grade:'0',
+				                 grade: null,
                                  code:'',
                                  realCredit: 0,
                                  originalCredit: 0,
@@ -366,10 +467,10 @@ CScourse.processCS = function(req, res, next){
 			PCBcos.en = detail[PCBnum[i]].cos_ename;
 			PCBcos.score = detail[PCBnum[i]].score;
 			PCBcos.grade = detail[PCBnum[i]].score_level;
-			PCBcos.realCredit = parseInt(detail[PCBnum[i]].cos_credit);
-			PCBcos.originalCredit = parseInt(detail[PCBnum[i]].cos_credit);
+			PCBcos.realCredit = parseFloat(detail[PCBnum[i]].cos_credit);
+			PCBcos.originalCredit = parseFloat(detail[PCBnum[i]].cos_credit);
 			PCBcos.complete = detail[PCBnum[i]].pass_fail;
-			PCBcos.year = parseInt(detail[PCBnum[i]].year) - school_year + 1;
+			PCBcos.year = parseInt(detail[PCBnum[i]].cos_year) - school_year + 1;
 			PCBcos.semester = parseInt(detail[PCBnum[i]].semester);
             PCBcos.type = detail[PCBnum[i]].cos_type;
             PCBcos.code = detail[PCBnum[i]].cos_code;
@@ -620,6 +721,9 @@ CScourse.processCS = function(req, res, next){
 		}
 		//determine the core
 		var core = req.course.core;
+        //console.log(req.course);
+        //console.log("core");
+        //console.log(core);
 		for(var q=0; q<core.length; q++){
                         var more = [];
 			trueCounter = 0;
@@ -641,7 +745,7 @@ CScourse.processCS = function(req, res, next){
                                 		en:'',
                                 		score: '',
 						code:'',
-                                		grade:'0',
+                                		grade: null,
                                 		complete:'0',
                                         type:'',
                                 		realCredit: 0,
@@ -656,13 +760,13 @@ CScourse.processCS = function(req, res, next){
                         		cosInfo.en = core[q].cos_ename;
                                 	if(taken[cosNumber[k]] === true){
 						cosInfo.code = cosNumber[k];
-						cosInfo.year = parseInt(detail[cosNumber[k]].year) - school_year + 1;
+						cosInfo.year = parseInt(detail[cosNumber[k]].cos_year) - school_year + 1;
 						cosInfo.semester = parseInt(detail[cosNumber[k]].semester);					   
-                        cosInfo.originalCredit = parseInt(detail[cosNumber[k]].cos_credit);
+                        cosInfo.originalCredit = parseFloat(detail[cosNumber[k]].cos_credit);
 						cosInfo.type = detail[cosNumber[k]].cos_type;
                         trueCounter++;
 				    		if(detail[cosNumber[k]].pass_fail == '通過'){
-							    cosInfo.realCredit = parseInt(detail[cosNumber[k]].cos_credit);
+							    cosInfo.realCredit = parseFloat(detail[cosNumber[k]].cos_credit);
                                 cosInfo.score = parseInt(detail[cosNumber[k]].score);
                                 cosInfo.grade = detail[cosNumber[k]].score_level;
                                 cosInfo.complete = true;
@@ -687,7 +791,7 @@ CScourse.processCS = function(req, res, next){
                                         if(more.length == 1){
                                                 if(more[0].complete == true){
                                                         code = more[0].code;
-                                                        credit = parseInt(detail[more[0].code].cos_credit);
+                                                        credit = parseFloat(detail[more[0].code].cos_credit);
 							if(detail[code].cos_typeext == '英文授課'){
                                                                 more[0].english = true;
                                                                 EnglishCourse.push(more[0]);
@@ -714,7 +818,7 @@ CScourse.processCS = function(req, res, next){
                                         }
 					else{
                                                 for(var d = 0; d<more.length; d++){
-                                                        credit = parseInt(detail[more[d].code].cos_credit);
+                                                        credit = parseFloat(detail[more[d].code].cos_credit);
                                                         if(more[d].complete == true){
                                                                 if(more[d].score >= max){
                                                                         index = d;
@@ -777,7 +881,7 @@ CScourse.processCS = function(req, res, next){
 						code:'',
 						english:false,
                                 		score: '',
-                                		grade:'0',
+                                		grade: null,
                                         type:'',
                                 		complete:'0',
                                 		realCredit: 0,
@@ -791,15 +895,15 @@ CScourse.processCS = function(req, res, next){
                         		cosInfo.en = other[q].cos_ename;
                                		if(taken[cosNumber[k]] === true){
 						cosInfo.code = cosNumber[k];
-						cosInfo.year = parseInt(detail[cosNumber[k]].year) - school_year + 1;								     cosInfo.semester = parseInt(detail[cosNumber[k]].semester);
-						cosInfo.originalCredit = parseInt(detail[cosNumber[k]].cos_credit);
+						cosInfo.year = parseInt(detail[cosNumber[k]].cos_year) - school_year + 1;								     cosInfo.semester = parseInt(detail[cosNumber[k]].semester);
+						cosInfo.originalCredit = parseFloat(detail[cosNumber[k]].cos_credit);
                         cosInfo.type = detail[cosNumber[k]].cos_type;
 						trueCounter++;
 						if(detail[cosNumber[k]].pass_fail == '通過'){
 							cosInfo.complete = true;
                             cosInfo.score = parseInt(detail[cosNumber[k]].score);
                             cosInfo.grade = detail[cosNumber[k]].score_level;
-                            cosInfo.realCredit = parseInt(detail[cosNumber[k]].cos_credit);
+                            cosInfo.realCredit = parseFloat(detail[cosNumber[k]].cos_credit);
                         }
 						else
 							cosInfo.complete = false;
@@ -821,7 +925,7 @@ CScourse.processCS = function(req, res, next){
                                         if(more.length == 1){
                                                 if(more[0].complete == true){
                                                         code = more[0].code;
-                                                        credit = parseInt(detail[more[0].code].cos_credit);
+                                                        credit = parseFloat(detail[more[0].code].cos_credit);
 							if(detail[code].cos_typeext == '英文授課'){
                                                                 more[0].english = true;
                                                                 EnglishCourse.push(more[0]);
@@ -848,7 +952,7 @@ CScourse.processCS = function(req, res, next){
                                         }
 					else{
                                                 for(var d = 0; d<more.length; d++){
-                                                        credit = parseInt(detail[more[d].code].cos_credit);
+                                                        credit = parseFloat(detail[more[d].code].cos_credit);
                                                         if(more[d].complete == true){
                                                                 if(more[d].score >= max){
                                                                         index = d;
@@ -909,7 +1013,7 @@ CScourse.processCS = function(req, res, next){
 						code:'',
 						english:false,
                                 		score: '',
-                                		grade:'0',
+                                		grade: null,
                                         type:'',
                                 		complete:'0',
                                 		realCredit: 0,
@@ -924,16 +1028,16 @@ CScourse.processCS = function(req, res, next){
 					////console.log(cosNumber[k]);
                                 	if(taken[cosNumber[k]] === true){
 						cosInfo.code = cosNumber[k];
-						cosInfo.year = parseInt(detail[cosNumber[k]].year) - school_year + 1;
+						cosInfo.year = parseInt(detail[cosNumber[k]].cos_year) - school_year + 1;
 						cosInfo.semester = parseInt(detail[cosNumber[k]].semester);
-						cosInfo.originalCredit = parseInt(detail[cosNumber[k]].cos_credit);
+						cosInfo.originalCredit = parseFloat(detail[cosNumber[k]].cos_credit);
                         cosInfo.type = detail[cosNumber[k]].cos_type;
 						trueCounter++;
 						if(detail[cosNumber[k]].pass_fail == '通過'){
 							cosInfo.complete = true;
                             cosInfo.score = parseInt(detail[cosNumber[k]].score);
                             cosInfo.grade = detail[cosNumber[k]].score_level;
-                            cosInfo.realCredit = parseInt(detail[cosNumber[k]].cos_credit);
+                            cosInfo.realCredit = parseFloat(detail[cosNumber[k]].cos_credit);
 						}
 						else
 							cosInfo.complete = false;
@@ -981,7 +1085,7 @@ CScourse.processCS = function(req, res, next){
                                         }
 					else{
                                                 for(var d = 0; d<more.length; d++){
-                                                        credit = parseInt(detail[more[d].code].cos_credit);
+                                                        credit = parseFloat(detail[more[d].code].cos_credit);
                                                         if(more[d].complete == true){
                                                                 if(more[d].score >= max){
                                                                         index = d;

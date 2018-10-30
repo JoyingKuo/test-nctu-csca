@@ -6,11 +6,11 @@ var s = require('./research_show_sqlString.js');
 var pool = psw.dbpsw();
 
 module.exports = {
-	ShowTeacherResearchStudent: function(teacher_id, callback){
+    ShowGradeTeacherResearchStudent: function(teacher_id, grade, callback){
         const resource = pool.acquire();
         resource.then(function(c){
-            var sql_ShowTeacherResearchStudent=c.prepare(s.ShowTeacherResearchStudent);
-            c.query(sql_ShowTeacherResearchStudent({teacher_id}), function(err, result){
+            var sql_ShowGradeTeacherResearchStudent=c.prepare(s.ShowGradeTeacherResearchStudent);
+            c.query(sql_ShowGradeTeacherResearchStudent({teacher_id,grade}), function(err, result){
                 if(err){
                     callback(err, undefined);
                     pool.release(c);
@@ -31,14 +31,14 @@ module.exports = {
                         idx=result.length;
                         break;
                     }
-                    if(year-parseInt(result[idx]['student_id'].substring(0, 2))>2)
-                        break
+                    // if(year-parseInt(result[idx]['student_id'].substring(0, 2))>2)
+                    //     break
                 }
                 callback(null, JSON.stringify(result.slice(0, idx)));
                 pool.release(c);
             });
         });
-    },
+    },    
     ShowTeacherInfoResearchCnt: function(callback){
         const resource=pool.acquire();
         resource.then(function(c){
@@ -181,13 +181,43 @@ module.exports = {
             });
         });
     }, 
-    ShowStudentResearchApplyForm:function(student_id, first_second, callback){
+    ShowStudentResearchApplyForm:function(student_id, callback){
         const resource=pool.acquire();
         resource.then(function(c){
             var sql_ShowStudentResearchApplyForm=c.prepare(s.ShowStudentResearchApplyForm);
-            c.query(sql_ShowStudentResearchApplyForm({student_id, first_second}), function(err, result){
+            c.query(sql_ShowStudentResearchApplyForm({student_id}), function(err, result){
                 if(err)
                 {
+                    callback(err, undefined);
+                    pool.release(c);
+                    return;
+                }
+                callback(null, JSON.stringify(result));
+                pool.release(c);
+            });
+        });
+    },
+    ShowStudentResearchStatus: function(student_id, callback) {
+        const resource = pool.acquire();
+        resource.then(function(c) {
+            var sql_ShowStudentResearchStatus = c.prepare(s.ShowStudentResearchStatus);
+            c.query(sql_ShowStudentResearchStatus({ student_id }), function(err, result) {
+                if (err){
+                    callback(err, undefined);
+                    pool.release(c);
+                    return;
+                }
+                callback(null, JSON.stringify(result));
+                pool.release(c);
+            })
+        })
+    },
+    ShowStudentResearchList: function(data,callback){
+        const resource = pool.acquire();
+        resource.then(function(c){
+            var sql_ShowStudentResearchList = c.prepare(s.ShowStudentResearchList);
+            c.query(sql_ShowStudentResearchList(data), function(err,result){
+                if(err){
                     callback(err, undefined);
                     pool.release(c);
                     return;

@@ -18,7 +18,7 @@ router.post('/students/graduate/orderResult', StudentId, function(req, res){
         var cos = courses[i].id;
         var pre = courses[i].pre;
         var next = courses[i].next;
-        query.SetCosMotion(studentId, cos, pre, next);
+        query.insertCosMotion(studentId, cos, pre, next);
     }
     res.send("{danny danny}");
 

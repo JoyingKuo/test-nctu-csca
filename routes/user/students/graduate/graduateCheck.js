@@ -9,15 +9,38 @@ var router = express.Router();
 var csrf = require('csurf');
 var csrfProtection = csrf();
 
-router.post('/students/graduate/check', csrfProtection, function(req, res){
-    var submit = req.body.check.state;
+var getStudentId = require('../../course/getStudentId');
 
-    if(req.session.profile && submit){
-        utils.getPersonIdwCb(JSON.parse(req.session.profile), setSubmitState);
+
+var StudentId = getStudentId.getStudentId.studentId;
+router.post('/students/graduate/check', csrfProtection, StudentId, function(req, res){
+
+    if(req.session.profile){
+        let personId = res.locals.studentId;
+        let submitType = req.body.general_course.type
+        let info ={id: personId, graduate_submit:1,submit_type:submitType}
+        query.SetGraduateSubmitStatus(info,function(err,result){
+             if(err){
+            ////console.log(err);
+            res.redirect('/');
+            }
+            else {
+                 var checkState = { 
+                    check:{
+                        state: 1
+                    }
+                }
+                res.send(checkState);
+
+            }
+        });
+    }
+    else{
+        res.redirect('/')
     }
 });
 
-router.get('/students/graduate/check',function(req, res){
+router.get('/students/graduate/check',StudentId,function(req, res){
     let personId = res.locals.studentId;
     //console.log(personId);
     query.ShowUserInfo(personId, function(err, result){
@@ -26,17 +49,18 @@ router.get('/students/graduate/check',function(req, res){
             res.redirect('/');
         }
         else {
-            if(JSON.parse(result)[0].graduate_submit === "1")
-                res.send({ check: {state: true } });
-            else
-                res.send({ check: {state: false } });
+            result = JSON.parse(result);
+
+            var checkState = { 
+                check:{
+                    state: (result[0].graduate_submit == null)?0:parseInt(result[0].graduate_submit)
+                }
+            }
+            res.send(checkState)
         }
     });
 });
 
-var setSubmitState = function(studentId){
-  query.SetGraduateSubmitStatus(studentId, '1');
-}
 
 module.exports = router;
 

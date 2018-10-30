@@ -5,18 +5,18 @@ import {Navbar,Nav,NavItem,DropdownButton,MenuItem,ButtonToolbar } from 'react-b
 
 import './Navbar.css'
 import defalt from '../Resources/defalt.jpg';
+import dinoIcon from '../Resources/dinoIcon.png'
 import NavButton from './NavButton'
-import axios from 'axios'
-import Notifications from 'material-ui/svg-icons/social/notifications'
+import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 
 const style = {
   BrandBox: {
-    borderLeft: '6px solid #00AEAE',
     height: 28,
     display: 'inline-block',
     marginTop: 12,
     marginLeft: 7,
+    marginRight: 25,
     verticalAlign: 'top',
     transition: 'background-color 0.5s ease'
   },
@@ -115,18 +115,19 @@ class _Navbar extends React.Component {
     const {onClicks,selectedButtonIndex} = this.state
     const navItems = {
       'student': [
-        <NavButton key={0} label='首頁' icon='fa fa-flag' onClick={onClicks[0]} selected={selectedButtonIndex === 0}/>,
-        <NavButton key={1} label='畢業預審' icon='fa fa-graduation-cap' onClick={onClicks[1]} selected={selectedButtonIndex === 1}/>,
-        <NavButton key={2} label='課程地圖' icon='fa fa-map' onClick={onClicks[2]} selected={selectedButtonIndex === 2}/>,
+        <NavButton key={0} label='首頁' icon='fa fa-flag' onClick={onClicks[0]} selected={this.props.router && this.props.location.pathname.match(this.props.router[0]) !== null }/>,
+        <NavButton key={1} label='畢業預審' icon='fa fa-graduation-cap' onClick={onClicks[1]} selected={this.props.router && this.props.location.pathname.match(this.props.router[1]) !== null}/>,
+        <NavButton key={2} label='課程地圖' icon='fa fa-map' onClick={onClicks[2]} selected={this.props.router && this.props.location.pathname.match(this.props.router[2]) !== null}/>,
         //<NavButton key={3} label='課程抵免' icon='fa fa-users' onClick={onClicks[3]} selected={selectedButtonIndex === 3}/>,
-        <NavButton key={3} label='教授' icon='fa fa-coffee' onClick={onClicks[3]} selected={selectedButtonIndex === 3}/>,
-        <NavButton key={4} label='專題' icon='glyphicon glyphicon-file' onClick={onClicks[4]} selected={selectedButtonIndex === 4}/>,
+        <NavButton key={3} label='教授' icon='fa fa-coffee' onClick={onClicks[3]} selected={this.props.router && this.props.location.pathname.match(this.props.router[3]) !== null}/>,
+        <NavButton key={4} label='專題' icon='glyphicon glyphicon-file' onClick={onClicks[4]} selected={this.props.router && this.props.location.pathname.match(this.props.router[4]) !== null}/>,
       ],
       'assistant': [
-        <NavButton key={0} label='首頁' icon='fa fa-flag' onClick={onClicks[0]} selected={selectedButtonIndex === 0}/>,
-        <NavButton key={1} label='畢業預審' icon='fa fa-graduation-cap' onClick={onClicks[1]} selected={selectedButtonIndex === 1}/>,
-        <NavButton key={2} label='學生專題' icon='fa fa-users' onClick={onClicks[2]} selected={selectedButtonIndex === 2}/>,
-        <NavButton key={3} label='導生' icon='fa fa-coffee' onClick={onClicks[3]} selected={selectedButtonIndex === 3}/>,
+        <NavButton key={0} label='首頁' icon='fa fa-flag' onClick={onClicks[0]} selected={this.props.router && this.props.location.pathname.match(this.props.router[0]) !== null }/>,
+        <NavButton key={1} label='畢業預審' icon='fa fa-graduation-cap' onClick={onClicks[1]} selected={this.props.router && this.props.location.pathname.match(this.props.router[1]) !== null}/>,
+        <NavButton key={2} label='學生專題' icon='fa fa-users' onClick={onClicks[2]} selected={this.props.router && this.props.location.pathname.match(this.props.router[2]) !== null}/>,
+        <NavButton key={3} label='導生' icon='fa fa-coffee' onClick={onClicks[3]} selected={this.props.router && this.props.location.pathname.match(this.props.router[3]) !== null}/>,
+        <NavButton key={4} label='審核' icon='fa fa-list-alt' onClick={onClicks[4]} selected={this.props.router && this.props.location.pathname.match(this.props.router[4]) !== null}/>,
       ],
       'teacher': [
         <NavButton key={0} label='首頁' icon='fa fa-flag' onClick={onClicks[0]} selected={selectedButtonIndex === 0}/>,
@@ -137,9 +138,11 @@ class _Navbar extends React.Component {
     }
     return <Navbar staticTop fixedTop fluid expanded={this.state.expanded} onToggle={this.onToggleCollapse}>
       <Navbar.Header>
-        <div style={{...style.BrandBox, borderLeft: `6px solid ${this.props.color}`}}>
-          <span style={style.BrandName}>交大資工線上助理</span>
-          <span style={style.BrandSubName} className='hidden-xs hidden-sm'>NCTU Curriculum Assistant</span>
+        {/*<div style={{...style.BrandBox, borderLeft: `6px solid ${this.props.color}`}}>*/}
+        <div style={{...style.BrandBox}}>
+          <img src={dinoIcon} style={{height: 35}} />
+          {/*<span style={style.BrandName}>交大資工線上助理</span>*/}
+          {/*<span style={style.BrandSubName} className='hidden-xs hidden-sm'>NCTU Curriculum Assistant</span>*/}
         </div>
         <Navbar.Toggle/>
       </Navbar.Header>
@@ -151,7 +154,26 @@ class _Navbar extends React.Component {
         <Nav pullRight>
           <NavItem className='logout-box'>
             <ButtonToolbar>
-              {this.dropButton()}
+              {/*{this.dropButton()}*/}
+
+              <div className="idcard" /*onClick={onClicks[4]}*/>
+                {/*<MuiThemeProvider>*/}
+                {/*<Notifications color = {'#c40000'} className='red-spot animated swing' style={{animationDuration:'2s', animationIterationCount:10000,}}/>*/}
+                {/*</MuiThemeProvider>*/}
+                <img id="idcard-photo" src={defalt} alt=""/>
+                <div style={{
+                  display: 'inline-block',
+                  verticalAlign: 'middle',
+                  marginLeft: 9,
+                }}>
+                  <div id="idcard-top">
+                    {this.props.name}
+                  </div>
+                  <div id="idcard-buttom">
+                    {this.props.subname}
+                  </div>
+                </div>
+              </div>
               <MuiThemeProvider>
                 <RaisedButton backgroundColor="#DDDDDD"
                               style={{marginLeft: '12px'}}
@@ -176,4 +198,4 @@ const mapState = (state) => ({
 const mapDispatch = (dispatch) => ({
 })
 
-export default connect(mapState, mapDispatch)(_Navbar)
+export default connect(mapState, mapDispatch)(withRouter(_Navbar))

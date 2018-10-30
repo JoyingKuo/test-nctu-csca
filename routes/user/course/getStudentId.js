@@ -11,19 +11,31 @@ getStudentId.studentId = function(req, res, next){
         else if(personStatus == 'a')
             res.locals.studentId = req.query.student_id;*/
         let checkPage = req.originalUrl;
+        let checkPage2 = req.originalUrl;
+        //console.log(checkPage2)
         // originalUrl: /students/graduate/revised
         let checkIndex = checkPage.indexOf("/", 1);
+       // let checkIndex2 = checkPage.indexOf("/", checkIndex);
         // start from 1 to find the second /
         checkPage = checkPage.substring(1, checkIndex);
+        if(checkPage === 'api')
+            checkPage = 'students';
+        checkPage2 = checkPage2.substring(1, checkIndex);
+
         // get students or assistants
+        //console.log(checkPage);
         if(checkPage === "students"){
-         //  res.locals.studentId = '0416212';
+             //res.locals.studentId = '0216323';
          //console.log("get student ID:");
            //console.log(JSON.parse(req.session.profile));
            res.locals.studentId = utils.getPersonId(JSON.parse(req.session.profile));
         }
-        else if(checkPage === "assistants"){
+        else if(checkPage2 === "assistants"){
+            //console.log("get assistant!")
             res.locals.studentId = req.query.student_id;
+           // console.log("ass:" + req.query.student_id);
+            //console.log(checkPage2)
+            //res.locals.studentId = '0316005';
         }
 
         next();
@@ -31,5 +43,4 @@ getStudentId.studentId = function(req, res, next){
     else
         res.redirect('/');
 }
-
 exports.getStudentId = getStudentId;

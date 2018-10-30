@@ -22,15 +22,16 @@ router.post('/StudentGradeList',csrfProtection, function(req, res){
 					var grade = {
 						semester: result[i].semester,
 						failed: result[i].failed == 'false' ? false : true,
-						avg : parseInt(result[i].avg),
+						avg: parseInt(result[i].avg),
+                        credit: parseInt(result[i].credit),
 						score: []
 					};
 					for(var j = 0; j < result[i].score.length; j++){
 						var scoreObj = {
 							cn: result[i].score[j].cn,
 							en: result[i].score[j].en,
-							score: parseInt(result[i].score[j].score),
-							pass: result[i].score[j].pass == '通過' ? true : false
+							score: (parseInt(result[i].score[j].score)> 0) ? parseInt(result[i].score[j].score) : null,
+							pass: result[i].score[j].pass == '通過' ? true :( (result[i].score[j].pass == 'W') ? 'W' : false)
 						}
 						grade.score.push(scoreObj);
 					}

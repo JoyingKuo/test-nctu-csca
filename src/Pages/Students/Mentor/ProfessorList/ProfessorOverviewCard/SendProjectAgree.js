@@ -34,6 +34,7 @@ import InputLabel from '@material-ui/core/InputLabel'
 import Grow from '@material-ui/core/Grow'
 import axios from 'axios/index'
 import withMobileDialog from '@material-ui/core/withMobileDialog/index'
+import { connect } from 'react-redux'
 
 function Transition (props) {
   return <Slide direction='up' {...props} />
@@ -86,10 +87,13 @@ class SendProjectAgree extends React.Component {
     this.handleremovemenber = this.handleremovemenber.bind(this)
     this.handleTitleChange = this.handleTitleChange.bind(this)
     this.handleSend = this.handleSend.bind(this)
+    this.handlepanelChange = this.handlepanelChange.bind(this)
+    this.handleinputChange = this.handleinputChange.bind(this)
+    this.getString = this.getString.bind(this)
   }
 
 
-  handleSend = () => {
+  handleSend () {
     let _this = this
     let phones = []
     let emails = []
@@ -121,39 +125,63 @@ class SendProjectAgree extends React.Component {
       emails.push(this.state.input[i].email)
     }
 
-    if(_this.state.projectNumber === ''){
-      alert('請填寫專題一或二')
-      return
-    }
-    let r = window.confirm('確定送出表單嗎?')
-    let Today = new Date()
-    let semester = ((Today.getFullYear()-1912)+ Number(((Today.getMonth()+1)>=8?1:0))) + '-' + ((Today.getMonth()+1)>=8?'1':'2')
-    if(r){
-      axios.post('/students/project_apply', {
-        semester:semester,
-        student_num:participants.length,
-        tname:_this.props.profile.tname,
-        first_second :_this.state.projectNumber,
-        research_title:_this.state.title,
-        participants:participants,
-        phones: phones,
-        email: emails,
+
+    let stateString = []
+    axios.post('/students/project/ShowStudentResearchStatus', {
+      participants:participants
+    })
+      .then(res => {
+        for(let i = 0; i<res.data.length; i++){
+          if(res.data[i].status !== '1' && res.data[i].status !== '2' && res.data[i].status !== '3'){
+            alert(res.data[i].student_id + " 因 " + this.getString(res.data[i].status) + " 申請失敗")
+            return
+          }
+          if(res.data[i].status === '2'){
+            let r = window.confirm('注意!如果您確定送出表單且教授也同意了，' + res.data[i].student_id + '同學將會修改專題二（意同於更改專題）請按確定以繼續')
+            if(!r)return
+          }
+
+          stateString.push(res.data[i].status)
+        }
+
+        let r = window.confirm('注意！如果您確定送出表單且教授也同意了，將代表您加簽 專題（一）課程，確定要送出表單嗎?')
+        let Today = new Date()
+        let semester = ((Today.getFullYear()-1912)+ Number(((Today.getMonth()+1)>=8?1:0))) + '-' + ((Today.getMonth()+1)>=8?'1':'2')
+        if(r){
+          axios.post('/students/project_apply', {
+            semester:semester,
+            student_num:participants.length,
+            tname:_this.props.profile.tname,
+            teacher_id:_this.props.profile.teacher_id,
+            teacher_email:_this.props.profile.email,
+            first_second :stateString,
+            research_title:_this.state.title,
+            participants:participants,
+            phones: phones,
+            email: emails,
+          })
+            .then(res => {
+              if(res.data.signal === 1){
+                alert('申請成功，等候教授回覆')
+                _this.handleClose()
+              }
+              else{
+                alert('申請失敗，請重新送出，如有成員中有審核中的專題將不能申請。')
+              }
+            })
+            .catch(err => {
+              //window.location.replace("/logout ");
+              alert('送出失敗，請檢查連線是否穩定。')
+              console.log(err)
+            })
+        }
       })
-        .then(res => {
-          if(res.data.signal === 1){
-            alert('申請成功，等候教授回覆')
-            _this.handleClose()
-          }
-          else{
-            alert('申請失敗，請重新送出，如有成員中有審核中的專題將不能申請。')
-          }
-        })
-        .catch(err => {
-          //window.location.replace("/logout ");
-          alert('送出失敗，請檢查連線是否穩定。')
-          console.log(err)
-        })
-    }
+      .catch(err => {
+        alert('送出失敗，請檢查連線是否穩定。')
+        console.log(err)
+      })
+
+
   }
 
   handleaddmenber () {
@@ -209,14 +237,28 @@ class SendProjectAgree extends React.Component {
     })
   }
 
-  handleProjectNumChange = name => event => {
-    this.setState({ [name]: event.target.value })
-  }
-
-  handleinputChange = (event, str, index) => {
+  handleinputChange (event, str, index) {
     let newinput = [...this.state.input]
     newinput[index][str] = event.target.value
     this.setState({ input: newinput })
+  }
+
+  getString (str) {
+    if(str === '1'){
+      return '專題一'
+    }
+    if(str === '2'){
+      return '專題二'
+    }
+    if(str === '3'){
+      return '基礎程式設計成績待審核'
+    }
+    if(str === '4'){
+      return '重複提交(當學期只能有一個專題/專題申請表)'
+    }
+    if(str === '5'){
+      return '已修過專1專2'
+    }
   }
 
   render () {
@@ -231,7 +273,7 @@ class SendProjectAgree extends React.Component {
             <ListItemIcon>
               <Face />
             </ListItemIcon>
-            <ListItemText inset primary={`寄送專題申請！`} />
+            <ListItemText inset primary={`專題申請/專題變更`} />
           </MenuItem>
           : <Tooltip title='寄送專題申請！' placement='top' classes={{tooltip:classes.tooltip}}>
             <IconButton
@@ -278,27 +320,11 @@ class SendProjectAgree extends React.Component {
               }
               onChange={this.handleTitleChange}
             />
-            <FormControl className={classes.formControl}>
-              <InputLabel htmlFor="age-native-simple">專題幾？</InputLabel>
-              <Select
-                native
-                value={this.state.projectNumber}
-                onChange={this.handleProjectNumChange('projectNumber')}
-                inputProps={{
-                  name: '專題幾？',
-                  id: 'age-native-simple',
-                }}
-              >
-                <option value="" />
-                <option value={1}>專題一</option>
-                <option value={2}>專題二</option>
-              </Select>
-            </FormControl>
-            <div className='hidden-xs'>
+            <div className='hidden-xs' style={{marginTop: '20px'}}>
               {this.state.menberNumber.map(t =>
                 <Grow in  key={t}>
                 <div className='row'>
-                  <div className='col-sm-3 col-md-3 col-lg-3'>
+                  <div className='col-sm-3 col-md-4 col-lg-4'>
                   <Input
                     placeholder='學號'
                     className='project-member-input'
@@ -312,7 +338,7 @@ class SendProjectAgree extends React.Component {
                     onChange={(event)=>this.handleinputChange(event, 'id', t-1)}
                   />
                   </div>
-                  <div className='col-sm-3 col-md-3 col-lg-3'>
+                  <div className='col-sm-3 col-md-4 col-lg-4'>
                   <Input
                     placeholder='電話'
                     className='project-member-input'
@@ -325,7 +351,7 @@ class SendProjectAgree extends React.Component {
                     onChange={(event)=>this.handleinputChange(event, 'phone', t-1)}
                   />
                   </div>
-                  <div className='col-sm-6 col-md-6 col-lg-6'>
+                  <div className='col-sm-6 col-md-4 col-lg-4'>
                   <Input
                     placeholder='Email'
                     className='project-member-input'
@@ -342,7 +368,7 @@ class SendProjectAgree extends React.Component {
                 </Grow>
               )}
             </div>
-            <div className='visible-xs '>
+            <div className='visible-xs ' style={{marginTop: '20px'}}>
               {this.state.menberNumber.map(t =>
                 <Grow in>
                 <ExpansionPanel  expanded={expanded === `成員 ${t}`} onChange={this.handlepanelChange(`成員 ${t}`)} key={t}>
@@ -369,7 +395,7 @@ class SendProjectAgree extends React.Component {
                     <div className='row'>
                       <Input
                         placeholder='電話'
-                        className='project-member-input-rwd'
+                        className='project-member-input-rwd '
                         fullWidth
                         startAdornment={
                           <InputAdornment position='start'>
@@ -442,4 +468,10 @@ function TransitionUp (props) {
   return <Slide {...props} direction='up' />
 }
 
-export default withStyles(styles)(withMobileDialog()(SendProjectAgree))
+const mapStateToProps = (state) => {
+  return {
+    researchStatus: state.Student.Professor.research_status
+  }
+}
+
+export default connect(mapStateToProps)(withStyles(styles)(withMobileDialog()(SendProjectAgree)))
