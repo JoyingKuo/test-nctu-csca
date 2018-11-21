@@ -73,7 +73,7 @@ module.exports.init = function(){
   app.use('/assistants/head', express.static('./public', { index: 'index.assistant.html'}));
 */
  
-  app.use('/assistants/head/s/:sid', express.static('./public', { index: 'index.html'}));
+  app.use('/assistants/head/s/:sid/:sname/:sgroup', express.static('./public', { index: 'index.html'}));
   //app.use('/api/', api());
 
   
@@ -161,6 +161,7 @@ module.exports.init = function(){
   app.use(require('./routes/user/assistants/graduate/gradeStudent'));
   app.use(require('./routes/user/assistants/graduate/graduateStudent'));
   app.use(require('./routes/user/assistants/graduate/graduateListDownload'));
+  app.use(require('./routes/user/students/graduate/graduateChange/graduateList'));
 
   return app;
 };

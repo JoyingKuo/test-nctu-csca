@@ -15,15 +15,19 @@ cardsets.Card = function(code, name, type, sId){   // Other
 cardsets.Card.prototype.check = function(callback){
     let checkCode = this.code.substring(0,3);
     let checkFullCode = this.code.substring(0,7);
+    let checkOneCode = this.code;
     let checkName = this.name;
     let checkType = this.type;
     let studentId = this.sId;
-    let checkEnStatus = this.enStatus;
     query.ShowCosGroup(studentId, function(err, result){
         let table = JSON.parse(result);
         for(let i = 0; i < table.length; i++){
             for(let j = 0; j < table[i].cos_codes.length; j++){
-                if(table[i].cos_codes[j] === checkFullCode){
+                if(table[i].cos_codes[j]+"_one" === checkOneCode){
+                    callback('其他選修');
+                    return;
+                }
+                if(table[i].cos_codes[j] === checkFullCode && table[i].type == "必修"){
                     callback('');
                     return;
                 }
@@ -148,6 +152,7 @@ cardsets.Elective.prototype = new cardsets.Card();
 cardsets.Elective.prototype.check = function(callback){
     let checkCode = this.code.substring(0, 3);
     let checkFullCode = this.code.substring(0,7);
+    let checkOneCode = this.code;
     let checkName = this.name;
     let checkType = this.type;
     let studentId = this.sId;
@@ -156,7 +161,11 @@ cardsets.Elective.prototype.check = function(callback){
         let table = JSON.parse(result);
         for(let i = 0; i < table.length; i++){
             for(let j = 0; j < table[i].cos_codes.length; j++){
-                if(table[i].cos_codes[j] === checkFullCode){
+                if(table[i].cos_codes[j]+"_one" === checkOneCode){
+                    callback('專業選修');
+                    return;
+                }
+                if(table[i].cos_codes[j] === checkFullCode && table[i].type === "必修"){
                     callback('');
                     return;
                 }
@@ -216,7 +225,7 @@ cardsets.General = function(code, type){
 cardsets.General.prototype = new cardsets.Card();
 
 cardsets.General.prototype.check = function(callback){
-    let checkType = this.type;
+    let checkType = this.type.substring(0,2);
     let checkCode = this.code;
     if(checkType === "通識")
         callback('通識');
@@ -281,11 +290,25 @@ cardsets.Art = function(name){
 cardsets.Art.prototype = new cardsets.Card();
 
 cardsets.Art.prototype.check = function(callback){
-    let checkName = this.name
+    let checkName = this.name;
     if(checkName === "藝文賞析教育")
         callback('藝文賞析');
     else
         callback('');
 
 }
+
+cardsets.Graduate = function(code){
+    this.code = code;
+};
+
+cardsets.Graduate.prototype = new cardsets.Card();
+
+cardsets.Graduate.prototype.check = function(callback){
+    let checkCode = this.code.substring(0,3);
+    if(checkCode === "IOC" || checkCode === "IOE" || checkCode === "ILE" || checkCode === "IDS")
+        callback('抵免研究所課程');
+    else callback('');
+}
+
 exports.cardset = cardsets;

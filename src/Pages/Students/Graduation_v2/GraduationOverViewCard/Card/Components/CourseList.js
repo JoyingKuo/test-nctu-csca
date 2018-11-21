@@ -2,7 +2,7 @@ import React from 'react'
 import PopoverButton from './PopoverButton'
 import MoveGroupButton from './MoveGroupButton'
 
-const phyCourseNames = ['物理(一)', '物理(二)', '物理(一)榮譽班', '物理(二)榮譽班', '微處理機']
+const phyCourseNames = ['物理(一)', '物理(二)', '物理(一)榮譽班', '物理(二)榮譽班', '微處理機系統實驗']
 
 const decideBtnFlash = (completed, selection) => {
   return !(completed | selection)
@@ -35,7 +35,7 @@ const CourseList = (props) => {
       {items.map((item, index) =>
         <div className='col-xs-6 col-sm-3 col-md-2 col-lg-2' key={index}>
           <PopoverButton
-            label={phyCourseNames.includes(item.cn) ? `${item.cn}  ${item.realCredit}學分` : item.cn}
+            label={(phyCourseNames.includes(item.cn) && item.realCredit > 0) ? `${item.cn}  ${item.realCredit}學分` : item.cn}
             backgroundColor={decideBtnBgColor(item.complete, item.reason, selection)}
             flash={decideBtnFlash(item.complete, selection)}
             rwd={rwd}
@@ -54,13 +54,13 @@ const CourseList = (props) => {
             {(item.reason === 'now' && item.complete) ? <div>已修過這堂課，目前正重複修課中。</div> : <div />}
 
             {/* An option for student to move a course to other group */}
-            <MoveGroupButton
+            { props.assis ? '' : <MoveGroupButton
               key={id}
               title={title}
               item={item}
               label={'移動課程'}
               rwd={rwd}
-            />
+            />}
           </PopoverButton>
         </div>
       )}

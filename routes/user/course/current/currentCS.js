@@ -2,6 +2,8 @@ var utils = require('../../../../utils');
 var currentCS = {};
 currentCS.processCS = function(req, res, next){
 	var courseResult = res.locals.courseResult;
+    //console.log(courseResult[0]);
+
 	var now = JSON.parse(req.now);
 	
 	var taken = [];
@@ -61,7 +63,7 @@ currentCS.processCS = function(req, res, next){
                     }
 					cosInfo.code = cosNumber[k];
 					for(var a = 0; a<courseResult[0].course.length; a++){
-						var reg1 = courseResult[0].course[a].cn;
+						var reg1 = courseResult[0].course[a].cn.substring(0,3);
 						var reg2 = cosInfo.cn.substring(0,2);
 						if(courseResult[0].course[a].cn == cosInfo.cn){
 							if(courseResult[0].course[a].complete == true)
@@ -71,7 +73,7 @@ currentCS.processCS = function(req, res, next){
 							break;
 						}
 						else{
-							if(reg == '物化生'){
+							if(reg1 == '物化生'){
                                 if(reg2 == '物理'||reg2 == '化學'||reg2 == '普通'){
 									courseResult[0].course[a] = cosInfo;
                                 break;
@@ -84,7 +86,7 @@ currentCS.processCS = function(req, res, next){
 			}
 		}
 				    		
-		var core = req.course.core;
+		/*var core = req.course.core;
                 for(var q=0; q<core.length; q++){
                         cosNumber = core[q].cos_codes;
                         var cosInfo = {
@@ -189,13 +191,15 @@ currentCS.processCS = function(req, res, next){
 					break;
                                 }
                         }
-                }
+                }*/
 
 
 	}
   	else {
       		res.redirect('/');
   	}
+   // console.log(courseResult[0]);
+
 	res.locals.courseResult = courseResult;
   	next();
 

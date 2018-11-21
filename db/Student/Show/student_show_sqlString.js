@@ -2,7 +2,7 @@ exports.findStudent = "\
     select\
         s.student_id, s.sname, s.program, s.grade,\
         s.email, s.graduate, s.graduate_submit, s.gmail,\
-        s.fb_id, s.github_id, s.submit_type,\
+        s.fb_id, s.github_id, s.submit_type, s.net_media,\
         if(e.pass_code=0,s.en_certificate,e.pass_code) as en_certificate\
     from student as s, en_certificate as e\
     where s.student_id = :id\
@@ -11,7 +11,7 @@ exports.findStudent = "\
     select\
         s.student_id, s.sname, s.program, s.grade,\
         s.email, s.graduate, s.graduate_submit, s.gmail,\
-        s.fb_id, s.github_id, NULL as en_certificate, s.submit_type\
+        s.fb_id, s.github_id, NULL as en_certificate, s.submit_type, s.net_media\
     from student as s\
     where s.student_id = :id\
     and s.student_id not in\
@@ -159,6 +159,7 @@ exports.ShowUserAllScore = "\
                                 end as unique_id\
                         from cos_score\
                         where student_id = :id\
+                        and pass_fail='通過'\
                     ) as sc, student as std, cos_name as n\
                     where std.student_id = :id\
                     and n.unique_id = sc.unique_id\
@@ -305,28 +306,20 @@ exports.ShowStudentMentor = "\
     from mentor_list\
     where student_id = :id";
 
-exports.ShowUserOnCos = "\
-    select\
-        s.student_id, cd.cos_code, cn.cos_cname, cn.cos_ename,\
-        cd.cos_type, cd.cos_typeext, cd.brief, cd.brief_new,\
-        cd.cos_credit\
-    from on_cos_data as o\
-    left outer join\
-    student as s\
-    on o.student_id = s.student_id\
-    left outer join\
-    cos_data as cd\
-    on cd.unique_id = concat(o.year, '-', o.semester, '-', o.code)\
-    left outer join\
-    cos_name as cn\
-    on cn.unique_id = cd.unique_id\
-    where s.student_id = :id";
+exports.ShowUserOnCos_single = "\
+    select  student_id, cos_code, cos_cname, cos_ename, cos_type, cos_typeext, brief, brief_new, cos_credit \
+    from on_cos_data where student_id = :id";
+
+exports.ShowUserOnCos_all = "\
+    select  student_id, cos_code, cos_cname, cos_ename, cos_type, cos_typeext, brief, brief_new, cos_credit \
+    from on_cos_data";
+
 
 exports.ShowUserOffsetSingle = "\
     select\
         os.student_id, os.apply_year, os.apply_semester, os.cos_code_old,\
         os.cos_cname_old, os.cos_code, os.cos_cname, os.credit,\
-        os.offset_type, os.brief, os.cos_type, cg.score\
+        os.offset_type, os.brief, os.brief_new, os.cos_type, cg.score\
     from offset as os\
     left outer join\
     (\

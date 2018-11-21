@@ -66,7 +66,7 @@ class MoveGroupButton extends React.Component {
     this.state = {
       isOpened: false,
       anchorEl: null,
-      targets: [{title: '...'}]
+      targets: []
     }
     this.fetchTarget()
   }
@@ -76,7 +76,7 @@ class MoveGroupButton extends React.Component {
       cn: this.props.item.cn, // 中文課名
       code: this.props.item.code, // 課號
       type: this.props.item.type,
-      studentId: this.props.studentIdcard.student_id,
+      studentId: this.props.assis ? this.props.idCard.id : this.props.studentIdcard.student_id
     }).then(res => {
       this.setState({targets: res.data})
     }).catch(err => {
@@ -112,7 +112,7 @@ class MoveGroupButton extends React.Component {
 
     axios.post('/students/graduate/switchCourse', {
       cn: cn, // 中文課名
-      student_id: studentIdcard.student_id,
+      student_id: this.props.assis ? this.props.idCard.id : studentIdcard.student_id,
       origin_group: title,
       target_group: target
     }).then(res => {
@@ -120,7 +120,8 @@ class MoveGroupButton extends React.Component {
       console.log(res)
       console.log('└------------------')
       let inter = 250
-      while (inter < 500000) {
+      // Magic update
+      while (inter < 100000) {
         setTimeout(
           () => {
             console.log('----- fetchGraduationCourse! ----')
@@ -128,15 +129,28 @@ class MoveGroupButton extends React.Component {
           }, inter)
         inter *= 2
       }
+      setTimeout(
+        () => {
+          console.log('----- POST students/graduate/graduateChange/graduateList ----')
+          this.extraPostGradChange()
+        }, 10000)
     }).catch(err => {
       console.log(err)
     })
     console.log('===========================================')
   }
 
+  extraPostGradChange () {
+    let studentIdcard = this.props.studentIdcard
+    axios.post('/students/graduate/graduateChange/graduateList', {
+      student_id: this.props.assis ? this.props.idCard.id : studentIdcard.student_id
+    })
+  }
+
   render () {
     const { label, classes, englishCheck } = this.props
     const { anchorEl, targets } = this.state
+    const shouldBeDisabled = ((englishCheck === '0' || englishCheck === null) && this.props.item.cn.search('進階英文') !== -1) || this.props.item.reason === 'now' || this.props.item.complete === false || this.props.item.reason === 'english' || this.state.targets.length === 0
 
     return (
       <div style={style.Popover}>
@@ -145,10 +159,11 @@ class MoveGroupButton extends React.Component {
           variant='outlined'
           onClick={this.handleClick}
           className={classes.root}
-          // 如果沒過英檢就不能移進階英文
-          disabled={(englishCheck === '0' || englishCheck === null) && this.props.item.cn.search('進階英文') !== -1}
+          // 由前端所擋掉的移動
+          disabled={shouldBeDisabled}
+          // style={{ display: shouldBeDisabled ? 'none' : '' }}
         >
-          {label}
+          {shouldBeDisabled ? '不能移動此課程' : label}
         </Button>
 
         <Menu
@@ -181,7 +196,9 @@ MoveGroupButton.propTypes = {
 
 const mapStateToProps = (state) => ({
   overview: state.Student.Graduation.overview,
-  studentIdcard: state.Student.User.studentIdcard
+  studentIdcard: state.Student.User.studentIdcard,
+  idCard: state.Student.Graduation.idCardForassistans,
+  assis: state.Student.Graduation.assis
 })
 
 const mapDispatchToProps = (dispatch) => ({

@@ -13,11 +13,21 @@ router.post('/students/graduate/switchCourse', csrfProtection, function(req, res
             //var code = req.body.code;
             var origin_group = req.body.origin_group;
             var target_group = req.body.target_group;
-            query.SetCosMotion(id, cos_name, origin_group, target_group);
-            var signal = {
-                signal:1
-            }
-            res.send(signal);
+            query.SetCosMotion(id, cos_name, origin_group, target_group,function(err, result){
+                    if(err)
+                        throw err;
+                        res.redirect('/');
+                    if(!result)
+                        res.redirect('/');
+                    else{
+                        result = JSON.parse(result);
+                        //console.log(result);
+                        //var signal = {
+                          //  signal:(parseInt(result.info.affectedRows) > 0)?1:0
+                        //}
+                        //res.send(signal);
+                    }     
+            });
         }
         else
             res.redirect('/');

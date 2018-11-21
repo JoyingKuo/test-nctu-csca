@@ -6,7 +6,7 @@ var router = express.Router();
 
 router.post('/assistants/graduate/graduateStudent', function(req, res) {
     var grades = {grade: req.body.grade};
-    // var grades = {grade: '二'};
+    //var grades = {grade: '二'};
     var list = [];
     if (req.session.profile) {
         m.ShowGivenGradeStudentID(grades, function(err, result) {
@@ -19,6 +19,7 @@ router.post('/assistants/graduate/graduateStudent', function(req, res) {
                 var all_result = JSON.parse(result);
                 for (var i = 0; i < all_result.length; i++) {
                     var studentID = {student_id: all_result[i].student_id};
+                    //var studentID = {student_id: '0616220'};
                     m.ShowStudentGraduate(studentID, function(err, graduate_result) {
                         if (err) {
                             throw err;
@@ -28,9 +29,10 @@ router.post('/assistants/graduate/graduateStudent', function(req, res) {
                         } else {
                             var output = JSON.parse(graduate_result)
                             output.map( student => {
-                                if (student.submit_status === null) { student.submit_status = '0'; }
-                                if (student.submit_type === null) { student.submit_type = '0'; }
-                                if (student.en_status === null) { student.en_status = '0'; }
+                                if (student.submit_status === null) { student.submit_status = 0; }
+                                if (student.submit_type === null) { student.submit_type = 0; }
+                                if (student.en_status === null) { student.en_status = 0; }
+                                student.submit_status = parseInt(student.submit_status);
                                 list.push(student);
                             });
                             // list.push(JSON.parse(graduate_result));

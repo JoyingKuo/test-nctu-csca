@@ -25,13 +25,17 @@ getStudentId.studentId = function(req, res, next){
         // get students or assistants
         //console.log(checkPage);
         if(checkPage === "students"){
-             //res.locals.studentId = '0216323';
+             //res.locals.studentId = '0413358';
          //console.log("get student ID:");
            //console.log(JSON.parse(req.session.profile));
+           res.locals.professional_field = req.body.professional_field;
+           
            res.locals.studentId = utils.getPersonId(JSON.parse(req.session.profile));
         }
         else if(checkPage2 === "assistants"){
             //console.log("get assistant!")
+            res.locals.professional_field = req.query.professional_field;
+                
             res.locals.studentId = req.query.student_id;
            // console.log("ass:" + req.query.student_id);
             //console.log(checkPage2)
@@ -43,4 +47,14 @@ getStudentId.studentId = function(req, res, next){
     else
         res.redirect('/');
 }
+
+getStudentId.studentId_post = function(req, res, next) {
+    if (req.session.profile) {
+        res.locals.studentId = req.body.student_id;
+        next();
+    } else {
+        res.redirect('/');
+    }
+}
+
 exports.getStudentId = getStudentId;

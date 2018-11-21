@@ -9,20 +9,6 @@ Othercourse.processOther = function(req, res, next){
                 require: 0,
                 course: []
         }
-        var coreClass = {
-                title: '核心課程',
-                credit: 0,
-                require: 0,
-                selection: false,
-                course: []
-        }
-        var otherClass = {
-                title: '副核心與他組核心',
-                credit: 0,
-                require: 0,
-                selection: false,
-                course: []
-        }
 	    var elective = {
                 title: '專業選修',
                 credit: 0,
@@ -86,8 +72,10 @@ Othercourse.processOther = function(req, res, next){
                 credit:0,
                 course:[]
         }
+        var professional_field = req.course.professional_field;
+
 	    var rules = JSON.parse(req.rules);
-	    var program = req.profile[0].program;
+	    var program = req.course.program;
         var pass = JSON.parse(req.pass);
        // console.log("pass ");
         //console.log(pass);
@@ -135,7 +123,7 @@ Othercourse.processOther = function(req, res, next){
         //console.log("before" + offset.length);
         for(var i = 0; i<offset.length; i++){
             if(offset[i].score !=null){
-                if(offsetTaken[offset[i].cos_code] == true){
+                if(offsetTaken[offset[i].cos_code] == true){ // offsetTaken
                     //console.log("find the same");
                     if(offset[i].cos_cname == '導師時間'){
                         teacherOffsetCount++;
@@ -150,13 +138,13 @@ Othercourse.processOther = function(req, res, next){
                     }
                 }
                 else{
-                    offsetTaken[offset[i].cos_code] = true;
+                    offsetTaken[offset[i].cos_code] = true; //offsetTaken
                     offsetInfo[offset[i].cos_code] = offset[i];
                 }
             }
             else{
                 offsetInfo[offset[i].cos_code] = offset[i];
-                offsetTaken[offset[i].cos_code] = true;
+                offsetTaken[offset[i].cos_code] = true; //offsetTaken
             }
         }
         //console.log("middle");
@@ -168,13 +156,30 @@ Othercourse.processOther = function(req, res, next){
         }
         //console.log("after");
         //console.log(offset);
-        
-
+         
 		for(var i = 0; i<offset.length; i++){
-            if((offsetTakenCheck[offset[i].cos_code] == true)&& (offset[i].cos_cname == '導師時間')){
+            if(offsetTakenCheck[offset[i].cos_code] == true){
+                if(offset[i].cos_cname == '導師時間'){
                     offsetTeacherTime.push(cosInfo);
                     compulsory.course.push(cosInfo);
+                    //console.log(cosInfo);
+                }
+                else if(offset[i].cos_type =='通識'){
+                    cosInfo.dimension = offset[i].brief.substring(0,2);
+                    general.course.push(cosInfo);
+                    var temp_cosInfo = Object.assign({}, cosInfo);
+                    temp_cosInfo.dimension = offset[i].brief_new.substring(0,5);
+                    general_new.course.push(temp_cosInfo);
+                    general.credit += parseFloat(offset[i].credit);
+                    general_new.credit.total += parseFloat(offset[i].credit);
+                    if(offset[i].brief_new.substring(0,2) == '核心') general_new.credit.core += parseFloat(pass[q].cos_credit);
+                    else if(offset[i].brief_new.substring(0,2) == '跨院') general_new.credit.cross += parseFloat(pass[q].cos_credit);
+                    else if(offset[i].brief_new.substring(0,2) == '校基') general_new.credit.basic += parseFloat(pass[q].cos_credit);
 
+                }
+                //else if(offset[i].cos_type =='體育'){
+
+                //}
             }
             if(offsetTakenCheck[offset[i].cos_code] != true){
             var cosInfo = {
@@ -238,24 +243,28 @@ Othercourse.processOther = function(req, res, next){
                 }
                 else{    
                     if(offset[i].cos_cname == '導師時間'){
-                        taken[cosInfo.code] == true;
+                        //taken[cosInfo.code] == true;
                         /*if(taken[cosInfo.code] === true){
+                            console.log("Here:");
                             console.log(cosInfo);
                             if(repeatCounter[cosInfo.code] == null)
                                 repeatCounter[cosInfo.code] = 1;
                             else
                                 repeatCounter[cosInfo.code]++;
                             var temp = cosInfo.code + '_' + repeatCounter[cosInfo.code];
+                            console.log("Plus");
                             console.log(cosInfo);
                             cosInfo.code = temp;
                         }
-                        else
+                        else{
                             taken[cosInfo.code] = true;
-                            console.log(taken);*/
-                       // console.log(cosInfo);
+                            console.log(taken);
+                        }*/
+                        //console.log(cosInfo);
                         offsetTeacherTime.push(cosInfo);
                         //console.log("show:" + JSON.stringify(cosInfo));
                     }
+                    //console.log(cosInfo);
                     compulsory.course.push(cosInfo);
                     compulsory.credit += cosInfo.realCredit;
                 }
@@ -311,8 +320,7 @@ Othercourse.processOther = function(req, res, next){
                                     dimension[5] = true;
                                 general.course.push(cosInfo);
                                 var temp_cosInfo = Object.assign({}, cosInfo);
-                                //temp_cosInfo.dimension = offset[i].brief_new.substring(0,5);
-                                temp_cosInfo.dimension = offset[i].brief_new;
+                                temp_cosInfo.dimension = offset[i].brief_new.substring(0,5);
                                 general_new.course.push(temp_cosInfo);
                                 general.credit += parseFloat(offset[i].credit);
                                 general_new.credit.total += parseFloat(offset[i].credit);
@@ -359,16 +367,15 @@ Othercourse.processOther = function(req, res, next){
         }
 		//////console.log("After checking free");
 		compulsory.require = parseFloat(rules[0].require_credit);
-	    coreClass.require = parseFloat(rules[0].core_credit);
-	    otherClass.require = parseFloat(rules[0].sub_core_credit);
 	    elective.require = parseFloat(rules[0].pro_credit);
 	    otherElect.require = parseFloat(rules[0].free_credit);
 	    language.require = parseFloat(rules[0].foreign_credit);
 
         //record the cs table courses and cs courses' names
 		for(var x = 0; x<total.length; x++){
-	        if(temp > 3){
-                if(total[x].type == '必修'){
+	        if(temp > 3){ 
+                //console.log('yoyoyo' +professional_field);
+                if(total[x].type == '必修' || (program == '網多' && professional_field == 0 && total[x].type == '網路') || (program == '網多' && professional_field == 1 && total[x].type == '多媒體')){
                     CSname[total[x].cos_cname] = true;
           	        for(var a = 0; a<total[x].cos_codes.length; a++){
 	                    rule[total[x].cos_codes[a]] = true;
@@ -482,7 +489,7 @@ Othercourse.processOther = function(req, res, next){
 				 }
 	             else{
 	                if(pass[q].cos_type == '外語'){
-				        var reg = pass[q].cos_cname.substring(0,4);
+				        var reg = pass[q].brief.substring(0,2);
                         for(var h = 0; h< language.course.length; h++){
                             if(language.course[h].cn == pass[q].cos_cname){
                                 if(pass[q].score >= language.course[h].score)
@@ -491,7 +498,7 @@ Othercourse.processOther = function(req, res, next){
                             }
                         }
                         if(h == language.course.length){
-                            if(reg == '進階英文')
+                            if(reg == '進階')
                                 advanceEnglish++;
                             else{
                                 if(pass[q].cos_cname == '大一英文（一）')
@@ -501,7 +508,7 @@ Othercourse.processOther = function(req, res, next){
                             }
                             if(englishState == '0'|| englishState == null ){
                                 if(advanceEnglish <=2){
-                                    if(reg == '進階英文'){
+                                    if(reg == '進階'){
                                         cosInfo.realCredit = 0;
                                         cosInfo.reason = 'english';
                                         //cosInfo.languageType = 'advance';
@@ -694,7 +701,25 @@ Othercourse.processOther = function(req, res, next){
 		    }
 	      }
 	    }
-
+        if((englishState == '0' || englishState == null) && advanceEnglish < 2){
+            for(var i = 0; i < (2 - advanceEnglish); i++){
+                var cosInfo = {
+                    cn:'進階英文',
+                    en:'',
+                    score: -1,
+                    reason: 'CS',
+                    complete:false,
+                    grade: '',
+                    realCredit: 0,
+                    originalCredit: 2,
+                    english: false,
+                    year: '',
+                    semester: '',
+                    move: false
+                };
+                language.course.push(cosInfo);
+            }
+        }
 		if(englishState == '0' || englishState == '3' || englishState == '4'){
             for(var i = 0; i<2; i++){
                if(basicEnglish[i] != true){
@@ -726,8 +751,7 @@ Othercourse.processOther = function(req, res, next){
               }
         }
         courseResult.push(compulsory);
-	    courseResult.push(coreClass);
-	    courseResult.push(otherClass);
+        //console.log(compulsory);
 		courseResult.push(elective);
 	    courseResult.push(otherElect);
 	    courseResult.push(language);

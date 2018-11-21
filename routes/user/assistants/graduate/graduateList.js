@@ -63,8 +63,8 @@ router.get('/assistants/graduate/graduateList', StudentId, StudentProfile, query
     			'graduate_status': 0,
     			'pro': 1,
     			'other': 1,
-    			'net': 9,
-    			'media': 9,
+    			'net': [],
+    			'media': [],
                 'submit_type': -1,
     			'old_total': 1,
     			'old_contemp': 2,
@@ -84,10 +84,11 @@ router.get('/assistants/graduate/graduateList', StudentId, StudentProfile, query
     			'en_basic': 1,
     			'en_advanced': 1,
     			'pe': 6,
-    			'sevice': 2,
+    			'service': 2,
     			'art': 2,
     			'mentor': 2,
-    			'compulse': []
+    			'compulse': [],
+                'current': []
 			};
 
             var will_list = {
@@ -116,11 +117,11 @@ router.get('/assistants/graduate/graduateList', StudentId, StudentProfile, query
                 'art': 0,
                 'mentor': 0,
                 'en_course': 0,
-                'net': 0,
-                'media': 0
+                'net': 9,
+                'media': 9
             };
 
-            var [compulse, core, subcore, pro, other, lang, general_old, general_new, pe, service, art, graduate, credit] = courseResult;
+            var [compulse, pro, other, lang, general_old, general_new, pe, service, art, graduate, credit] = courseResult;
             list.student_id = info.student_id;
             list.sname = info.sname;
             list.program = info.program;
@@ -284,6 +285,15 @@ router.get('/assistants/graduate/graduateList', StudentId, StudentProfile, query
             var en_pass = (list.en_total <= 0 && list.en_basic <= 0 && list.en_advanced <= 0);
             var will_en_pass = (will_list.en_total <= 0 && will_list.en_basic <= 0 && will_list.en_advanced <= 0);
             
+            var net_map = {'計算機網': 0, '網路程式': 1, '網路通訊': 2};
+            var media_map = {'計算機圖': 0, '影像處理': 1, '數值方法': 2};
+            var net_course = ['計算機網路概論', '網路程式設計概論', '網路通訊原理'];
+            var media_course = ['計算機圖學概論', '影像處理概論', '數值方法'];
+            var net_complete = [0, 0, 0];
+            var media_complete = [0, 0, 0];
+            var net_credit = 9;
+            var media_credit = 9;
+
             for (var i = 0; i < compulse.course.length; i++) {
                 if (compulse.course[i].complete) {
                     if (compulse.course[i].cn.substring(0, 4) === '導師時間') {
@@ -293,15 +303,18 @@ router.get('/assistants/graduate/graduateList', StudentId, StudentProfile, query
                         if (compulse.course[i].english === true && compulse.course[i].code.substring(0, 3) === 'DCP') {
                             list.en_course = 1;
                         }
+
                         if (cn.substring(0, 7) === '計算機網路概論' || cn.substring(0, 8) === '網路程式設計概論' || cn.substring(0, 6) === '網路通訊原理') {
-                            list.net -= 3;
+                            net_credit -= 3;
+                            net_complete[net_map[cn.substring(0, 4)]] = 1;
                         } else if (cn.substring(0, 7) === '計算機圖學概論' || cn.substring(0, 6) === '影像處理概論' || cn.substring(0, 4) === '數值方法') {
-                            list.media -=3;
+                            media_credit -= 3;
+                            media_complete[media_map[cn.substring(0, 4)]] = 1;
                         }
                     }
                 } else {
-                    list.compulse.push(compulse.course[i].cn);
                     if (compulse.course[i].reason === 'now') {
+                        list.current.push(compulse.course[i].cn);
                         if (compulse.course[i].cn.substring(0, 4) === '導師時間') {
                             will_list.mentor += 1;
                         } else {
@@ -312,11 +325,13 @@ router.get('/assistants/graduate/graduateList', StudentId, StudentProfile, query
                             if (cn.substring(0, 7) === '計算機網路概論' || cn.substring(0, 8) === '網路程式設計概論' || cn.substring(0, 6) === '網路通訊原理') {
                                 will_list.net += 3;
                             } else if (cn.substring(0, 7) === '計算機圖學概論' || cn.substring(0, 6) === '影像處理概論' || cn.substring(0, 4) === '數值方法') {
-                                will_list.media +=3;
+                                will_list.media += 3;
                             }
                         }
                         will_list.compulse += compulse.course[i].originalCredit;
                         will_list.total += compulse.course[i].originalCredit;
+                    } else {
+                        list.compulse.push(compulse.course[i].cn);
                     }
                 }
             }
@@ -328,9 +343,11 @@ router.get('/assistants/graduate/graduateList', StudentId, StudentProfile, query
                         list.en_course = 1;
                     }
                     if (cn.substring(0, 7) === '計算機網路概論' || cn.substring(0, 8) === '網路程式設計概論' || cn.substring(0, 6) === '網路通訊原理') {
-                        list.net -= 3;
+                        net_credit -= 3;
+                        net_complete[net_map[cn.substring(0, 4)]] = 1;
                     } else if (cn.substring(0, 7) === '計算機圖學概論' || cn.substring(0, 6) === '影像處理概論' || cn.substring(0, 4) === '數值方法') {
-                        list.media -= 3;
+                        media_credit -= 3;
+                        media_complete[media_map[cn.substring(0, 4)]] = 1;
                     }
                 } else {
                     if (pro.course[i].reason === 'now') {
@@ -348,20 +365,18 @@ router.get('/assistants/graduate/graduateList', StudentId, StudentProfile, query
                     }
                 }
             }
-            
-            for (var i = 0; i < core.course.length; i++) {
-                if (core.course[i].complete) {
-                    var cn = core.course[i].cn;
-                    if (core.course[i].english === true && core.course[i].code.substring(0, 3) === 'DCP') {
-                        list.en_course = 1;
-                    }
-                    if (cn.substring(0, 7) === '計算機網路概論' || cn.substring(0, 8) === '網路程式設計概論' || cn.substring(0, 6) === '網路通訊原理') {
-                        list.net -= 3;
-                    } else if (cn.substring(0, 7) === '計算機圖學概論' || cn.substring(0, 6) === '影像處理概論' || cn.substring(0, 4) === '數值方法') {
-                        list.media -= 3;
-                    }
+
+            for (var i = 0; i < 3; i++) {
+                if (net_complete[i] === 1) {
+                    list.net.push(net_course[i]);
+                }
+                if (media_complete[i] === 1) {
+                    list.media.push(media_course[i]);
                 }
             }
+
+            list.net_credit = net_credit;
+            list.media_credit = media_credit;
             
             for (var i = 0; i < other.course.length; i++) {
                 if (!other.course[i].complete && other.course[i].reason === 'now') {
@@ -389,8 +404,8 @@ router.get('/assistants/graduate/graduateList', StudentId, StudentProfile, query
             }
             
             list.total_credit = credit.total;
-            var total_pass = list.total_credit >= credit.total_require;;
-            var will_total_pass = (list.total_credit + will_list.total) >= credit.total_require;;
+            var total_pass = list.total_credit >= credit.total_require;
+            var will_total_pass = (list.total_credit + will_list.total) >= credit.total_require;
 
             list.pro = credit.pro_require - credit.pro;
             var pro_pass = list.pro <= 0;
@@ -415,16 +430,34 @@ router.get('/assistants/graduate/graduateList', StudentId, StudentProfile, query
             var mentor_pass = list.mentor <= 0;
             var will_mentor_pass = (list.mentor - will_list.mentor) <= 0;
 
-            var net_media_pass = (list.net <= 0 || list.media <= 0);
+            var net_media_pass = (net_credit <= 0 || media_credit <= 0);
             var will_net_media_pass = (list.net - will_list.net <= 0 || list.media - will_list.media <= 0);
 
             var eng_pass = list.en_course === 1;
             var will_eng_pass = will_list.en_course === 1;
 
-            var compulse_pass = (credit.compulse_require - credit.compulse) <= 0;
+            var compulse_pass = (credit.compulse_require - credit.compulsory) <= 0;
             var will_compulse_pass = (credit.compulse_require - credit.compulse - will_list.compulse) <= 0;
         
             var pass = (total_pass && compulse_pass && pro_pass && other_pass && general_pass && en_pass && pe_pass && service_pass && art_pass && mentor_pass && eng_pass);
+            /*
+            list.total_pass = total_pass;
+            list.compulse_pass = compulse_pass;
+            list.pro_pass = pro_pass;
+            list.other_pass = other_pass;
+            list.general_pass = general_pass;
+            list.old_pass = old_pass;
+            list.new_pass = new_pass;
+            list.en_pass = en_pass;
+            list.pe_pass = pe_pass;
+            list.service_pass = service_pass;
+            list.art_pass = art_pass;
+            list.mentor_pass = mentor_pass;
+            list.eng_pass = eng_pass;
+            list.compulse_require = credit.compulse_require;
+            list.compulse_credit = credit.compulsory;
+            */
+
             var will_pass = (will_total_pass && will_compulse_pass && will_pro_pass && will_other_pass && will_general_pass && will_en_pass && will_pe_pass && will_service_pass && will_art_pass && will_mentor_pass && will_eng_pass);
 
             if (pass) {
@@ -437,8 +470,6 @@ router.get('/assistants/graduate/graduateList', StudentId, StudentProfile, query
             
             list.pro = Math.max(0, list.pro);
             list.other = Math.max(0, list.other);
-            list.net = Math.max(0, list.net);
-            list.media = Math.max(0, list.media);
             list.old_total = Math.max(0, list.old_total);
             list.old_contemp = Math.max(0, list.old_contemp);
             list.old_culture = Math.max(0, list.old_culture);
@@ -460,8 +491,8 @@ router.get('/assistants/graduate/graduateList', StudentId, StudentProfile, query
             list.art = Math.max(0, list.art);
             list.mentor = Math.max(0, list.mentor);
 
-            //res.send(list);
-            m.CreateStudentGraduate(list, function(err, result) {
+            res.send(list);
+            /*m.CreateStudentGraduate(list, function(err, result) {
                 if (err) {
                     throw err;
                     res.redirect('/');
@@ -470,7 +501,7 @@ router.get('/assistants/graduate/graduateList', StudentId, StudentProfile, query
                 } else {
                     res.send(JSON.parse(result));
                 }
-            });
+            });*/
         }
     });
 });

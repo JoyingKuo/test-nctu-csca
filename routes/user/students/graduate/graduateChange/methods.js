@@ -1,8 +1,6 @@
 var cards = require('./cardType').cardset;
 var query = require('../../../../../db/msql');
 var Compulsory = cards.Compulsory;
-var Core = cards.Core;
-var SecondaryCore = cards.SecondaryCore;
 var Elective = cards.Elective;
 var Language = cards.Language;
 var General = cards.General;
@@ -10,8 +8,9 @@ var PE = cards.PE;
 var Art = cards.Art;
 var Serve = cards.Serve;
 var Card = cards.Card;
+var Graduate = cards.Graduate;
 var methods = {};
-var allGroup = [/*"共同必修", */"專業選修", "其他選修", "外語", "通識", "體育", "服務學習", "藝文賞析"];
+var allGroup = [/*"共同必修", */"專業選修", "其他選修", "外語", "通識", "體育", "服務學習", "藝文賞析", "抵免研究所課程"];
 //var getStudentId = require('../../../course/getStudentId');
 //var studentId = getStudentId.getStudentId.studentId;
 
@@ -47,12 +46,6 @@ methods.checkCard = function(req, res){
             /*case "共同必修":
                 theCard = new Compulsory(cardCode, cardType, studentId);
                 //console.log(1);
-                break;
-            case "核心課程":
-                theCard = new Core(cardCode, cardType, studentId);
-                break;
-            case "副核心與他組核心":
-                theCard = new SecondaryCore(cardCode, cardType, studentId);
                 break;*/
             case "專業選修":
                 theCard = new Elective(cardCode, cardName, cardType, studentId);
@@ -64,15 +57,16 @@ methods.checkCard = function(req, res){
                 break;
             case "外語":
                 theCard = new Language(cardType); // All courses can move here
-                console.log(4);
+                //console.log(4);
                 break;
             case "通識":
-                theCard = new General(cardCode, cardType); 
+                //theCard = new General(cardCode, cardName, cardType, studentId); 
+                theCard = new General(cardCode, cardType);
                 //console.log(5);
                 break;
             case "體育":
                 theCard = new PE(cardCode); 
-                console.log(6);
+                //console.log(6);
                 break;
             case "服務學習":
                 theCard = new Serve(cardType); 
@@ -82,7 +76,10 @@ methods.checkCard = function(req, res){
                 theCard = new Art(cardName); 
                 //console.log(8);
                 break;
-            default:
+            case "抵免研究所課程":
+                theCard = new Graduate(cardCode);
+                break;
+                default:
                 //theCard = new Card(cardCode);
                 break;
         }

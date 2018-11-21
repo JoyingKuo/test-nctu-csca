@@ -31,7 +31,7 @@ var currentCS = nowCS.currentCS.processCS;
 
 
 
-router.get('/students/graduate/revised', StudentId, StudentProfile, queryFree, queryGeneral, queryPass, queryChange, queryCourse, queryNow,queryRule, processOther, processCS, currentOther, currentCS, processRestore, processResult, function(req, res){
+router.post('/students/graduate/revised', StudentId, StudentProfile, queryFree, queryGeneral, queryPass, queryChange, queryCourse, queryNow,queryRule, processOther, processCS, currentOther, currentCS, processRestore, processResult, function(req, res){
 	//console.log(" get revised");
     res.send(res.locals.courseResult);
 
