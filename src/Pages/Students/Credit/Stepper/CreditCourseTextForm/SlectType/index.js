@@ -1,7 +1,7 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import SelectField from 'material-ui/SelectField'
 import MenuItem from 'material-ui/MenuItem'
-import { courseCreditChange } from '../../../../../../Redux/Students/Actions/Credit'
+import { compulsoryCourseChange } from '../../../../../../Redux/Students/Actions/Credit'
 import { connect } from 'react-redux'
 
 const fontStyle = {
@@ -10,7 +10,7 @@ const fontStyle = {
   fontWeight: '300',
   letterSpacing: '1px',
   fontFamily: 'Noto Sans CJK TC',
-  width: '100px',
+  width: '100px'
 }
 
 const fontlabelStyle = {
@@ -32,12 +32,13 @@ class SelectCourseField extends Component {
 
   handleChange (event, index, value) {
     this.setState({ value: value })
-    this.props.courseCreditChange('course_type', event.target.value === 0 ? '必修' : '選修')
+    console.log(value)
+    this.props.compulsoryCourseChange({ course_type: value === 0 ? '必修' : '選修' })
   }
 
   render () {
     return (
-      <div style={{float: 'left', paddingTop: '25px', width: '100px'}}>
+      <div style={{ float: 'left', paddingTop: '25px', width: '150', marginRight: '10px' }}>
         <SelectField
           value={this.state.value}
           onChange={this.handleChange}
@@ -48,7 +49,7 @@ class SelectCourseField extends Component {
           selectedMenuItemStyle={fontlabelStyle}
           listStyle={fontStyle}
           menuItemStyle={fontStyle}
-          style={{width: '100px'}}
+          style={{ width: '100px' }}
         >
           <MenuItem value={0} key={0} primaryText={'必修'} />
           <MenuItem value={1} key={1} primaryText={'選修'} />
@@ -61,8 +62,8 @@ class SelectCourseField extends Component {
 const mapStateToProps = (state) => ({
 })
 const mapDispatchToProps = (dispatch) => ({
-  courseCreditChange: (type, value) => {
-    dispatch(courseCreditChange(type, value))
+  compulsoryCourseChange: (payload) => {
+    dispatch(compulsoryCourseChange(payload))
   }
 })
 

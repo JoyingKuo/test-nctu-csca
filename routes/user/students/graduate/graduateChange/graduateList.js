@@ -168,7 +168,7 @@ router.post('/students/graduate/graduateChange/graduateList', StudentId, Student
             list.new_total = credit.general_new_require - credit.general_new;
             list.new_core_total = general_new.require.core;
             for (var i = 0; i < general_new.course.length; i++) {
-                if (general_new.course[i].complete) {
+                if (general_new.course[i].complete && general_new.course[i].dimension != '') {
                     if (general_new.course[i].dimension.substring(0, 1) === '核') {
                         if (general_new.course[i].dimension.substring(3, 5) === '社會') {
                             list.new_core_society -= general_new.course[i].realCredit;

@@ -3,8 +3,7 @@ var currentOther = {};
 currentOther.processOther = function(req, res, next){
         
 	var now = JSON.parse(req.now);
-  //  console.log(now);
-    
+    //console.log(now);
 	//var total = req.course.total;
     var total = req.course.compulse
 	var courseResult = res.locals.courseResult;
@@ -86,7 +85,18 @@ currentOther.processOther = function(req, res, next){
   		            }
                     else{
                         if(now[q].cos_type == '外語'){
-					        courseResult[3].course.push(cosInfo);
+                            var replace = 0;
+                            if(now[q].cos_cname.substring(0,4) == '進階英文'){
+                                for(var t = 0; t < courseResult[3].course.length; t++){
+                                    if(courseResult[3].course[t].cn == '進階英文'){
+                                        courseResult[3].course[t] = cosInfo;
+                                        replace = 1; break;
+                                    }
+                                }
+                                if(replace == 0) courseResult[3].course.push(cosInfo);
+                            }
+                            else
+                                courseResult[3].course.push(cosInfo);
   				 		}
                         else if(now[q].cos_type == '通識'){
   						    var brief = now[q].brief.substring(0,2);

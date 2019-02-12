@@ -16,12 +16,12 @@ exports.ShowTeacherInfoResearchCnt="\
     select *\
     from\
     (\
-        select r.tname, substring(r.student_id, 1, 2) as 'grade', count(*) as 'scount'\
+        select r.tname, substring(r.semester, 1, 3) as 'year', count(*) as 'scount'\
         from \
         (\
-            select distinct r.student_id, r.tname, t.teacher_id \
+            select distinct r.student_id, r.tname, t.teacher_id , r.semester \
             from research_student as r, teacher as t\
-            where r.tname = t.tname\
+            where r.tname = t.tname  and first_second = 1 \
         ) as r \
         where r.student_id IN \
         (\
@@ -51,8 +51,8 @@ exports.ShowTeacherInfoResearchCnt="\
                 group by cs.student_id having count(distinct cs.student_id, cs.cos_year, cs.semester) >= 8\
             ) as cs\
         )\
-        group by substring(r.student_id, 1, 2), r.tname \
-        order by r.tname, substring(r.student_id, 1, 2)\
+        group by substring(r.semester, 1, 3), r.tname \
+        order by r.tname, substring(r.semester, 1, 3)\
     ) as o right join \
     (\
         select t.teacher_id,ti.phone, t.tname, ti.email, ti.expertise, ti.info\
@@ -96,6 +96,13 @@ exports.ShowResearchGroup="\
     where research_title = :research_title\
     and tname = :tname\
     and first_second = :first_second\
+    and semester = :semester";
+
+exports.ShowResearchTitleNumber="\
+    select count(distinct research_title)+1 as count\
+    from research_student\
+    where research_title like concat(:research_title, '_%') or research_title = :research_title\
+    and tname = :tname\
     and semester = :semester";
 
 exports.ShowResearchFilePath="\
@@ -177,3 +184,11 @@ exports.ShowStudentResearchList = "\
     where s.student_id = rs.student_id\
     and rs.first_second = :first_second\
     and rs.semester = :semester";
+
+exports.ShowStudentFirstSecond = "\
+    select first_second \
+    from research_student \
+    where student_id = :student_id \
+    order by first_second desc \
+    limit 1\
+    ";

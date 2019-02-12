@@ -340,6 +340,23 @@ query.queryProjectApplyList = function(req, res, next){
     else
         res.redirect('/');
 }
+
+query.queryTeacherPastProject = function (req, res, next){
+    if(req.session.profile){
+	
+        var teacherId = req.body.teacher_id;
+        table.tables.getTeacherPastProject(teacherId, function(projects){
+		req.projects = projects;
+        if(req.projects)
+            next();
+        else
+            return;
+        });
+    }
+    else
+        res.redirect('/');
+
+}
 // query the formal project list the teacher have
 query.queryProjectList = function(req, res, next){
     if(req.session.profile){

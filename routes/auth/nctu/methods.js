@@ -4,25 +4,26 @@ var utils = require('../../../utils');
 var randoms = require('../../../randomVals');
 var methods = {};
 
-var url = "https://id.nctu.edu.tw/o/authorize/?client_id=whzg3iNMpyLCy0jNFqq6iTSyEayJkvhYCRYbC9MY&response_type=code&scope=profile%20name";
+var url = "https://id.nctu.edu.tw/o/authorize/?client_id=QkP1fSywwMdJ3i6boO3jw2F7SfZiutyc6tihAvK6&response_type=code&scope=profile%20name";
 var redirectPath = utils.redirectPath;
 var oAuthNctu = {
     grant_type : "authorization_code",
-    client_id : "whzg3iNMpyLCy0jNFqq6iTSyEayJkvhYCRYbC9MY",
+    client_id : "QkP1fSywwMdJ3i6boO3jw2F7SfZiutyc6tihAvK6",
     client_secret : randoms.randomVals.nctuClientKey,
-    redirect_uri : "http://140.113.168.202:1234/auth/Nctu/callback"
+    redirect_uri : "http://140.113.17.22:1234/auth/Nctu/callback"
 }
 
 exports.oAuthNctu = oAuthNctu;
 
 methods.getCode = function(req, res, next){
     oAuthNctu.code = req.query.code;
+    console.log( oAuthNctu.code)
     if(!oAuthNctu.code){
         //console.log("Did not recieve code.");
         res.redirect('/');
         return;
-et   }
-    //console.log("token:");
+   }
+    console.log("token:");
    // console.log(oAuthNctu.code);
     next();
 }
@@ -122,7 +123,7 @@ methods.redirectAfterAuth = function(req, res, next){
 }
 
 methods.redirectPath = function(req, res, next){
-    //console.log(req.session.profile); 
+    console.log(req.session.profile); 
     var personStatus = JSON.parse(req.session.profile).personStatus;
     switch(personStatus){
         case 'w':

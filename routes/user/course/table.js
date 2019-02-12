@@ -455,12 +455,36 @@ function queryMentorInfo(studentId ,callback){
     });	
 }
 function SetProjectScore(info ,callback){
-    var content = {student_id:info.student_id,tname:info.tname, research_title:info.research_title, first_second: info.first_second, semester: info.year, new_score:info.new_score, new_comment: info.comment};
-    query.SetResearchScoreComment(content);
+    var content = {
+        student_id: '',
+        tname: '',
+        research_title: '',
+        first_second: 0,
+        semester: '',
+        new_score: 0,
+        new_comment: ''
+    }
+    query.ShowStudentFirstSecond(info.student_id,function(err,result){
+        if(err){
+            throw err;
+            return;
+        }
+        result = JSON.parse(result);
+        var fir_sec = parseInt(result[0].first_second);
+        //console.log(fir_sec);
+        content.student_id = info.student_id;
+        content.tname = info.tname;
+        content.research_title = info.research_title;
+        content.first_second = fir_sec;
+        content.semester = info.year;
+        content.new_score = parseInt(info.new_score);
+        content.new_comment = info.comment;
+    });
 	
 	setTimeout(function(){
-			var signal = {signal :1};
-			callback(signal);
+        query.SetResearchScoreComment(content);
+		var signal = {signal :1};
+		callback(signal);
 	},1000);
 }
 function SetProjectTitle(info ,callback){
@@ -541,6 +565,19 @@ function queryProjectApplyList(teacherId ,callback){
     
     });	
 }
+function queryTeacherPastProject(teacherId,callback){
+    query.ShowGradeTeacherResearchStudent(teacherId,'',function(err, projects){
+            if(err){
+                throw err;
+                return;
+            }
+            if(!projects)
+                return;
+
+            projects = JSON.parse(projects);
+            callback(projects);
+    });
+}
 function queryProjectList(info, callback){
     var teacherId = info.teacherId;
     var sem = info.sem;
@@ -584,6 +621,7 @@ function queryProjectList(info, callback){
 								participants : [],
 								year:'',
 								first_second: '',
+                                //title_number: ''
 						}
 						project.year = result[i].semester;
                         project.research_title = result[i].research_title;
@@ -593,6 +631,15 @@ function queryProjectList(info, callback){
 						count++;
 					}  
 				}
+                /*for(var i = 0; i<projects.groups.length; i++){
+                    query.ShowResearchTitleNumber({tname: tname, research_title: group_list_1[i].research_title, semester: group_list_1[i].year}, function(error, results){
+                        if(error) 
+                            throw error;
+                        else{
+                            results = JSON.parse(results);
+                        }
+                    });
+                }*/
 				var cs_number = 0, other_number = 0, cnt = 0;
 				for(var i = 0; i<result.length; i++){
 					if(result[i].semester != sem) continue;
@@ -600,6 +647,7 @@ function queryProjectList(info, callback){
 						student_id: '',
 						sname: '',
 						detail: '',
+                        comment: '',
 						score: null
 					}
 					student.student_id = result[i].student_id;
@@ -622,6 +670,7 @@ function queryProjectList(info, callback){
 					}*/
 					student.sname = result[i].sname;
 					student.detail = result[i].class_detail;
+                    student.comment = result[i].comment;
 					var id = index[result[i].research_title];
 					projects.groups[id].participants.push(student);
 					//setTimeout(function(){	
@@ -903,6 +952,14 @@ table.getProjectList = function(info, callback){
         callback(projects);
     });
 }
+table.getTeacherPastProject = function(teacherId, callback){
+//table.getProjectList = function(teacherId, callback){
+    queryTeacherPastProject(teacherId, function(projects){
+    //queryProjectList(teacherId, function(projects){
+        callback(projects);
+    });
+}
+
 table.SetState = function(info, callback){
     SetApplyFormState(info, function(signal){
         callback(signal);

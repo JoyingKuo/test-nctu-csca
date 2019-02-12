@@ -32,6 +32,7 @@ restore.processRestore = function(req, res, next){
         }
         for(var i = 0; i<courses.length; i++){
             if(courses[i].now_pos == '...') continue;
+            if(courses[i].orig_pos == null) continue;
             if(courses[i].orig_pos == '共同必修'){
                 restore[0].pre[courses[i].cos_cname] = true;
                 restoreIndex[0].pre.push(courses[i].cos_cname);    

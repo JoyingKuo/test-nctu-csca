@@ -37,8 +37,13 @@ router.get('/assistants/ShowUserOffsetApplyForm', function(req, res){
                             "type": result[i].cos_type,
                             "reason": result[i].reason,
                             "status": parseInt(result[i].agree),
-                            "previous": result[i].previous == "0" ? false : true
+                            "previous": result[i].previous == "0" ? false : true,
+                            "date": result[i].timestamp,
+                            "file": result[i].file,
+                            "transferTo": []
                         };
+                        if(result[i].transferto != null)
+                            one.transferTo = result[i].transferto;
                         group.push(one);
                     }
                     if(group.length == result.length)

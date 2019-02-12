@@ -172,7 +172,7 @@ module.exports = {
     ShowRecommendCos:function(id, callback){
         const resource = pool.acquire();
         resource.then(function(c){
-            var semester = '107-1%';
+            var semester = '107-2%';
             var sql_ShowRecommendCos = c.prepare(s.ShowRecommendCos);
             var sql_findCurrentCos = c.prepare(s.findCurrentCos);
             var sql_findTeacher = c.prepare(s.findTeacher);
@@ -373,6 +373,10 @@ module.exports = {
         resource.then(function(c) {
             var sql_ShowGraduateRule = c.prepare(s.ShowGraduateRule);
             var year = '1' + id[0] + id[1];
+
+            if(id == "0316084") // wait to delete
+                year = "104";
+
             c.query(sql_ShowGraduateRule({ id: id, year: year }), function(err, result) {
                 if (err){
                     callback(err, undefined);
@@ -404,6 +408,12 @@ module.exports = {
         resource.then(function(c) {
             var sql_ShowCosGroup = c.prepare(s.ShowCosGroup);
             var year = '1' + id[0] + id[1];
+
+            
+            if(id == "0316084") // wait to delete
+                year = "104";
+
+
             c.query(sql_ShowCosGroup({ id: id, year: year }), function(err, result) {
                 if (err){
                     callback(err, undefined);
@@ -453,6 +463,7 @@ module.exports = {
                         return;
                     }
                     callback(null, JSON.stringify(result));
+                    pool.release(c);
                 });
             else if(data['all_student'])
                 c.query(sql_ShowUserOffsetApplyFormAll([]),function(err,result){
@@ -462,7 +473,23 @@ module.exports = {
                         return;
                     }
                     callback(null, JSON.stringify(result));
+                    pool.release(c);
                 });
+        });
+    },
+    ShowGivenOffsetApplyForm: function(data, callback){
+        const resource = pool.acquire();
+        resource.then(function(c){
+            var sql_ShowGivenOffsetApplyForm = c.prepare(s.ShowGivenOffsetApplyForm);
+            c.query(sql_ShowGivenOffsetApplyForm(data),function(err,result){
+                if(err){
+                    callback(err, undefined);
+                    pool.release(c);
+                    return;
+                }
+                callback(null, JSON.stringify(result));
+                pool.release(c);
+            });
         });
     },
     ShowGivenGradeStudent: function(data, callback){
@@ -480,5 +507,33 @@ module.exports = {
                 pool.release(c);
             });
         })
-    }
+    },
+    ShowStudentHotCos: function(data, callback){
+        const resource=pool.acquire();
+        resource.then(function(c) {
+            var sql_ShowStudentGrade = c.prepare(s.ShowStudentGrade);
+            var sql_ShowStudentHotCos = c.prepare(s.ShowStudentHotCos);
+            c.query(sql_ShowStudentGrade(data), function(err, student){
+                student = JSON.parse(JSON.stringify(student));
+                if(err)
+                {
+                    callback(err, undefined);
+                    pool.release(c);
+                    return ;
+                }
+                if(student.length==1){
+                    c.query(sql_ShowStudentHotCos(student[0]), function(err, result){
+                        if(err)
+                        {
+                            callback(err, undefined);
+                            pool.release(c);
+                            return ;
+                        }
+                        callback(null, JSON.stringify(result));
+                        pool.release(c);
+                    });
+                }
+            })  
+        })
+    },
 }

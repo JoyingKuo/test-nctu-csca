@@ -4,8 +4,8 @@ var query = require('../../course/query');
 var csrf = require('csurf');
 var csrfProtection = csrf();
 
-var queryTotalProjects = query.query.queryTotalProjects;
-router.post('/students/project/ResearchInfoOfPro',csrfProtection, queryTotalProjects, function(req, res){
+var queryTeacherPastProject = query.query.queryTeacherPastProject;
+router.post('/students/project/ResearchInfoOfPro',csrfProtection, queryTeacherPastProject, function(req, res){
 	res.send(req.projects);
 });
 

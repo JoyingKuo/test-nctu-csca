@@ -52,7 +52,7 @@ module.exports = {
                 var gradeCnt, temp={}, i, res=[];
                 result=JSON.parse(JSON.stringify(result));
                 for(i in result){
-                    gradeCnt={grade:result[i].grade, scount:result[i].scount};
+                    gradeCnt={grade:result[i].year, scount:result[i].scount};
                     if(i==0){
                         temp={tname:result[i].tname, teacher_id:result[i].teacher_id, 
                             phone:result[i].phone, email:result[i].email, 
@@ -226,5 +226,38 @@ module.exports = {
                 pool.release(c);
             });
         });
-    }
+    },
+    ShowStudentFirstSecond: function(student_id, callback) {
+        const resource = pool.acquire();
+        resource.then(function(c) {
+            var sql_ShowStudentFirstSecond = c.prepare(s.ShowStudentFirstSecond);
+            c.query(sql_ShowStudentFirstSecond({ student_id }), function(err, result) {
+                if (err){
+                    callback(err, undefined);
+                    pool.release(c);
+                    return;
+                }
+                callback(null, JSON.stringify(result));
+                pool.release(c);
+            })
+        })
+    },
+    ShowResearchTitleNumber: function(data, callback){
+        if(typeof(data)==='string')
+            data=JSON.parse(data);
+        const resource=pool.acquire();
+        resource.then(function(c){
+            var sql_ShowResearchTitleNumber=c.prepare(s.ShowResearchTitleNumber);
+            c.query(sql_ShowResearchTitleNumber(data), function(err, result){
+                if(err)
+                {
+                    callback(err, undefined);
+                    pool.release(c);
+                    return ;
+                }
+                callback(null, JSON.stringify(result));
+                pool.release(c);
+            });
+        });
+    }, 
 };

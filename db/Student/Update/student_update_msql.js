@@ -61,6 +61,7 @@ module.exports = {
                         return;
                     }
                     callback(null, JSON.stringify(result));
+                    pool.release(c);
                 })
             });
         });
@@ -76,6 +77,7 @@ module.exports = {
                     return;
                 }
                 callback(null, JSON.stringify(result));
+                pool.release(c);
             });
         });
     },
@@ -90,21 +92,64 @@ module.exports = {
                     return;
                 }
                 callback(null, JSON.stringify(result));
+                pool.release(c);
+
             });
         });
     },
-    SetOffsetApplyFormAggreStatus(data,callback){
+    SetOffsetApplyFormAgreeStatus(data,callback){
         const resource = pool.acquire();
         resource.then(function(c){
-            var sql_SetOffsetApplyFormAggreStatus = c.prepare(s.SetOffsetApplyFormAggreStatus)
-            c.query(sql_SetOffsetApplyFormAggreStatus(data),function(err,result){
+            var sql_SetOffsetApplyFormAgreeStatus = c.prepare(s.SetOffsetApplyFormAgreeStatus)
+            c.query(sql_SetOffsetApplyFormAgreeStatus(data),function(err,result){
                 if(err){
                     callback(err, undefined);
                     pool.release(c);
                     return;
                 }
                 callback(null, JSON.stringify(result));
+                pool.release(c);
             });
+        });
+    },
+    SetRecommendCosStar(data, callback){
+        const resource = pool.acquire();
+        resource.then(function(c){
+            var sql_SetRecommendCosStar = c.prepare(s.SetRecommendCosStar);
+            var sql_CheckRecommendCosStar = c.prepare(s.CheckRecommendCosStar);
+            var sql_UpdataRecommendCosStar = c.prepare(s.UpdataRecommendCosStar);
+            c.query(sql_CheckRecommendCosStar(data), function(err, check){
+                if(err){
+                    callback(err, undefined);
+                    pool.release(c);
+                    return;
+                }
+                check = JSON.parse(JSON.stringify(check));
+                if(check.length==1){
+                    // if exist, update
+                    c.query(sql_UpdataRecommendCosStar(data), function(err, result){
+                        if(err){
+                            callback(err, undefined);
+                            pool.release(c);
+                            return;
+                        }
+                        callback(null, JSON.stringify(result));
+                        pool.release(c);
+                    });
+                }
+                else{
+                    // if not exist, insert
+                    c.query(sql_SetRecommendCosStar(data), function(err, result){
+                        if(err){
+                            callback(err, undefined);
+                            pool.release(c);
+                            return;
+                        }
+                        callback(null, JSON.stringify(result));
+                        pool.release(c);
+                    });
+                }
+            })
         });
     }
 }

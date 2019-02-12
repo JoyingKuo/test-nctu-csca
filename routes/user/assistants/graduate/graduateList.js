@@ -30,9 +30,9 @@ var currentCS = nowCS.currentCS.processCS;
 
 router.get('/assistants/graduate/graduateList', StudentId, StudentProfile, queryFree, queryGeneral, queryPass, queryChange, queryCourse, queryNow,queryRule, processOther, processCS, currentOther, currentCS,  processRestore, processResult, function(req, res) {
     //res.send(req.course.total);
-    //res.send(req.now);
+    //res.send(req.pass);
     //res.send(res.locals.courseResult);
-    /*m.ShowUserOnCos('0416256', function(err, result) {
+    /*m.ShowUserAllScore('0416037', function(err, result) {
         if (err) {
             throw err;
             res.redirect('/');
@@ -182,7 +182,7 @@ router.get('/assistants/graduate/graduateList', StudentId, StudentProfile, query
             list.new_total = credit.general_new_require - credit.general_new;
             list.new_core_total = general_new.require.core;
             for (var i = 0; i < general_new.course.length; i++) {
-                if (general_new.course[i].complete) {
+                if (general_new.course[i].complete && general_new.course[i].dimension != '') {
                     if (general_new.course[i].dimension.substring(0, 1) === '核') {
                         if (general_new.course[i].dimension.substring(3, 5) === '社會') {
                             list.new_core_society -= general_new.course[i].realCredit;
@@ -491,8 +491,8 @@ router.get('/assistants/graduate/graduateList', StudentId, StudentProfile, query
             list.art = Math.max(0, list.art);
             list.mentor = Math.max(0, list.mentor);
 
-            res.send(list);
-            /*m.CreateStudentGraduate(list, function(err, result) {
+            //res.send(list);
+            m.CreateStudentGraduate(list, function(err, result) {
                 if (err) {
                     throw err;
                     res.redirect('/');
@@ -501,7 +501,7 @@ router.get('/assistants/graduate/graduateList', StudentId, StudentProfile, query
                 } else {
                     res.send(JSON.parse(result));
                 }
-            });*/
+            });
         }
     });
 });

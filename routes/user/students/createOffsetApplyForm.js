@@ -21,7 +21,9 @@ router.post('/students/credit/course/form', csrfProtection, function(req, res){
               cos_code: req.body.course_code,
               cos_type: req.body.course_type,
               credit: 0,
-              reason: req.body.reason
+              reason: req.body.reason,
+              file: req.body.file,
+              offset_type: 0
             };
             query.CreateOffsetApplyForm(data, function(err,result){
                 if(err){

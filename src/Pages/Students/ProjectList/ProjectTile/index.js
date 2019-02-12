@@ -21,17 +21,7 @@ import { storeProjectsImage, storeProjectsFile } from '../../../../Redux/Student
 import axios from 'axios/index'
 import Edit from './Edit/Edit'
 
-let config = {
-  apiKey: 'AIzaSyC64Eitf77FqUAMjjPaG1_rk3Sr6pyttoo',
-  authDomain: 'code-86ba4.firebaseapp.com',
-  databaseURL: 'https://code-86ba4.firebaseio.com',
-  projectId: 'code-86ba4',
-  storageBucket: 'code-86ba4.appspot.com',
-  messagingSenderId: '354539568437'
-}
-if (!firebase.apps.length) {
-  firebase.initializeApp(config)
-}
+
 let storageRef = firebase.storage().ref()
 
 const styles = {
@@ -66,7 +56,7 @@ class Index extends React.Component {
     this.handleClose = this.handleClose.bind(this)
     this.getString = this.getString.bind(this)
     this.getImage = this.getImage.bind(this)
-    
+
     this.fetchImage()
     this.state = {
       open: false
@@ -76,12 +66,10 @@ class Index extends React.Component {
   fetchImage () {
     if (this.props.data.image !== undefined && this.props.data.file !== undefined) return
     let directory = this.props.data.semester + '/' + this.props.data.tname + '/' + this.props.data.research_title + '/image/image.jpg'
-    console.log(directory)
     let pathReference = storageRef.child(directory)
     pathReference.getDownloadURL().then(url => {
       this.props.store_image(url)
     }).catch(error => {
-      console.log(error)
       this.props.store_image('')
     })
     directory = this.props.data.semester + '/' + this.props.data.tname + '/' + this.props.data.research_title + '/file/file.pdf'
@@ -89,7 +77,6 @@ class Index extends React.Component {
     pathReference.getDownloadURL().then(url => {
       this.props.store_file(url)
     }).catch(error => {
-      console.log(error)
       this.props.store_file('')
     })
   }

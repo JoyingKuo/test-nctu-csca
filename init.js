@@ -56,6 +56,7 @@ module.exports.init = function(){
   app.use('/students/head', express.static('./public', {index: 'index.html'}));
   app.use('/students/grad', express.static('./public', {index: 'index.html'}));
   app.use('/students/map', express.static('./public', {index: 'index.html'}));
+  app.use('/students/recommend', express.static('./public', {index: 'index.html'}));
   app.use('/students/professor', express.static('./public', {index: 'index.html'}));
   app.use('/students/project', express.static('./public', {index: 'index.html'}));
   app.use('/teachers/head', express.static('./public', {index: 'index.html'}));
@@ -66,7 +67,13 @@ module.exports.init = function(){
   app.use('/assistants/family/:tid', express.static('./public', {index: 'index.html'}));
   app.use('/assistants/verify', express.static('./public', {index: 'index.html'}));
 
-  
+app.use('/students/credit', express.static('./public', {index: 'index.html'}));
+
+app.use('/teachers/group', express.static('./public', {index: 'index.html'}));
+app.use('/teachers/family', express.static('./public', {index: 'index.html'}));
+app.use('/teachers/course', express.static('./public', {index: 'index.html'}));
+
+
 /*
   app.use('/', express.static('./public', { index: 'index.login.html'}));
   app.use('/students/head', express.static('./public', { index: 'index.student.html'}));
@@ -162,6 +169,12 @@ module.exports.init = function(){
   app.use(require('./routes/user/assistants/graduate/graduateStudent'));
   app.use(require('./routes/user/assistants/graduate/graduateListDownload'));
   app.use(require('./routes/user/students/graduate/graduateChange/graduateList'));
-
+  app.use(require('./routes/user/students/createEnglishOffsetApplyForm.js'));
+  app.use(require('./routes/user/students/recommend/showHotCos.js'));
+  app.use(require('./routes/user/students/recommend/setRecommendCosStar.js'));
+  app.use(require('./routes/user/students/OffsetApplyFormAllInfo.js'));
+  app.use(require('./routes/user/professor/SetOffsetApplyFormAgreeStatus.js'));
+  app.use(require('./routes/user/students/credit/waiveCourse.js'));
+  app.use(require('./routes/user/students/credit/exemptCourse.js'));
   return app;
 };

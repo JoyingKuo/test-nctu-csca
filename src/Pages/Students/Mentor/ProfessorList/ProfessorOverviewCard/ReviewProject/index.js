@@ -105,8 +105,8 @@ class Index extends React.Component {
           </AppBar>
           <div className='container'>
             {
-              this.state.data.groups.map(t =>
-                <Card data={t} profile={this.props.profile} />)
+              this.state.data.map(t =>
+                <Card data={t} profile={this.props.profile} key={t.research_title} />)
             }
           </div>
         </Dialog>

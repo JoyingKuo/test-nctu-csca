@@ -171,6 +171,13 @@ cardsets.Elective.prototype.check = function(callback){
                 }
             }
         }
+        var EEcos = ["UEE2101", "DEE2548", "DEE2542", "UEE2601", "UEE4605"];
+        for(let i = 0; i < EEcos.length; i++){
+            if(checkFullCode === EEcos[i]){
+                callback('專業選修');
+                return;
+            }
+        }
         if(checkCode === "DCP" || checkCode === "IOC" || checkCode === "IOE" || checkCode === "ILE" || checkCode === "IDS"){
             if(checkName === "服務學習(一)" || checkName === "服務學習(二)" || checkName === "導師時間" || checkName === "教學實務" || checkName === "個別研究")
                 callback(''); // these courses although held by CS cannot be placed in elective course

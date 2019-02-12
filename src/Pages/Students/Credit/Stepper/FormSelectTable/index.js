@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import {
   Table,
   TableBody,
@@ -14,7 +14,7 @@ export default class TableExampleControlled extends Component {
     this.isSelected = this.isSelected.bind(this)
     this.handleRowSelection = this.handleRowSelection.bind(this)
     this.state = {
-      selected: [1]
+      selected: []
     }
   }
 
@@ -26,6 +26,10 @@ export default class TableExampleControlled extends Component {
     this.setState({
       selected: selectedRows
     })
+    if (selectedRows[0] !== undefined) {
+      // due to table lifecycle terminate, selectedRows[0] will become undefined
+      this.props.selectCreditForm(selectedRows[0])
+    }
   }
 
   render () {
@@ -38,13 +42,16 @@ export default class TableExampleControlled extends Component {
         </TableHeader>
         <TableBody>
           <TableRow selected={this.isSelected(0)}>
-            <TableRowColumn>必修課程未通過外系抵免</TableRowColumn>
+            <TableRowColumn>學分抵免</TableRowColumn>
           </TableRow>
           <TableRow selected={this.isSelected(1)}>
-            <TableRowColumn>轉系生抵免</TableRowColumn>
+            <TableRowColumn>課程免修</TableRowColumn>
           </TableRow>
           <TableRow selected={this.isSelected(2)}>
-            <TableRowColumn>外系英文授課抵免</TableRowColumn>
+            <TableRowColumn>本系必修課程抵免</TableRowColumn>
+          </TableRow>
+          <TableRow selected={this.isSelected(3)}>
+            <TableRowColumn>英授專業課程抵免</TableRowColumn>
           </TableRow>
         </TableBody>
       </Table>

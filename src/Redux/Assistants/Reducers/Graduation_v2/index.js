@@ -1,7 +1,7 @@
 import { handleActions } from 'redux-actions'
 
 const initialState = {
-  students: [/*{
+  students: [/* {
     "student_id": "0416210",
     "sname": "王大明",
     "program": "網多",
@@ -34,7 +34,8 @@ const initialState = {
     "service": 1,
     "art": 1,
     "mentor": 1,
-    "compulse": ["計算機", "組織", "電路"]
+    "compulse": ["計算機", "組織", "電路"],
+    "current": ["當學期課程"]
   },{
     "student_id": "0416210",
     "sname": "王大明",
@@ -68,17 +69,17 @@ const initialState = {
     "service": 1,
     "art": 1,
     "mentor": 1,
-    "compulse": ["計算機", "組織", "電路", "test"]
-  }*/],
+    "compulse": ["計算機", "組織", "電路", "test"],
+    "current": ["當學期課程"]
+  } */],
   students_csv_data: [],
   status: ''
 }
 export default handleActions({
   SET_GRADUATE_STATE: (state, action) => ({ ...state,
-    students: state.students.map( student => student.student_id !== action.payload.student_id ?
-      student
-      :
-      { ...student,
+    students: state.students.map(student => student.student_id !== action.payload.student_id
+      ? student
+      : { ...student,
         graduate_status: action.payload.graduate_submit
       }
     )

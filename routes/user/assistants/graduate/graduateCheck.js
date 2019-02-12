@@ -77,7 +77,13 @@ router.get('/assistants/graduate/check',StudentId,function(req, res){
             var checkState = { 
                 check:{
                     state: (result[0].graduate_submit == null)?0:parseInt(result[0].graduate_submit)
-                }
+                },
+                general_course:{
+                    type: (result[0].submit_type == null)?null:parseInt(result[0].submit_type)
+
+                },
+                professional_field: (result[0].net_media == null)?0:parseInt(result[0].net_media)
+
             }
             res.send(checkState)
         }

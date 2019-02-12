@@ -11,6 +11,9 @@ import StudentScore from './StudentScore.json'
 import TeacherList from './TeacherList.json'
 import GraduationRule from './GraduationRule.json'
 import FormList from './FormList.json'
+import RecommendCos from './RecommendCos.json'
+import RecommendHot from './RecommendHot.json'
+import Credit from './Credit.json'
 
 export default {
   GraduationItems,
@@ -25,5 +28,8 @@ export default {
   StudentScore,
   TeacherList,
   GraduationRule,
-  FormList
+  FormList,
+  RecommendCos,
+  RecommendHot,
+  Credit
 }

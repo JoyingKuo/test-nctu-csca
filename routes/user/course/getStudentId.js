@@ -25,7 +25,7 @@ getStudentId.studentId = function(req, res, next){
         // get students or assistants
         //console.log(checkPage);
         if(checkPage === "students"){
-             //res.locals.studentId = '0413358';
+             //res.locals.studentId = '0516007';
          //console.log("get student ID:");
            //console.log(JSON.parse(req.session.profile));
            res.locals.professional_field = req.body.professional_field;

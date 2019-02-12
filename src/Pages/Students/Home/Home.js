@@ -9,14 +9,14 @@ import './Home.css'
 class Mentor extends React.Component {
   render () {
     return (
-      <div >
+      <div className='home-image-adjust'>
         <Link to='/students/grad'>
           <img alt='' src={img2} className='image' />
         </Link>
         <Link to='/students/map'>
           <img alt='' src={img0} className='image' />
         </Link>
-        <img alt='' src={img1} className='image' />       
+        <img alt='' src={img1} className='image' />
         <img alt='' src={img3} className='image' />
       </div>
     )

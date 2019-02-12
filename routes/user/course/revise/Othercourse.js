@@ -422,7 +422,7 @@ Othercourse.processOther = function(req, res, next){
 				cosInfo.complete = false;
 	        if(rule[pass[q].cos_code] != true){
 		        if(cosInfo.complete === true){
-				    if(temp == 'DCP' || temp == 'IOC' || temp == 'IOE' || temp == 'ILE'){
+				    if((temp == 'DCP' || temp == 'IOC' || temp == 'IOE' || temp == 'ILE') && pass[q].cos_type != '通識'){
 	                    if(pass[q].cos_cname == '服務學習(一)' || pass[q].cos_cname == '服務學習(二)'){
                             if(offsetNameCheck[pass[q].cos_cname] == true);
                             else{
@@ -753,9 +753,11 @@ Othercourse.processOther = function(req, res, next){
         courseResult.push(compulsory);
         //console.log(compulsory);
 		courseResult.push(elective);
+        //console.log(elective);
 	    courseResult.push(otherElect);
 	    courseResult.push(language);
 	    courseResult.push(general);
+        //console.log(general);
         courseResult.push(general_new);
 	    courseResult.push(peClass);
 	    courseResult.push(service);

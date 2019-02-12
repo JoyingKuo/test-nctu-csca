@@ -505,8 +505,96 @@ exports.ShowUserOffsetApplyFormAll = "\
     on pre.cos_cname_old = body.cos_cname_old\
     and pre.cos_code_old = body.cos_code_old";
 
+exports.ShowGivenOffsetApplyForm = "\
+    select body.*,if(pre.previous=1,1,0) as previous\
+    from\
+    (\
+        select o.*,s.sname,s.phone\
+        from offset_apply_form as o,student as s\
+        where o.student_id = :student_id \
+        and o.student_id = s.student_id \
+        and o.cos_cname_old = :cos_cname_old \
+        and o.cos_cname = :cos_cname \
+    ) as body\
+    left outer join\
+    (\
+        select o.cos_cname_old, o.cos_code_old, 1 as previous\
+        from offset_apply_form as o\
+        where \
+        o.cos_cname_old in\
+        (\
+            select cos_cname_old\
+            from offset_apply_form\
+            where agree = 1 or agree = 2\
+        )\
+        and o.cos_code_old in\
+        (\
+            select cos_code_old\
+            from offset_apply_form\
+            where agree = 1 or agree = 2\
+        )\
+        group by cos_cname_old, cos_code_old\
+    ) as pre\
+    on pre.cos_cname_old = body.cos_cname_old\
+    and pre.cos_code_old = body.cos_code_old";
+
 exports.ShowGivenGradeStudent = "\
     select sname, student_id, program, graduate,\
     if(substring(program,1,2)='資工' or substring(program,1,2)='網多' or substring(program,1,2)='資電',1,0) as status\
     from student\
-    where grade = :grade";
+    where grade = :grade\
+    and study_status !='休學'\
+    and study_status !='畢業'";
+
+exports.ShowStudentHotCos = "\
+    select a.grade, a.unique_id, a.count, a.url, a.cos_credit, a.cos_time, a.depType, a.tname, a.cos_cname \
+    from  \
+    ( \
+        select a.grade, a.unique_id, a.count, a.url, a.cos_credit, a.cos_time, a.depType, a.tname, b.cos_cname \
+        from \
+        ( \
+            select a.grade, a.unique_id, a.count, a.url, a.cos_credit, a.cos_time, a.depType, b.tname \
+            from  \
+            ( \
+                select a.grade, a.unique_id, a.count, a.url, b.cos_credit, b.cos_time, b.depType, b.teacher_id \
+                from  \
+                ( \
+                    select grade, unique_id, count, url \
+                    from hot_cos \
+                    where grade = :grade \
+                ) as a \
+                left outer join \
+                ( \
+                    select unique_id, cos_credit, cos_time, depType, teacher_id \
+                    from cos_data \
+                ) as b \
+                on a.unique_id=b.unique_id \
+            ) as a \
+            left outer join \
+            ( \
+                select teacher_id, tname \
+                from teacher_cos_relation \
+            ) as b \
+            on a.teacher_id=b.teacher_id \
+        ) as a \
+        left outer join \
+        ( \
+            select unique_id, cos_cname \
+            from cos_name \
+        ) as b \
+        on a.unique_id=b.unique_id \
+        order by a.count DESC \
+    ) as a \
+    where a.cos_cname not in \
+    ( \
+        select cos_cname \
+        from cos_score \
+        where student_id = :student_id \
+    )";
+
+exports.ShowStudentGrade = "\
+    select student_id, grade\
+    from student\
+    where student_id=:student_id"
+
+
