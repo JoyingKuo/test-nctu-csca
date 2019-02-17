@@ -33,7 +33,7 @@ router.get('/testAPI', function(req, res){
                 cos_cname: '不知道～',
                 cos_code: '不知道',
                 cos_type: '不知道',
-                credit: 22,
+                //credit: 22,
                 reason: '2',
                 credit_old: 3,
                 file: 'LOOOOOOOOOO',

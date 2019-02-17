@@ -11,26 +11,29 @@ router.post('/assistants/SetOffsetApplyFormAgreeStatus', csrfProtection, functio
         if(req.session.profile){
             for(var i = 0; i < req.body.courses.length; i++){
                 var data = {
+                    timestamp: req.body.courses[i].timestamp,
                     student_id: req.body.courses[i].sid,
-                    cos_cname_old: req.body.courses[i].cosname,
-                    cos_code_old: req.body.courses[i].coscode,
                     state: req.body.status, // 0:尚未決定, 1:助理同意, 2:主任同意, 3:主任不同意
-                    transferto: req.body.transferTo
+                    reject_reason: req.body.courses[i].reason,
+                    transferto:req.body.transferTo
                 }
+              //console.log(data);
                 query.SetOffsetApplyFormAgreeStatus(data, function(err,result){
                     if(err){
                         throw err;
                         res.redirect('/');
                     }
                     if(!result)
-                        res.redirect('/');
-                    else{
-                        result = JSON.parse(result);
-                        // console.log(result);
-                        res.send(result); 
-                    }
-                });                           
+                        res.redirect('/');        
+                });
+
             }
+            setTimeout(function(){
+		        var signal = {signal :1};
+		        res.send(signal);
+	        },2000);
+
+
         }
         else
             res.redirect('/');

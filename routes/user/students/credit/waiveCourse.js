@@ -15,6 +15,7 @@ router.post('/students/credit/waiveCourse', studentId, function(req, res) {
         var data = {
             student_id: student_id,
             phone: req.body.phone,
+            class: req.body.class,
             apply_year: req.body.apply_year,
             apply_semester: req.body.apply_semester,
             cos_dep_old: req.body.original_course_department,
@@ -23,7 +24,7 @@ router.post('/students/credit/waiveCourse', studentId, function(req, res) {
             cos_code_old: null,
             cos_cname: req.body.current_course_name,
             cos_code: req.body.current_course_code,
-            cos_type: null,
+            cos_type: req.body.current_course_type,
             credit: parseInt(req.body.current_course_credit),
             reason: null,
             credit_old: parseInt(req.body.original_course_credit),
@@ -34,7 +35,9 @@ router.post('/students/credit/waiveCourse', studentId, function(req, res) {
             cos_year_old: parseInt(req.body.original_course_year),
             cos_semester_old: parseInt(req.body.original_course_semester),
             score_old: parseInt(req.body.original_course_score),
-            offset_type: 2                                                          };
+            offset_type: 2,
+            reason_type: null
+        };
         /* var data = {
             student_id: '0512345',
             phone: "0912345678",

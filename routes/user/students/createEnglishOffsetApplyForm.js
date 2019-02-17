@@ -15,6 +15,7 @@ router.post('/students/credit/englishCourse', StudentId, csrfProtection, functio
             var data = {
               student_id: StudentId,
               phone: req.body.phone,
+              class: null,
               apply_year: req.body.apply_year,
               apply_semester: req.body.apply_semester,
               cos_dep_old: req.body.department,
@@ -24,6 +25,7 @@ router.post('/students/credit/englishCourse', StudentId, csrfProtection, functio
               cos_cname: null,
               cos_code: null,
               cos_type: null,
+              credit: req.body.credit,
               reason: req.body.reason,
               credit_old: 0,
               file: req.body.file,
@@ -34,6 +36,7 @@ router.post('/students/credit/englishCourse', StudentId, csrfProtection, functio
               cos_semester_old: 0,
               score_old: 0,
               offset_type: 1,
+              reason_type: null
               //transferto:'["T9505","T9125"]'
             };
             //console.log(data);

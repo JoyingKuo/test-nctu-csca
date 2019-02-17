@@ -18,13 +18,16 @@ router.get('/assistants/ShowUserOffsetApplyForm', function(req, res){
                 else{
                     result = JSON.parse(result);
                     // console.log(result);
+
                     var group = [];
-                    for(var i = 0; i < result.length; i++){
-                        var one = {
+                   
+                        for(var i = 0; i < result.length; i++){
+                          var one = {
                             "year" : result[i].apply_year,
                             "semester" : parseInt(result[i].apply_semester),
                             "sid": result[i].student_id,
                             "name": result[i].sname,
+                            "info": result[i].class,
                             "phone": result[i].phone,
                             "nameA": result[i].cos_cname_old,
                             "codeA": result[i].cos_code_old,
@@ -34,20 +37,24 @@ router.get('/assistants/ShowUserOffsetApplyForm', function(req, res){
                             "nameB": result[i].cos_cname,
                             "codeB": result[i].cos_code,
                             "creditB": parseInt(result[i].credit),
-                            "type": result[i].cos_type,
+                            "typeB": result[i].cos_type,
+                            "type": parseInt(result[i].offset_type),
+                            "score": result[i].score_old,
                             "reason": result[i].reason,
+                            "reject_reason": result[i].reject_reason,
                             "status": parseInt(result[i].agree),
                             "previous": result[i].previous == "0" ? false : true,
                             "date": result[i].timestamp,
                             "file": result[i].file,
-                            "transferTo": []
+                            "transferTo": ""
                         };
+
                         if(result[i].transferto != null)
                             one.transferTo = result[i].transferto;
                         group.push(one);
                     }
                     if(group.length == result.length)
-                        res.send(group); 
+                        res.send(group);                         
                 }
             });                           
         }

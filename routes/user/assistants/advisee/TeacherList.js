@@ -20,11 +20,14 @@ router.get('/assistants/advisee/TeacherList', function(req, res){
 					var info ={
 						id : result[i].teacher_id,
 						name : result[i].tname,
+                        status: 0,
 						email : result[i].email,
 						all_students : parseInt(result[i].all_students),
 						recent_failed : parseInt(result[i].recent_failed),
                         failed_students : parseInt(result[i].failed_students)
 					}
+                    if(info.id == "T9303" )
+                        info.status = 1;
 					list.push(info);
 				}
 				if(list.length == result.length)
